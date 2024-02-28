@@ -123,6 +123,32 @@ class UserRepost {
     }
   }
 
+  Future<void> bookmark() async {
+    if (postBookmarked) {
+      throw Exception('Post $postNumber is already bookmarked.');
+    } else {
+      final response = await httpPost('bookmark/$postNumber/', null, jwt: true);
+      if (response['bookmarked']) {
+        postBookmarked = true;
+      } else {
+        throw Exception('Post $postNumber is already bookmarked in backend.');
+      }
+    }
+  }
+
+  Future<void> unbookmark() async {
+    if (!postBookmarked) {
+      throw Exception('Post $postNumber is already unbookmarked.');
+    } else {
+      final response = await httpPost('bookmark/$postNumber/', null, jwt: true);
+      if (!response['bookmarked']) {
+        postBookmarked = false;
+      } else {
+        throw Exception('Post $postNumber is already unbookmarked in backend.');
+      }
+    }
+  }
+
   factory UserRepost.fromJson(Map<String, dynamic> json) {
     List<Progress> progressList = [];
     List<String> progressTextList = [];

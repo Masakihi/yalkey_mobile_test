@@ -19,6 +19,7 @@ class _HomePageState extends State<HomePage> {
   bool _loading = false; // データをロード中かどうかを示すフラグ
   int _page = 1; // 現在のページ番号
   bool _liking = false;
+  bool _bookmarking = false;
 
   @override
   void initState() {
@@ -114,6 +115,10 @@ class _HomePageState extends State<HomePage> {
                 .map((repost) => jsonEncode(repost.toJson()))
                 .toList());
         setState(() {});
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('いいねしました')),
+        );
       } else {
         await repost.like();
         userRepostList.forEach((r) {
@@ -128,10 +133,66 @@ class _HomePageState extends State<HomePage> {
                 .map((repost) => jsonEncode(repost.toJson()))
                 .toList());
         setState(() {});
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('いいねを解除しました')),
+        );
       }
     }
 
     _liking = false;
+  }
+
+  Future<void> bookmark(UserRepost repost) async {
+    if (_bookmarking) {
+      return;
+    }
+
+    _bookmarking = true;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final cachedRepostList = prefs.getStringList('user_repost_list');
+    if (cachedRepostList != null && cachedRepostList.isNotEmpty) {
+      var userRepostList = cachedRepostList
+          .map((jsonString) => UserRepost.fromJson(jsonDecode(jsonString)));
+      if (repost.postBookmarked) {
+        print(repost.postBookmarked);
+        await repost.unbookmark();
+        userRepostList.forEach((r) {
+          if (r.postNumber == repost.postNumber) {
+            r.postBookmarked = false;
+          }
+        });
+        prefs.setStringList(
+            'user_repost_list',
+            userRepostList
+                .map((repost) => jsonEncode(repost.toJson()))
+                .toList());
+        setState(() {});
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('ブックマークを解除しました')),
+        );
+      } else {
+        await repost.bookmark();
+        userRepostList.forEach((r) {
+          if (r.postNumber == repost.postNumber) {
+            r.postBookmarked = true;
+          }
+        });
+        prefs.setStringList(
+            'user_repost_list',
+            userRepostList
+                .map((repost) => jsonEncode(repost.toJson()))
+                .toList());
+        setState(() {});
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('ブックマークしました')),
+        );
+      }
+    }
+
+    _bookmarking = false;
   }
 
   @override
@@ -252,7 +313,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           IconButton(
                             onPressed: () {
-                              // ブックマークボタンが押された時の処理
+                              bookmark(repost);
                             },
                             icon: Icon(
                                 repost.postBookmarked
