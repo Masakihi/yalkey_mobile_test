@@ -1,4 +1,5 @@
 import 'api.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // ProgressとUserRepostの型定義
 class Progress {
@@ -69,9 +70,9 @@ class UserRepost {
   final String postText;
   final List<Progress> progressList;
   final String postCreatedAt;
-  final int postLikeNumber;
-  final bool postLiked;
-  final bool postBookmarked;
+  int postLikeNumber;
+  bool postLiked;
+  bool postBookmarked;
   final bool postReposted;
   final List<String> progressTextList;
 
@@ -93,6 +94,36 @@ class UserRepost {
     required this.postReposted,
     required this.progressTextList,
   });
+
+  Future<void> like() async {
+    if (postLiked) {
+      throw Exception('Post $postNumber is already liked.');
+    } else {
+      final response = await httpPost('like/$postNumber/', null, jwt: true);
+      if (response['liked']) {
+        postLiked = true;
+        postLikeNumber++;
+        print('likeしました');
+      } else {
+        throw Exception('Post $postNumber is already liked in backend.');
+      }
+    }
+  }
+
+  Future<void> unlike() async {
+    if (!postLiked) {
+      throw Exception('Post $postNumber is already unliked.');
+    } else {
+      final response = await httpPost('like/$postNumber/', null, jwt: true);
+      if (!response['liked']) {
+        postLiked = false;
+        postLikeNumber--;
+        print('unlikeしました');
+      } else {
+        throw Exception('Post $postNumber is already unliked in backend.');
+      }
+    }
+  }
 
   factory UserRepost.fromJson(Map<String, dynamic> json) {
     List<Progress> progressList = [];

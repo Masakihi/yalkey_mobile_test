@@ -18,6 +18,7 @@ class _HomePageState extends State<HomePage> {
   late ScrollController _scrollController; // ListView のスクロールを制御するコントローラー
   bool _loading = false; // データをロード中かどうかを示すフラグ
   int _page = 1; // 現在のページ番号
+  bool _liking = false;
 
   @override
   void initState() {
@@ -85,6 +86,54 @@ class _HomePageState extends State<HomePage> {
     } catch (error) {
       print('Error clearing cache: $error');
     }
+  }
+
+  Future<void> like(UserRepost repost) async {
+    if (_liking) {
+      return;
+    }
+
+    _liking = true;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final cachedRepostList = prefs.getStringList('user_repost_list');
+    if (cachedRepostList != null && cachedRepostList.isNotEmpty) {
+      var userRepostList = cachedRepostList
+          .map((jsonString) => UserRepost.fromJson(jsonDecode(jsonString)));
+      if (repost.postLiked) {
+        print(repost.postLiked);
+        await repost.unlike();
+        userRepostList.forEach((r) {
+          if (r.postNumber == repost.postNumber) {
+            print('${repost.postNumber}をfalseにします');
+            r.postLiked = false;
+            r.postLikeNumber--;
+          }
+        });
+        prefs.setStringList(
+            'user_repost_list',
+            userRepostList
+                .map((repost) => jsonEncode(repost.toJson()))
+                .toList());
+        setState(() {});
+      } else {
+        await repost.like();
+        userRepostList.forEach((r) {
+          if (r.postNumber == repost.postNumber) {
+            print('${repost.postNumber}をtrueにします');
+            r.postLiked = true;
+            r.postLikeNumber++;
+          }
+        });
+        prefs.setStringList(
+            'user_repost_list',
+            userRepostList
+                .map((repost) => jsonEncode(repost.toJson()))
+                .toList());
+        setState(() {});
+      }
+    }
+
+    _liking = false;
   }
 
   @override
@@ -181,7 +230,7 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               IconButton(
                                 onPressed: () {
-                                  // いいねボタンが押された時の処理
+                                  like(repost);
                                 },
                                 icon: Icon(
                                   repost.postLiked

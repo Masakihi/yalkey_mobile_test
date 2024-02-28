@@ -26,7 +26,7 @@ Future httpGet(String path, {bool jwt = false}) async {
   return json.decode(utf8.decode(response.bodyBytes));
 }
 
-Future httpPost(String path, Map<String, dynamic> body,
+Future httpPost(String path, Map<String, dynamic>? body,
     {bool jwt = false}) async {
   if (jwt) {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -40,7 +40,7 @@ Future httpPost(String path, Map<String, dynamic> body,
           'Content-Type': 'application/json',
           'Authorization': 'JWT $token'
         },
-        body: jsonEncode(body),
+        body: body != null ? jsonEncode(body) : null, // bodyがnullの場合はnullを設定
       );
       return json.decode(utf8.decode(response.bodyBytes));
     }
@@ -48,7 +48,7 @@ Future httpPost(String path, Map<String, dynamic> body,
   final response = await http.post(
     Uri.parse('https://yalkey.com/api/v1/$path'),
     headers: {'Content-Type': 'application/json'},
-    body: jsonEncode(body),
+    body: body != null ? jsonEncode(body) : null, // bodyがnullの場合はnullを設定
   );
   return json.decode(utf8.decode(response.bodyBytes));
 }
