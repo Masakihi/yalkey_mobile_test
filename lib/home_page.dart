@@ -20,6 +20,7 @@ class _HomePageState extends State<HomePage> {
   int _page = 1; // 現在のページ番号
   bool _liking = false;
   bool _bookmarking = false;
+  bool _reposting = false;
 
   @override
   void initState() {
@@ -195,6 +196,58 @@ class _HomePageState extends State<HomePage> {
     _bookmarking = false;
   }
 
+  Future<void> _repost(UserRepost repost) async {
+    if (_reposting) {
+      return;
+    }
+
+    _reposting = true;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final cachedRepostList = prefs.getStringList('user_repost_list');
+    if (cachedRepostList != null && cachedRepostList.isNotEmpty) {
+      var userRepostList = cachedRepostList
+          .map((jsonString) => UserRepost.fromJson(jsonDecode(jsonString)));
+      if (repost.postReposted) {
+        print(repost.postReposted);
+        await repost.unrepost();
+        userRepostList.forEach((r) {
+          if (r.postNumber == repost.postNumber) {
+            r.postReposted = false;
+          }
+        });
+        prefs.setStringList(
+            'user_repost_list',
+            userRepostList
+                .map((repost) => jsonEncode(repost.toJson()))
+                .toList());
+        setState(() {});
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('リポストを解除しました')),
+        );
+      } else {
+        await repost.repost();
+        userRepostList.forEach((r) {
+          if (r.postNumber == repost.postNumber) {
+            r.postReposted = true;
+          }
+        });
+        prefs.setStringList(
+            'user_repost_list',
+            userRepostList
+                .map((repost) => jsonEncode(repost.toJson()))
+                .toList());
+        setState(() {});
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('リポストしました')),
+        );
+      }
+    }
+
+    _reposting = false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -325,9 +378,12 @@ class _HomePageState extends State<HomePage> {
                           ),
                           IconButton(
                             onPressed: () {
-                              // リポストボタンが押された時の処理
+                              _repost(repost);
                             },
-                            icon: Icon(Icons.refresh),
+                            icon: Icon(Icons.refresh,
+                                color: repost.postReposted
+                                    ? Color.fromARGB(255, 39, 181, 0)
+                                    : null),
                           ),
                         ],
                       ),

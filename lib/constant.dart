@@ -73,7 +73,7 @@ class UserRepost {
   int postLikeNumber;
   bool postLiked;
   bool postBookmarked;
-  final bool postReposted;
+  bool postReposted;
   final List<String> progressTextList;
 
   UserRepost({
@@ -145,6 +145,32 @@ class UserRepost {
         postBookmarked = false;
       } else {
         throw Exception('Post $postNumber is already unbookmarked in backend.');
+      }
+    }
+  }
+
+  Future<void> repost() async {
+    if (postReposted) {
+      throw Exception('Post $postNumber is already reposted.');
+    } else {
+      final response = await httpPost('repost/$postNumber/', null, jwt: true);
+      if (response['post_reposted']) {
+        postReposted = true;
+      } else {
+        throw Exception('Post $postNumber is already reposted in backend.');
+      }
+    }
+  }
+
+  Future<void> unrepost() async {
+    if (!postReposted) {
+      throw Exception('Post $postNumber is already unreposted.');
+    } else {
+      final response = await httpPost('repost/$postNumber/', null, jwt: true);
+      if (!response['post_reposted']) {
+        postReposted = false;
+      } else {
+        throw Exception('Post $postNumber is already unreposted in backend.');
       }
     }
   }
