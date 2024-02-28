@@ -104,7 +104,6 @@ class _HomePageState extends State<HomePage> {
         await repost.unlike();
         userRepostList.forEach((r) {
           if (r.postNumber == repost.postNumber) {
-            print('${repost.postNumber}をfalseにします');
             r.postLiked = false;
             r.postLikeNumber--;
           }
@@ -119,7 +118,6 @@ class _HomePageState extends State<HomePage> {
         await repost.like();
         userRepostList.forEach((r) {
           if (r.postNumber == repost.postNumber) {
-            print('${repost.postNumber}をtrueにします');
             r.postLiked = true;
             r.postLikeNumber++;
           }

@@ -103,7 +103,6 @@ class UserRepost {
       if (response['liked']) {
         postLiked = true;
         postLikeNumber++;
-        print('likeしました');
       } else {
         throw Exception('Post $postNumber is already liked in backend.');
       }
@@ -118,7 +117,6 @@ class UserRepost {
       if (!response['liked']) {
         postLiked = false;
         postLikeNumber--;
-        print('unlikeしました');
       } else {
         throw Exception('Post $postNumber is already unliked in backend.');
       }
