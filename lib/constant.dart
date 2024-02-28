@@ -112,7 +112,7 @@ class UserRepost {
       // print(progressTextList);
     }
     return UserRepost(
-      dateReposted: json['date_reposted'],
+      dateReposted: json['repost_date'],
       isRepost: json['is_repost'],
       repostUserId: json['repost_user_id'],
       postUserIcon: json['post_user_icon'],
@@ -133,7 +133,7 @@ class UserRepost {
 
   Map<String, dynamic> toJson() {
     return {
-      'date_reposted': dateReposted,
+      'repost_date': dateReposted,
       'is_repost': isRepost,
       'repost_user_id': repostUserId,
       'post_user_icon': postUserIcon,
