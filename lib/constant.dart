@@ -329,8 +329,8 @@ class ReportListResponse {
 
   factory ReportListResponse.fromJson(Map<String, dynamic> json) {
     List<Report> reportList = [];
-    if (json['yalker_repost_list'] != null) {
-      var reportJsonList = json['yalker_repost_list'] as List;
+    if (json['yalker_report_list'] != null) {
+      var reportJsonList = json['yalker_report_list'] as List;
       reportList =
           reportJsonList.map((report) => Report.fromJson(report)).toList();
     }
@@ -339,6 +339,7 @@ class ReportListResponse {
 
   static Future<ReportListResponse> fetchReportListResponse(int userId) async {
     dynamic jsonData = await httpGet('report-list/$userId', jwt: true);
+    print(jsonData);
     return ReportListResponse.fromJson(jsonData);
   }
 }
