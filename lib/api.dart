@@ -42,6 +42,7 @@ Future httpPost(String path, Map<String, dynamic>? body,
         },
         body: body != null ? jsonEncode(body) : null, // bodyがnullの場合はnullを設定
       );
+      print(response.reasonPhrase);
       return json.decode(utf8.decode(response.bodyBytes));
     }
   }

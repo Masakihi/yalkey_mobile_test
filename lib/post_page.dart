@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'api.dart';
 
 class PostPage extends StatefulWidget {
   const PostPage({Key? key}) : super(key: key);
@@ -35,39 +36,48 @@ class _PostPageState extends State<PostPage> {
   }
 
   Future<void> _postFormData() async {
-    // 日付を文字列に変換
-    String formattedDate =
-        '${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}';
+    if (!_hasData) {
+      String text = _textEditingController.text;
+      var data = {
+        'text': text,
+      };
+      final response = httpPost('post-form/', data, jwt: true);
+      print(response);
+    } else {
+      // 日付を文字列に変換
+      String formattedDate =
+          '${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}';
 
-    // データをAPIに投稿する処理をここに記述
-    // テキストデータ
-    String text = _textEditingController.text;
-    // 時間データ
-    int? hours = _hoursController.text.isNotEmpty
-        ? int.parse(_hoursController.text)
-        : null;
-    // 分データ
-    int? minutes = _minutesController.text.isNotEmpty
-        ? int.parse(_minutesController.text)
-        : null;
+      // データをAPIに投稿する処理をここに記述
+      // テキストデータ
+      String text = _textEditingController.text;
+      // 時間データ
+      int? hours = _hoursController.text.isNotEmpty
+          ? int.parse(_hoursController.text)
+          : null;
+      // 分データ
+      int? minutes = _minutesController.text.isNotEmpty
+          ? int.parse(_minutesController.text)
+          : null;
 
-    // APIに投稿するデータを作成
-    var data = {
-      'text': text,
-      'types': {},
-      'units': {},
-      'report_date': formattedDate,
-      'report': [],
-      if (hours != null && minutes != null) 'hours': [hours],
-      if (hours != null && minutes != null) 'minutes': [minutes],
-      if (hours != null && minutes != null) 'todo': ['off'],
-      'custom_data': [0],
-      'custom_float_data': [0.0],
-    };
+      // APIに投稿するデータを作成
+      var data = {
+        'text': text,
+        'types': {},
+        'units': {},
+        'report_date': formattedDate,
+        'report': [],
+        if (hours != null && minutes != null) 'hours': [hours],
+        if (hours != null && minutes != null) 'minutes': [minutes],
+        if (hours != null && minutes != null) 'todo': ['off'],
+        'custom_data': [0],
+        'custom_float_data': [0.0],
+      };
 
-    // APIにデータを投稿する処理を実行
-    // http.post('https://yalkey.com/api/v1/progress-form/', body: data);
-    // データの送信結果などの処理を追加する
+      // APIにデータを投稿する処理を実行
+      // http.post('https://yalkey.com/api/v1/progress-form/', body: data);
+      // データの送信結果などの処理を追加する
+    }
   }
 
   Future<void> _getImages() async {
