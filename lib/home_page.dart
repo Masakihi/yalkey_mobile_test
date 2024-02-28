@@ -118,7 +118,7 @@ class _HomePageState extends State<HomePage> {
         setState(() {});
         ScaffoldMessenger.of(context).removeCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('いいねしました')),
+          SnackBar(content: Text('いいねを解除しました')),
         );
       } else {
         await repost.like();
@@ -136,7 +136,7 @@ class _HomePageState extends State<HomePage> {
         setState(() {});
         ScaffoldMessenger.of(context).removeCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('いいねを解除しました')),
+          SnackBar(content: Text('いいねしました')),
         );
       }
     }

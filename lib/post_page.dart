@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'api.dart';
+import 'constant.dart';
 
 class PostPage extends StatefulWidget {
   const PostPage({Key? key}) : super(key: key);
@@ -16,15 +17,19 @@ class _PostPageState extends State<PostPage> {
   late TextEditingController _hoursController;
   late TextEditingController _minutesController;
   late DateTime _selectedDate;
+  // late ReportListResponse _reportList;
+  // late Report? _selectedReport;
   bool _hasData = false;
 
   @override
-  void initState() {
+  void initState() async {
     super.initState();
     _textEditingController = TextEditingController();
     _hoursController = TextEditingController();
     _minutesController = TextEditingController();
     _selectedDate = DateTime.now();
+    // _reportList = await ReportListResponse.fetchReportListResponse(59);
+    // _selectedReport = null;
   }
 
   @override
