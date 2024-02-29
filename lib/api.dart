@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,30 +27,61 @@ Future httpGet(String path, {bool jwt = false}) async {
   return json.decode(utf8.decode(response.bodyBytes));
 }
 
-Future httpPost(String path, Map<String, dynamic>? body,
-    {bool jwt = false}) async {
+// Post（画像投稿可能）
+Future<dynamic> httpPost(String path, Map<String, dynamic>? body,
+    {bool jwt = false, List<String> images = const []}) async {
   if (jwt) {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('access_token');
     if (token == null) {
       throw Exception('Token does not exist');
     } else {
-      final response = await http.post(
+      var request = http.MultipartRequest(
+        'POST',
         Uri.parse('https://yalkey.com/api/v1/$path'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'JWT $token'
-        },
-        body: body != null ? jsonEncode(body) : null, // bodyがnullの場合はnullを設定
       );
+      // ヘッダーにトークンを追加
+      request.headers['Authorization'] = 'JWT $token';
+
+      // 画像をリクエストに追加
+      for (var imagePath in images) {
+        request.files
+            .add(await http.MultipartFile.fromPath('postimage', imagePath));
+      }
+
+      // ボディを追加
+      if (body != null) {
+        body.forEach((key, value) {
+          request.fields[key] = value.toString();
+        });
+      }
+
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
       print(response.reasonPhrase);
-      return json.decode(utf8.decode(response.bodyBytes));
+      return json.decode(responseBody);
     }
+  } else {
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse('https://yalkey.com/api/v1/$path'),
+    );
+
+    // 画像をリクエストに追加
+    for (var imagePath in images) {
+      request.files
+          .add(await http.MultipartFile.fromPath('postimage', imagePath));
+    }
+
+    // ボディを追加
+    if (body != null) {
+      body.forEach((key, value) {
+        request.fields[key] = value.toString();
+      });
+    }
+
+    var response = await request.send();
+    var responseBody = await response.stream.bytesToString();
+    return json.decode(responseBody);
   }
-  final response = await http.post(
-    Uri.parse('https://yalkey.com/api/v1/$path'),
-    headers: {'Content-Type': 'application/json'},
-    body: body != null ? jsonEncode(body) : null, // bodyがnullの場合はnullを設定
-  );
-  return json.decode(utf8.decode(response.bodyBytes));
 }

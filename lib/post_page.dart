@@ -86,7 +86,8 @@ class _PostPageState extends State<PostPage> {
       var data = {
         'text': text,
       };
-      final response = await httpPost('post-form/', data, jwt: true);
+      final response = await httpPost('post-form/', data,
+          jwt: true, images: _selectedImagePaths);
     } else {
       // 日付を文字列に変換
       String formattedDate =
@@ -131,7 +132,8 @@ class _PostPageState extends State<PostPage> {
       };
       print(data);
 
-      final response = httpPost('progress-form/', data, jwt: true);
+      final response = httpPost('progress-form/', data,
+          jwt: true, images: _selectedImagePaths);
     }
   }
 
