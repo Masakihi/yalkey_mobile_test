@@ -47,7 +47,6 @@ class _PostPageState extends State<PostPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final cachedReportList =
         prefs.getStringList('user_report_list')?.toSet().toList();
-    print(cachedReportList);
     if (cachedReportList != null && cachedReportList.isNotEmpty) {
       setState(() {
         _reportList = cachedReportList
@@ -70,7 +69,6 @@ class _PostPageState extends State<PostPage> {
     }
     prefs.setStringList('user_report_list',
         _reportList.map((repost) => jsonEncode(repost.toJson())).toList());
-    // print(_reportList);
   }
 
   @override
@@ -90,8 +88,6 @@ class _PostPageState extends State<PostPage> {
         };
         final response = await httpPost('post-form/', data,
             jwt: true, images: _selectedImagePaths);
-        print('responseを返すね');
-        print(response);
       } else {
         // 日付を文字列に変換
         String formattedDate =

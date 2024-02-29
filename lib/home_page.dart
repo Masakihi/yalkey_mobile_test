@@ -54,7 +54,6 @@ class _HomePageState extends State<HomePage> {
     }
     UserRepostListResponse userRepostListResponse =
         await UserRepostListResponse.fetchUserRepostListResponse(_page);
-    print(userRepostListResponse);
     if (mounted) {
       setState(() {
         _userRepostList
@@ -102,7 +101,6 @@ class _HomePageState extends State<HomePage> {
       var userRepostList = cachedRepostList
           .map((jsonString) => UserRepost.fromJson(jsonDecode(jsonString)));
       if (repost.postLiked) {
-        print(repost.postLiked);
         await repost.unlike();
         userRepostList.forEach((r) {
           if (r.postNumber == repost.postNumber) {
@@ -156,7 +154,6 @@ class _HomePageState extends State<HomePage> {
       var userRepostList = cachedRepostList
           .map((jsonString) => UserRepost.fromJson(jsonDecode(jsonString)));
       if (repost.postBookmarked) {
-        print(repost.postBookmarked);
         await repost.unbookmark();
         userRepostList.forEach((r) {
           if (r.postNumber == repost.postNumber) {
@@ -208,7 +205,6 @@ class _HomePageState extends State<HomePage> {
       var userRepostList = cachedRepostList
           .map((jsonString) => UserRepost.fromJson(jsonDecode(jsonString)));
       if (repost.postReposted) {
-        print(repost.postReposted);
         await repost.unrepost();
         userRepostList.forEach((r) {
           if (r.postNumber == repost.postNumber) {

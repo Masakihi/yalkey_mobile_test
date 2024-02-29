@@ -2,6 +2,11 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:developer';
+
+void logResponse(dynamic response) {
+  log(response.toString(), name: 'Response');
+}
 
 Future httpGet(String path, {bool jwt = false}) async {
   if (jwt) {
@@ -58,7 +63,7 @@ Future<dynamic> httpPost(String path, Map<String, dynamic>? body,
 
       var response = await request.send();
       var responseBody = await response.stream.bytesToString();
-      print(response.reasonPhrase);
+      logResponse(responseBody);
       return json.decode(responseBody);
     }
   } else {
@@ -82,6 +87,7 @@ Future<dynamic> httpPost(String path, Map<String, dynamic>? body,
 
     var response = await request.send();
     var responseBody = await response.stream.bytesToString();
+
     return json.decode(responseBody);
   }
 }

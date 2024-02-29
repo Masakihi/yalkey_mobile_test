@@ -42,6 +42,21 @@ class Progress {
     );
   }
 
+  factory Progress.fromJson2(Map<String, dynamic> json) {
+    return Progress(
+      reportType: json['report_type'],
+      reportTitle: json['report_title'],
+      reportNumber: json['report_number'],
+      progressTodo: json['todo'],
+      progressHours: json['hours'],
+      progressMinutes: json['minutes'],
+      progressCustomData: json['custom_data'],
+      progressCustomFloatData: json['custom_float_data'],
+      progressUnit: json['unit'],
+      progressDate: json['progress_date'],
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'report_type': reportType,
@@ -340,5 +355,31 @@ class ReportListResponse {
   static Future<ReportListResponse> fetchReportListResponse(int userId) async {
     dynamic jsonData = await httpGet('report-list/$userId', jwt: true);
     return ReportListResponse.fromJson(jsonData);
+  }
+}
+
+// ProgressListの型定義
+class YalkerProgressListResponse {
+  final List<Progress> progressList;
+
+  YalkerProgressListResponse({required this.progressList});
+
+  factory YalkerProgressListResponse.fromJson(Map<String, dynamic> json) {
+    List<Progress> progressList = [];
+    if (json['yalker_progress_list'] != null) {
+      var progressJsonList = json['yalker_progress_list'] as List;
+      progressList = progressJsonList
+          .map((progress) => Progress.fromJson2(progress))
+          .toList();
+    }
+    return YalkerProgressListResponse(progressList: progressList);
+  }
+
+  static Future<YalkerProgressListResponse> fetchYalkerProgressListResponse(
+      int userId, DateTime startDate, DateTime endDate) async {
+    dynamic jsonData = await httpGet(
+        'yalker-progress-list/$userId/${startDate.year}/${startDate.month}/${startDate.day}/${endDate.year}/${endDate.month}/${endDate.day}/1');
+    print(jsonData);
+    return YalkerProgressListResponse.fromJson(jsonData);
   }
 }
