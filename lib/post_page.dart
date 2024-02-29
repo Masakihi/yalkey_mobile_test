@@ -4,6 +4,7 @@ import 'dart:io';
 import 'constant.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'api.dart';
 
 class PostPage extends StatefulWidget {
   const PostPage({Key? key}) : super(key: key);
@@ -17,6 +18,9 @@ class _PostPageState extends State<PostPage> {
   late TextEditingController _textEditingController;
   late TextEditingController _hoursController;
   late TextEditingController _minutesController;
+  late TextEditingController _integerController;
+  late TextEditingController _floatController;
+  bool _todoCompleted = false;
   late DateTime _selectedDate;
   late List<Report> _reportList = [];
   Report? _selectedReport = null;
@@ -29,6 +33,8 @@ class _PostPageState extends State<PostPage> {
     _textEditingController = TextEditingController();
     _hoursController = TextEditingController();
     _minutesController = TextEditingController();
+    _integerController = TextEditingController();
+    _floatController = TextEditingController();
     _selectedDate = DateTime.now();
     _fetchReportList();
   }
@@ -38,20 +44,26 @@ class _PostPageState extends State<PostPage> {
       _loading = true; // データのロード中フラグをtrueに設定
     });
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final cachedReportList = prefs.getStringList('user_report_list');
+    final cachedReportList =
+        prefs.getStringList('user_report_list')?.toSet().toList();
+    print(cachedReportList);
     if (cachedReportList != null && cachedReportList.isNotEmpty) {
       setState(() {
         _reportList = cachedReportList
             .map((jsonString) => Report.fromJson(jsonDecode(jsonString)))
+            .toSet()
             .toList();
       });
     }
     ReportListResponse reportListResponse =
         await ReportListResponse.fetchReportListResponse(59);
-    print(reportListResponse.reportList);
     if (mounted) {
       setState(() {
-        _reportList.addAll(reportListResponse.reportList); // 新しいデータをリストに追加
+        reportListResponse.reportList.forEach((newReport) => {
+              if (!_reportList.any((existingReport) =>
+                  existingReport.reportName == newReport.reportName))
+                {_reportList.add(newReport)}
+            });
         _loading = false; // データのロード中フラグをfalseに設定
       });
     }
@@ -69,39 +81,58 @@ class _PostPageState extends State<PostPage> {
   }
 
   Future<void> _postFormData() async {
-    // 日付を文字列に変換
-    String formattedDate =
-        '${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}';
+    if (!_hasData) {
+      String text = _textEditingController.text;
+      var data = {
+        'text': text,
+      };
+      final response = await httpPost('post-form/', data, jwt: true);
+    } else {
+      // 日付を文字列に変換
+      String formattedDate =
+          '${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}';
 
-    // データをAPIに投稿する処理をここに記述
-    // テキストデータ
-    String text = _textEditingController.text;
-    // 時間データ
-    int? hours = _hoursController.text.isNotEmpty
-        ? int.parse(_hoursController.text)
-        : null;
-    // 分データ
-    int? minutes = _minutesController.text.isNotEmpty
-        ? int.parse(_minutesController.text)
-        : null;
+      // データをAPIに投稿する処理をここに記述
+      // テキストデータ
+      String text = _textEditingController.text;
+      // 時間データ
+      int? hours = _hoursController.text.isNotEmpty
+          ? int.parse(_hoursController.text)
+          : 0;
+      // 分データ
+      int? minutes = _minutesController.text.isNotEmpty
+          ? int.parse(_minutesController.text)
+          : 0;
+      // 分データ
+      int? integerForm = _integerController.text.isNotEmpty
+          ? int.parse(_integerController.text)
+          : 0;
+      // 分データ
+      double? floatForm = _floatController.text.isNotEmpty
+          ? double.parse(_floatController.text)
+          : 0;
 
-    // APIに投稿するデータを作成
-    var data = {
-      'text': text,
-      'types': {},
-      'units': {},
-      'report_date': formattedDate,
-      'report': [],
-      if (hours != null && minutes != null) 'hours': [hours],
-      if (hours != null && minutes != null) 'minutes': [minutes],
-      if (hours != null && minutes != null) 'todo': ['off'],
-      'custom_data': [0],
-      'custom_float_data': [0.0],
-    };
+      // APIに投稿するデータを作成
+      var data = {
+        'text': text,
+        'reports': [
+          {
+            'type': _selectedReport?.reportType,
+            'unit': _selectedReport?.reportUnit,
+            'report_name': _selectedReport?.reportName,
+            "hour": hours,
+            "minute": minutes,
+            "todo": _todoCompleted,
+            'custom_data': integerForm,
+            'custom_float_data': floatForm,
+            'report_date': formattedDate
+          },
+        ]
+      };
+      print(data);
 
-    // APIにデータを投稿する処理を実行
-    // http.post('https://yalkey.com/api/v1/progress-form/', body: data);
-    // データの送信結果などの処理を追加する
+      final response = httpPost('progress-form/', data, jwt: true);
+    }
   }
 
   Future<void> _getImages() async {
@@ -190,36 +221,85 @@ class _PostPageState extends State<PostPage> {
                     )),
                 if (_selectedReport != null) ...[
                   if (_selectedReport!.reportType == 0) ...[
-                    // 時間入力フォーム
-                    // 例: TextFormField(
-                    //   decoration: InputDecoration(labelText: '時間'),
-                    // ),
+                    Row(children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _hoursController,
+                          decoration: const InputDecoration(labelText: '時間'),
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                      const SizedBox(width: 16.0),
+                      Expanded(
+                        child: TextFormField(
+                          controller: _minutesController,
+                          decoration: const InputDecoration(labelText: '分'),
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                    ])
                   ],
                   if (_selectedReport!.reportType == 2) ...[
-                    // 整数入力フォーム
-                    // 例: TextFormField(
-                    //   decoration: InputDecoration(labelText: '整数'),
-                    //   keyboardType: TextInputType.number,
-                    // ),
+                    Row(children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _integerController,
+                          decoration: const InputDecoration(labelText: '整数値'),
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                      const SizedBox(width: 8.0),
+                      Text(_selectedReport!.reportUnit), // 単位
+                    ])
                   ],
                   if (_selectedReport!.reportType == 3) ...[
-                    // 小数入力フォーム
-                    // 例: TextFormField(
-                    //   decoration: InputDecoration(labelText: '小数'),
-                    //   keyboardType: TextInputType.numberWithOptions(decimal: true),
-                    // ),
+                    Row(children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _integerController,
+                          decoration: const InputDecoration(labelText: '小数値'),
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
+                        ),
+                      ),
+                      const SizedBox(width: 8.0),
+                      Text(_selectedReport!.reportUnit), // 単位
+                    ])
                   ],
                   if (_selectedReport!.reportType == 4) ...[
-                    // 達成、未達成のbool入力フォーム
-                    // 例: CheckboxListTile(
-                    //   title: Text('達成'),
-                    //   value: _isAchieved,
-                    //   onChanged: (newValue) {
-                    //     setState(() {
-                    //       _isAchieved = newValue!;
-                    //     });
-                    //   },
-                    // ),
+                    Row(
+                      children: [
+                        Text('ToDo達成：'),
+                        Row(
+                          children: [
+                            Radio(
+                              value: true,
+                              groupValue: _todoCompleted,
+                              onChanged: (value) {
+                                setState(() {
+                                  _todoCompleted = value as bool;
+                                });
+                              },
+                            ),
+                            Text('達成'),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Radio(
+                              value: false,
+                              groupValue: _todoCompleted,
+                              onChanged: (value) {
+                                setState(() {
+                                  _todoCompleted = value as bool;
+                                });
+                              },
+                            ),
+                            Text('未達成'),
+                          ],
+                        ),
+                      ],
+                    ),
                   ],
                 ],
               ],

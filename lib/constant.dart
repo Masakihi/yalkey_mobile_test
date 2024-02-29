@@ -339,7 +339,6 @@ class ReportListResponse {
 
   static Future<ReportListResponse> fetchReportListResponse(int userId) async {
     dynamic jsonData = await httpGet('report-list/$userId', jwt: true);
-    print(jsonData);
     return ReportListResponse.fromJson(jsonData);
   }
 }
