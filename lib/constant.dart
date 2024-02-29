@@ -1,4 +1,5 @@
 import 'api.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // ProgressとUserRepostの型定義
 class Progress {
@@ -41,6 +42,21 @@ class Progress {
     );
   }
 
+  factory Progress.fromJson2(Map<String, dynamic> json) {
+    return Progress(
+      reportType: json['report_type'],
+      reportTitle: json['report_title'],
+      reportNumber: json['report_number'],
+      progressTodo: json['todo'],
+      progressHours: json['hours'],
+      progressMinutes: json['minutes'],
+      progressCustomData: json['custom_data'],
+      progressCustomFloatData: json['custom_float_data'],
+      progressUnit: json['unit'],
+      progressDate: json['progress_date'],
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'report_type': reportType,
@@ -69,10 +85,10 @@ class UserRepost {
   final String postText;
   final List<Progress> progressList;
   final String postCreatedAt;
-  final int postLikeNumber;
-  final bool postLiked;
-  final bool postBookmarked;
-  final bool postReposted;
+  int postLikeNumber;
+  bool postLiked;
+  bool postBookmarked;
+  bool postReposted;
   final List<String> progressTextList;
 
   UserRepost({
@@ -94,6 +110,86 @@ class UserRepost {
     required this.progressTextList,
   });
 
+  Future<void> like() async {
+    if (postLiked) {
+      throw Exception('Post $postNumber is already liked.');
+    } else {
+      final response = await httpPost('like/$postNumber/', null, jwt: true);
+      if (response['liked']) {
+        postLiked = true;
+        postLikeNumber++;
+      } else {
+        throw Exception('Post $postNumber is already liked in backend.');
+      }
+    }
+  }
+
+  Future<void> unlike() async {
+    if (!postLiked) {
+      throw Exception('Post $postNumber is already unliked.');
+    } else {
+      final response = await httpPost('like/$postNumber/', null, jwt: true);
+      if (!response['liked']) {
+        postLiked = false;
+        postLikeNumber--;
+      } else {
+        throw Exception('Post $postNumber is already unliked in backend.');
+      }
+    }
+  }
+
+  Future<void> bookmark() async {
+    if (postBookmarked) {
+      throw Exception('Post $postNumber is already bookmarked.');
+    } else {
+      final response = await httpPost('bookmark/$postNumber/', null, jwt: true);
+      if (response['bookmarked']) {
+        postBookmarked = true;
+      } else {
+        throw Exception('Post $postNumber is already bookmarked in backend.');
+      }
+    }
+  }
+
+  Future<void> unbookmark() async {
+    if (!postBookmarked) {
+      throw Exception('Post $postNumber is already unbookmarked.');
+    } else {
+      final response = await httpPost('bookmark/$postNumber/', null, jwt: true);
+      if (!response['bookmarked']) {
+        postBookmarked = false;
+      } else {
+        throw Exception('Post $postNumber is already unbookmarked in backend.');
+      }
+    }
+  }
+
+  Future<void> repost() async {
+    if (postReposted) {
+      throw Exception('Post $postNumber is already reposted.');
+    } else {
+      final response = await httpPost('repost/$postNumber/', null, jwt: true);
+      if (response['post_reposted']) {
+        postReposted = true;
+      } else {
+        throw Exception('Post $postNumber is already reposted in backend.');
+      }
+    }
+  }
+
+  Future<void> unrepost() async {
+    if (!postReposted) {
+      throw Exception('Post $postNumber is already unreposted.');
+    } else {
+      final response = await httpPost('repost/$postNumber/', null, jwt: true);
+      if (!response['post_reposted']) {
+        postReposted = false;
+      } else {
+        throw Exception('Post $postNumber is already unreposted in backend.');
+      }
+    }
+  }
+
   factory UserRepost.fromJson(Map<String, dynamic> json) {
     List<Progress> progressList = [];
     List<String> progressTextList = [];
@@ -112,7 +208,7 @@ class UserRepost {
       // print(progressTextList);
     }
     return UserRepost(
-      dateReposted: json['date_reposted'],
+      dateReposted: json['repost_date'],
       isRepost: json['is_repost'],
       repostUserId: json['repost_user_id'],
       postUserIcon: json['post_user_icon'],
@@ -133,7 +229,7 @@ class UserRepost {
 
   Map<String, dynamic> toJson() {
     return {
-      'date_reposted': dateReposted,
+      'repost_date': dateReposted,
       'is_repost': isRepost,
       'repost_user_id': repostUserId,
       'post_user_icon': postUserIcon,
@@ -201,5 +297,89 @@ class UserRepostListResponse {
       int page) async {
     dynamic jsonData = await httpGet('home/$page', jwt: true);
     return UserRepostListResponse.fromJson(jsonData);
+  }
+}
+
+// Reportの型定義
+class Report {
+  final String reportName;
+  final String reportUnit;
+  final String graphType;
+  final int reportType;
+  final int userId;
+
+  Report({
+    required this.reportName,
+    required this.reportUnit,
+    required this.graphType,
+    required this.reportType,
+    required this.userId,
+  });
+
+  factory Report.fromJson(Map<String, dynamic> json) {
+    return Report(
+      reportName: json['report_name'],
+      reportUnit: json['report_unit'],
+      graphType: json["graph_type"],
+      reportType: json['report_type'],
+      userId: json['user'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'report_name': reportName,
+      'report_unit': reportUnit,
+      'graph_type': graphType,
+      'report_type': reportType,
+      'user': userId,
+    };
+  }
+}
+
+class ReportListResponse {
+  final List<Report> reportList;
+
+  ReportListResponse({required this.reportList});
+
+  factory ReportListResponse.fromJson(Map<String, dynamic> json) {
+    List<Report> reportList = [];
+    if (json['yalker_report_list'] != null) {
+      var reportJsonList = json['yalker_report_list'] as List;
+      reportList =
+          reportJsonList.map((report) => Report.fromJson(report)).toList();
+    }
+    return ReportListResponse(reportList: reportList);
+  }
+
+  static Future<ReportListResponse> fetchReportListResponse(int userId) async {
+    dynamic jsonData = await httpGet('report-list/$userId', jwt: true);
+    return ReportListResponse.fromJson(jsonData);
+  }
+}
+
+// ProgressListの型定義
+class YalkerProgressListResponse {
+  final List<Progress> progressList;
+
+  YalkerProgressListResponse({required this.progressList});
+
+  factory YalkerProgressListResponse.fromJson(Map<String, dynamic> json) {
+    List<Progress> progressList = [];
+    if (json['yalker_progress_list'] != null) {
+      var progressJsonList = json['yalker_progress_list'] as List;
+      progressList = progressJsonList
+          .map((progress) => Progress.fromJson2(progress))
+          .toList();
+    }
+    return YalkerProgressListResponse(progressList: progressList);
+  }
+
+  static Future<YalkerProgressListResponse> fetchYalkerProgressListResponse(
+      int userId, DateTime startDate, DateTime endDate) async {
+    dynamic jsonData = await httpGet(
+        'yalker-progress-list/$userId/${startDate.year}/${startDate.month}/${startDate.day}/${endDate.year}/${endDate.month}/${endDate.day}/1');
+    print(jsonData);
+    return YalkerProgressListResponse.fromJson(jsonData);
   }
 }
