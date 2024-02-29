@@ -18,6 +18,9 @@ class _HomePageState extends State<HomePage> {
   late ScrollController _scrollController; // ListView のスクロールを制御するコントローラー
   bool _loading = false; // データをロード中かどうかを示すフラグ
   int _page = 1; // 現在のページ番号
+  bool _liking = false;
+  bool _bookmarking = false;
+  bool _reposting = false;
 
   @override
   void initState() {
@@ -51,7 +54,6 @@ class _HomePageState extends State<HomePage> {
     }
     UserRepostListResponse userRepostListResponse =
         await UserRepostListResponse.fetchUserRepostListResponse(_page);
-    print(userRepostListResponse);
     if (mounted) {
       setState(() {
         _userRepostList
@@ -86,6 +88,161 @@ class _HomePageState extends State<HomePage> {
     } catch (error) {
       print('Error clearing cache: $error');
     }
+  }
+
+  Future<void> like(UserRepost repost) async {
+    if (_liking) {
+      return;
+    }
+
+    _liking = true;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final cachedRepostList = prefs.getStringList('user_repost_list');
+    if (cachedRepostList != null && cachedRepostList.isNotEmpty) {
+      var userRepostList = cachedRepostList
+          .map((jsonString) => UserRepost.fromJson(jsonDecode(jsonString)));
+      if (repost.postLiked) {
+        await repost.unlike();
+        userRepostList.forEach((r) {
+          if (r.postNumber == repost.postNumber) {
+            r.postLiked = false;
+            r.postLikeNumber--;
+          }
+        });
+        prefs.setStringList(
+            'user_repost_list',
+            userRepostList
+                .map((repost) => jsonEncode(repost.toJson()))
+                .toList());
+        setState(() {});
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('いいねを解除しました')),
+        );
+      } else {
+        await repost.like();
+        userRepostList.forEach((r) {
+          if (r.postNumber == repost.postNumber) {
+            r.postLiked = true;
+            r.postLikeNumber++;
+          }
+        });
+        prefs.setStringList(
+            'user_repost_list',
+            userRepostList
+                .map((repost) => jsonEncode(repost.toJson()))
+                .toList());
+        setState(() {});
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('いいねしました')),
+        );
+      }
+    }
+
+    _liking = false;
+  }
+
+  Future<void> bookmark(UserRepost repost) async {
+    if (_bookmarking) {
+      return;
+    }
+
+    _bookmarking = true;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final cachedRepostList = prefs.getStringList('user_repost_list');
+    if (cachedRepostList != null && cachedRepostList.isNotEmpty) {
+      var userRepostList = cachedRepostList
+          .map((jsonString) => UserRepost.fromJson(jsonDecode(jsonString)));
+      if (repost.postBookmarked) {
+        await repost.unbookmark();
+        userRepostList.forEach((r) {
+          if (r.postNumber == repost.postNumber) {
+            r.postBookmarked = false;
+          }
+        });
+        prefs.setStringList(
+            'user_repost_list',
+            userRepostList
+                .map((repost) => jsonEncode(repost.toJson()))
+                .toList());
+        setState(() {});
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('ブックマークを解除しました')),
+        );
+      } else {
+        await repost.bookmark();
+        userRepostList.forEach((r) {
+          if (r.postNumber == repost.postNumber) {
+            r.postBookmarked = true;
+          }
+        });
+        prefs.setStringList(
+            'user_repost_list',
+            userRepostList
+                .map((repost) => jsonEncode(repost.toJson()))
+                .toList());
+        setState(() {});
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('ブックマークしました')),
+        );
+      }
+    }
+
+    _bookmarking = false;
+  }
+
+  Future<void> _repost(UserRepost repost) async {
+    if (_reposting) {
+      return;
+    }
+
+    _reposting = true;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final cachedRepostList = prefs.getStringList('user_repost_list');
+    if (cachedRepostList != null && cachedRepostList.isNotEmpty) {
+      var userRepostList = cachedRepostList
+          .map((jsonString) => UserRepost.fromJson(jsonDecode(jsonString)));
+      if (repost.postReposted) {
+        await repost.unrepost();
+        userRepostList.forEach((r) {
+          if (r.postNumber == repost.postNumber) {
+            r.postReposted = false;
+          }
+        });
+        prefs.setStringList(
+            'user_repost_list',
+            userRepostList
+                .map((repost) => jsonEncode(repost.toJson()))
+                .toList());
+        setState(() {});
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('リポストを解除しました')),
+        );
+      } else {
+        await repost.repost();
+        userRepostList.forEach((r) {
+          if (r.postNumber == repost.postNumber) {
+            r.postReposted = true;
+          }
+        });
+        prefs.setStringList(
+            'user_repost_list',
+            userRepostList
+                .map((repost) => jsonEncode(repost.toJson()))
+                .toList());
+        setState(() {});
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('リポストしました')),
+        );
+      }
+    }
+
+    _reposting = false;
   }
 
   @override
@@ -181,7 +338,7 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               IconButton(
                                 onPressed: () {
-                                  // 返信ボタンが押された時の処理
+                               
                                 },
                                 icon: Icon(
                                   Icons.reply,
@@ -192,7 +349,7 @@ class _HomePageState extends State<HomePage> {
                                 children: [
                                   IconButton(
                                     onPressed: () {
-                                      // いいねボタンが押された時の処理
+                                      like(repost);
                                     },
                                     icon: Icon(
                                       repost.postLiked
@@ -216,7 +373,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                               IconButton(
                                 onPressed: () {
-                                  // ブックマークボタンが押された時の処理
+                                  bookmark(repost);
                                 },
                                 icon: Icon(
                                     repost.postBookmarked
@@ -228,21 +385,15 @@ class _HomePageState extends State<HomePage> {
                               ),
                               IconButton(
                                 onPressed: () {
-                                  // リポストボタンが押された時の処理
+                                  _repost(repost);
                                 },
-                                icon: Icon(
-                                    Icons.refresh,
+                                icon: Icon(Icons.refresh,
                                     color: repost.postReposted
                                         ? const Color.fromRGBO(102, 205, 170, 1)
                                         : const Color(0xFF929292)),
                               ),
                             ],
                           ),
-                          if (index != _userRepostList.length - 1)
-                            Divider(
-                                height: 32.0,
-                                thickness: 1.0,
-                                color: Colors.grey), // 最後のポストの後には区切り線を表示しない
                         ],
                       ),
                     );

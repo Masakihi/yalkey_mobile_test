@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'profile_edit_page.dart';
+import 'bar_graph.dart';
+import 'constant.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -13,11 +15,13 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   Map<String, dynamic>? _profileData;
+  List<Progress>? _progressData;
 
   @override
   void initState() {
     super.initState();
     _fetchProfileData();
+    _fetchProgressData();
   }
 
   Future<void> _fetchProfileData() async {
@@ -43,6 +47,25 @@ class _ProfilePageState extends State<ProfilePage> {
       await prefs.setString('profileData', json.encode(response));
     } catch (error) {
       print('Error fetching profile data: $error');
+    }
+  }
+
+  Future<void> _fetchProgressData() async {
+    try {
+      // 本日から一か月前の日付を計算
+      DateTime today = DateTime.now();
+      DateTime oneMonthAgo = today.subtract(Duration(days: 30));
+
+      // fetchYalkerProgressListResponseを呼び出してデータを取得
+      final YalkerProgressListResponse response =
+          await YalkerProgressListResponse.fetchYalkerProgressListResponse(
+              59, oneMonthAgo, today);
+
+      setState(() {
+        _progressData = response.progressList;
+      });
+    } catch (error) {
+      print('Error fetching progress data: $error');
     }
   }
 
@@ -105,6 +128,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     Text(
                       '${_profileData!['login_user_profile']['profile']}',
                       textAlign: TextAlign.start, // 左詰めに設定
+                    ),
+                    SizedBox(height: 20), // 余白を追加
+                    MonthlyBarChart(
+                      numberOfDays: 30, // 1か月分の日数
+                      data: generateRandomData(30), // ランダムなデータ
                     ),
                   ],
                 ),
