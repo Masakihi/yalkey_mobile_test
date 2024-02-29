@@ -31,11 +31,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'yalkey mobile',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorSchemeSeed:const Color(0xFFAE0103),
         useMaterial3: true,
       ),
+      darkTheme: ThemeData(
+        colorSchemeSeed:const Color(0xFFAE0103),
+        useMaterial3: true,
+        brightness: Brightness.dark,
+      ),
+      themeMode: ThemeMode.system,
       home: token == null
           ? LoginPage()
           : AppPage(), // tokenがあればHomePage、なければLoginPageを表示

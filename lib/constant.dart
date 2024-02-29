@@ -58,13 +58,24 @@ class Progress {
 }
 
 class UserRepost {
-  final String dateReposted;
   final int isRepost;
+  final String repostDate;
   final String repostUserId;
+  final String repostUserName;
   final String postUserIcon;
   final int postUserNumber;
   final String postUserId;
   final String postUserName;
+  /*  final String toPostUserId;
+  final String toPostUserName;
+  final int postUserProfileNumber;
+  final bool postUserPrivate;
+  final bool postUserSuperHardWorker;
+  final bool postUserHardWorker;
+  final bool postUserRegularCustomer;
+  final bool postUserSuperEarlyBird;
+  final bool postUserEarlyBird;
+   */
   final int postNumber;
   final String postText;
   final List<Progress> progressList;
@@ -76,13 +87,25 @@ class UserRepost {
   final List<String> progressTextList;
 
   UserRepost({
-    required this.dateReposted,
     required this.isRepost,
+    required this.repostDate,
     required this.repostUserId,
+    required this.repostUserName,
     required this.postUserIcon,
     required this.postUserNumber,
     required this.postUserId,
     required this.postUserName,
+    /*
+    required this.toPostUserId,
+    required this.toPostUserName,
+    required this.postUserProfileNumber,
+    required this.postUserPrivate,
+    required this.postUserSuperHardWorker,
+    required this.postUserHardWorker,
+    required this.postUserRegularCustomer,
+    required this.postUserSuperEarlyBird,
+    required this.postUserEarlyBird,
+     */
     required this.postNumber,
     required this.postText,
     required this.progressList,
@@ -112,13 +135,25 @@ class UserRepost {
       // print(progressTextList);
     }
     return UserRepost(
-      dateReposted: json['date_reposted'],
       isRepost: json['is_repost'],
+      repostDate: json['repost_date'],
       repostUserId: json['repost_user_id'],
+      repostUserName: json['repost_user_name'],
       postUserIcon: json['post_user_icon'],
       postUserNumber: json['post_user_number'],
       postUserId: json['post_user_id'],
       postUserName: json['post_user_name'],
+      /*
+      toPostUserId: json['to_post_user_id'],
+      toPostUserName: json['to_post_user_name'],
+      postUserProfileNumber: json['post_user_profile_number'],
+      postUserPrivate: json['post_user_private'],
+      postUserSuperHardWorker: json['post_user_super_hard_worker'],
+      postUserHardWorker: json['post_user_hard_worker'],
+      postUserRegularCustomer: json['post_user_regular_customer'],
+      postUserSuperEarlyBird: json['post_user_super_early_bird'],
+      postUserEarlyBird: json['post_user_early_bird'],
+      */
       postNumber: json['post_number'],
       postText: json['post_text'],
       progressList: progressList,
@@ -133,13 +168,26 @@ class UserRepost {
 
   Map<String, dynamic> toJson() {
     return {
-      'date_reposted': dateReposted,
+      // 'date_reposted': dateReposted,
       'is_repost': isRepost,
+      'repost_date': repostDate,
       'repost_user_id': repostUserId,
+      'repost_user_name': repostUserName,
       'post_user_icon': postUserIcon,
       'post_user_number': postUserNumber,
       'post_user_id': postUserId,
       'post_user_name': postUserName,
+      /*
+      'to_post_user_id': toPostUserId,
+      'to_post_user_name': toPostUserName,
+      'post_user_profile_number': postUserProfileNumber,
+      'post_user_private': postUserPrivate,
+      'post_user_super_hard_worker': postUserSuperHardWorker,
+      'post_user_hard_worker': postUserHardWorker,
+      'post_user_regular_customer': postUserRegularCustomer,
+      'post_user_super_early_bird': postUserSuperEarlyBird,
+      'post_user_early_bird': postUserEarlyBird,
+       */
       'post_number': postNumber,
       'post_text': postText,
       'progress_list':

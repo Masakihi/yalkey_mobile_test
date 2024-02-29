@@ -81,6 +81,7 @@ class _HomePageState extends State<HomePage> {
         _userRepostList.clear();
         _page = 1; // ページ番号をリセット
       });
+      print("list refresh");
       await _fetchUserRepostList(); // データを再読み込み
     } catch (error) {
       print('Error clearing cache: $error');
@@ -90,6 +91,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      /*
       appBar: AppBar(
         title: const Text('Home'),
         actions: [
@@ -100,141 +102,155 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollController, // スクロールコントローラーを設定
-              itemCount: _userRepostList.length + 1, // リストアイテム数 + ローディングインジケーター
-              itemBuilder: (context, index) {
-                if (index == _userRepostList.length) {
-                  return _loading
-                      ? Container(
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.all(16.0),
-                          child: CircularProgressIndicator(
-                            strokeWidth: 3.0,
-                          ),
-                        )
-                      : SizedBox.shrink(); // ローディングインジケーターを表示
-                }
-                final repost = _userRepostList[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 8.0, horizontal: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Row(
+       */
+      body: RefreshIndicator(
+        displacement: 0,
+        onRefresh: () async {
+          _clearCache();
+        },
+        child:Column(
+            children: <Widget>[
+              Expanded(
+                child: ListView.builder(
+                  controller: _scrollController, // スクロールコントローラーを設定
+                  itemCount: _userRepostList.length + 1, // リストアイテム数 + ローディングインジケーター
+                  itemBuilder: (context, index) {
+                    if (index == _userRepostList.length) {
+                      return _loading
+                          ? Container(
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.all(16.0),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 3.0,
+                              ),
+                            )
+                          : SizedBox.shrink(); // ローディングインジケーターを表示
+                    }
+                    final repost = _userRepostList[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 16.0),
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          CircleAvatar(
-                            backgroundImage: NetworkImage(
-                              'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${repost.postUserIcon}',
-                            ),
-                          ),
-                          SizedBox(width: 16.0),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  repost.postUserName,
-                                  style: TextStyle(fontSize: 16.0),
-                                ),
-                                SizedBox(height: 4.0),
-                                Text(
-                                  '@${repost.postUserId} / ${repost.postCreatedAt.toString().substring(0, 10)} ${repost.postCreatedAt.toString().substring(11, 16)}',
-                                  style: TextStyle(
-                                      fontSize: 12.0, color: Colors.grey),
-                                ),
-                                SizedBox(height: 8.0),
-                                repost.postText != ''
-                                    ? Text(
-                                        repost.postText,
-                                        style: TextStyle(fontSize: 16.0),
-                                      )
-                                    : SizedBox.shrink(),
-                                SizedBox(height: 4.0),
-                                ...repost.progressTextList
-                                    .map((progressText) => Text(
-                                        "・" + progressText,
-                                        style: TextStyle(
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.bold)))
-                                    .toList(),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              // 返信ボタンが押された時の処理
-                            },
-                            icon: Icon(Icons.reply),
-                          ),
                           Row(
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  // いいねボタンが押された時の処理
-                                },
-                                icon: Icon(
-                                  repost.postLiked
-                                      ? Icons.favorite
-                                      : Icons.favorite_border,
-                                  color: repost.postLiked
-                                      ? Colors.red
-                                      : null, // 赤色にするかどうか
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                  'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${repost.postUserIcon}',
                                 ),
                               ),
-                              Text(
-                                '${repost.postLikeNumber}', // いいね数を表示
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  color: repost.postLiked
-                                      ? Colors.red
-                                      : Colors.black,
+                              SizedBox(width: 16.0),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      repost.postUserName,
+                                      style: TextStyle(fontSize: 18.0),
+                                    ),
+                                    SizedBox(height: 4.0),
+                                    Text(
+                                      '@${repost.postUserId} / ${repost.postCreatedAt.toString().substring(0, 10)} ${repost.postCreatedAt.toString().substring(11, 16)}',
+                                      style: TextStyle(
+                                          fontSize: 12.0, color: Colors.grey),
+                                    ),
+                                    SizedBox(height: 8.0),
+                                    repost.postText != ''
+                                        ? Text(
+                                            repost.postText,
+                                            style: TextStyle(fontSize: 16.0),
+                                          )
+                                        : SizedBox.shrink(),
+                                    SizedBox(height: 4.0),
+                                    ...repost.progressTextList
+                                        .map((progressText) => Text(
+                                            "・" + progressText,
+                                            style: TextStyle(
+                                                fontSize: 12.0,
+                                                fontWeight: FontWeight.bold)))
+                                        .toList(),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
-                          IconButton(
-                            onPressed: () {
-                              // ブックマークボタンが押された時の処理
-                            },
-                            icon: Icon(
-                                repost.postBookmarked
-                                    ? Icons.bookmark
-                                    : Icons.bookmark_border,
-                                color: repost.postBookmarked
-                                    ? Color.fromARGB(255, 255, 226, 59)
-                                    : null),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  // 返信ボタンが押された時の処理
+                                },
+                                icon: Icon(
+                                  Icons.reply,
+                                  color: const Color(0xFF929292),
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      // いいねボタンが押された時の処理
+                                    },
+                                    icon: Icon(
+                                      repost.postLiked
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
+                                      color: repost.postLiked
+                                          ? const Color(0xFFF75D5D)
+                                          : const Color(0xFF929292), // 赤色にするかどうか
+                                    ),
+                                  ),
+                                  Text(
+                                    '${repost.postLikeNumber}', // いいね数を表示
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      color: repost.postLiked
+                                          ? const Color(0xFFF75D5D)
+                                          : const Color(0xFF929292),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  // ブックマークボタンが押された時の処理
+                                },
+                                icon: Icon(
+                                    repost.postBookmarked
+                                        ? Icons.bookmark
+                                        : Icons.bookmark_border,
+                                    color: repost.postBookmarked
+                                        ? const Color.fromRGBO(255, 196, 67, 1)
+                                        : const Color(0xFF929292)),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  // リポストボタンが押された時の処理
+                                },
+                                icon: Icon(
+                                    Icons.refresh,
+                                    color: repost.postReposted
+                                        ? const Color.fromRGBO(102, 205, 170, 1)
+                                        : const Color(0xFF929292)),
+                              ),
+                            ],
                           ),
-                          IconButton(
-                            onPressed: () {
-                              // リポストボタンが押された時の処理
-                            },
-                            icon: Icon(Icons.refresh),
-                          ),
+                          if (index != _userRepostList.length - 1)
+                            Divider(
+                                height: 32.0,
+                                thickness: 1.0,
+                                color: Colors.grey), // 最後のポストの後には区切り線を表示しない
                         ],
                       ),
-                      if (index != _userRepostList.length - 1)
-                        Divider(
-                            height: 32.0,
-                            thickness: 1.0,
-                            color: Colors.grey), // 最後のポストの後には区切り線を表示しない
-                    ],
-                  ),
-                );
-              },
-            ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
       ),
     );
   }
