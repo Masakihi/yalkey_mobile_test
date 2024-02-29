@@ -256,7 +256,7 @@ class _PostPageState extends State<PostPage> {
                     Row(children: [
                       Expanded(
                         child: TextFormField(
-                          controller: _integerController,
+                          controller: _floatController,
                           decoration: const InputDecoration(labelText: '小数値'),
                           keyboardType: const TextInputType.numberWithOptions(
                               decimal: true),
