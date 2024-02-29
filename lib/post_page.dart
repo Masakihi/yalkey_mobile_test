@@ -5,6 +5,7 @@ import 'constant.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api.dart';
+import 'app.dart';
 
 class PostPage extends StatefulWidget {
   const PostPage({Key? key}) : super(key: key);
@@ -81,59 +82,84 @@ class _PostPageState extends State<PostPage> {
   }
 
   Future<void> _postFormData() async {
-    if (!_hasData) {
-      String text = _textEditingController.text;
-      var data = {
-        'text': text,
-      };
-      final response = await httpPost('post-form/', data,
-          jwt: true, images: _selectedImagePaths);
-    } else {
-      // 日付を文字列に変換
-      String formattedDate =
-          '${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}';
+    try {
+      if (!_hasData) {
+        String text = _textEditingController.text;
+        var data = {
+          'text': text,
+        };
+        final response = await httpPost('post-form/', data,
+            jwt: true, images: _selectedImagePaths);
+        print('responseを返すね');
+        print(response);
+      } else {
+        // 日付を文字列に変換
+        String formattedDate =
+            '${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}';
 
-      // データをAPIに投稿する処理をここに記述
-      // テキストデータ
-      String text = _textEditingController.text;
-      // 時間データ
-      int? hours = _hoursController.text.isNotEmpty
-          ? int.parse(_hoursController.text)
-          : 0;
-      // 分データ
-      int? minutes = _minutesController.text.isNotEmpty
-          ? int.parse(_minutesController.text)
-          : 0;
-      // 分データ
-      int? integerForm = _integerController.text.isNotEmpty
-          ? int.parse(_integerController.text)
-          : 0;
-      // 分データ
-      double? floatForm = _floatController.text.isNotEmpty
-          ? double.parse(_floatController.text)
-          : 0;
+        // データをAPIに投稿する処理をここに記述
+        // テキストデータ
+        String text = _textEditingController.text;
+        // 時間データ
+        int? hours = _hoursController.text.isNotEmpty
+            ? int.parse(_hoursController.text)
+            : 0;
+        // 分データ
+        int? minutes = _minutesController.text.isNotEmpty
+            ? int.parse(_minutesController.text)
+            : 0;
+        // 整数データ
+        int? integerForm = _integerController.text.isNotEmpty
+            ? int.parse(_integerController.text)
+            : 0;
+        // 小数データ
+        double? floatForm = _floatController.text.isNotEmpty
+            ? double.parse(_floatController.text)
+            : 0;
 
-      // APIに投稿するデータを作成
-      var data = {
-        'text': text,
-        'reports': [
-          {
-            'type': _selectedReport?.reportType,
-            'unit': _selectedReport?.reportUnit,
-            'report_name': _selectedReport?.reportName,
-            "hour": hours,
-            "minute": minutes,
-            "todo": _todoCompleted,
-            'custom_data': integerForm,
-            'custom_float_data': floatForm,
-            'report_date': formattedDate
-          },
-        ]
-      };
-      print(data);
+        // ToDo達成フラグ
+        bool todoCompleted = _todoCompleted;
 
-      final response = httpPost('progress-form/', data,
-          jwt: true, images: _selectedImagePaths);
+        // APIに投稿するデータを作成
+        var data = {
+          'text': text,
+          'reports': [
+            {
+              'type': _selectedReport?.reportType,
+              'unit': _selectedReport?.reportUnit,
+              'report_name': _selectedReport?.reportName,
+              "hour": hours,
+              "minute": minutes,
+              "todo": todoCompleted,
+              'custom_data': integerForm,
+              'custom_float_data': floatForm,
+              'report_date': formattedDate
+            },
+          ]
+        };
+
+        final response = await httpPost('progress-form/', data,
+            jwt: true, images: _selectedImagePaths);
+      }
+
+      // 成功メッセージを表示
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('投稿完了しました！'),
+        ),
+      );
+
+      // ホーム画面に戻る
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => AppPage(),
+      ));
+    } catch (error) {
+      // エラーメッセージを表示
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('エラー: $error'),
+        ),
+      );
     }
   }
 
