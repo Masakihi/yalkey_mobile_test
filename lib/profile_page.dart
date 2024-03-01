@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'profile_edit_page.dart';
 import 'bar_graph.dart';
 import 'constant.dart';
+import 'achievement_calendar.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -139,6 +140,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         reportTitle: "アプリ開発",
                         startDate: DateTime(2024, 2, 1),
                         endDate: DateTime(2024, 2, 29)),
+                    SizedBox(height: 20), // 余白を追加
+                    AchievementCalendar(
+                        userId: 59,
+                        reportTitle: "boolテスト",
+                        year: 2024,
+                        month: 3),
                   ],
                 ),
               ))
