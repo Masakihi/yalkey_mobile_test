@@ -13,6 +13,8 @@ class Progress {
   final double progressCustomFloatData;
   final String progressUnit;
   final String progressDate;
+  late DateTime progressDateTime;
+  late Duration progressDuration;
 
   Progress({
     required this.reportType,
@@ -25,7 +27,9 @@ class Progress {
     required this.progressCustomFloatData,
     required this.progressUnit,
     required this.progressDate,
-  });
+  })  : progressDateTime = DateTime.parse(progressDate),
+        progressDuration =
+            Duration(hours: progressHours, minutes: progressMinutes);
 
   factory Progress.fromJson(Map<String, dynamic> json) {
     return Progress(
@@ -70,6 +74,22 @@ class Progress {
       'progress_unit': progressUnit,
       'progress_date': progressDate,
     };
+  }
+
+  // 足し合わせるためのデータ抽出
+  dynamic extractData() {
+    switch (reportType) {
+      case 0:
+        return progressDuration;
+      case 1:
+        return;
+      case 2:
+        return progressCustomData;
+      case 3:
+        return progressCustomFloatData;
+      case 4:
+        return progressTodo;
+    }
   }
 }
 
@@ -169,7 +189,7 @@ class UserRepost {
       throw Exception('Post $postNumber is already reposted.');
     } else {
       final response = await httpPost('repost/$postNumber/', null, jwt: true);
-      if (response['post_reposted']) {
+      if (response['reposted']) {
         postReposted = true;
       } else {
         throw Exception('Post $postNumber is already reposted in backend.');
@@ -182,7 +202,7 @@ class UserRepost {
       throw Exception('Post $postNumber is already unreposted.');
     } else {
       final response = await httpPost('repost/$postNumber/', null, jwt: true);
-      if (!response['post_reposted']) {
+      if (!response['reposted']) {
         postReposted = false;
       } else {
         throw Exception('Post $postNumber is already unreposted in backend.');
@@ -379,7 +399,111 @@ class YalkerProgressListResponse {
       int userId, DateTime startDate, DateTime endDate) async {
     dynamic jsonData = await httpGet(
         'yalker-progress-list/$userId/${startDate.year}/${startDate.month}/${startDate.day}/${endDate.year}/${endDate.month}/${endDate.day}/1');
-    print(jsonData);
     return YalkerProgressListResponse.fromJson(jsonData);
+  }
+
+  static Future<Map<DateTime, dynamic>> fetchDataForGraphByReportTitle(
+      int userId,
+      DateTime startDate,
+      DateTime endDate,
+      String reportTitle) async {
+    dynamic jsonData = await httpGet(
+        'yalker-progress-list/$userId/${startDate.year}/${startDate.month}/${startDate.day}/${endDate.year}/${endDate.month}/${endDate.day}/1');
+    final progressList =
+        YalkerProgressListResponse.fromJson(jsonData).progressList;
+    Map<DateTime, dynamic> date2DataMap = {};
+    for (Progress progress in progressList) {
+      if (progress.reportTitle == reportTitle) {
+        final date = DateTime.parse(progress.progressDate);
+        if (date2DataMap.containsKey(date)) {
+          // bool型なら||でつなぎ、それ以外なら足し合わせる
+          if (progress.reportType == 0) {
+            date2DataMap[date] = date2DataMap[date]! || progress.extractData();
+          } else {
+            date2DataMap[date] = date2DataMap[date]! + progress.extractData();
+          }
+        } else {
+          date2DataMap[date] = progress.extractData();
+        }
+      }
+    }
+    return date2DataMap;
+  }
+}
+
+class ProgressTimeDataForGraph {
+  final String progressTitle;
+  final DateTime progressDate;
+  late Duration progressDuration;
+
+  ProgressTimeDataForGraph({
+    required this.progressTitle,
+    required this.progressDate,
+    required this.progressDuration,
+  });
+
+  factory ProgressTimeDataForGraph.fromJson(Map<String, dynamic> json) {
+    return ProgressTimeDataForGraph(
+        progressTitle: json['report_title'],
+        progressDate: DateTime.parse(json['progress_date']),
+        progressDuration:
+            Duration(hours: json['hours'], minutes: json['minutes']));
+  }
+}
+
+class ProgressIntegerDataForGraph {
+  final String progressTitle;
+  final DateTime progressDate;
+  late int progressInteger;
+
+  ProgressIntegerDataForGraph({
+    required this.progressTitle,
+    required this.progressDate,
+    required this.progressInteger,
+  });
+
+  factory ProgressIntegerDataForGraph.fromJson(Map<String, dynamic> json) {
+    return ProgressIntegerDataForGraph(
+        progressTitle: json['report_title'],
+        progressDate: DateTime.parse(json['progress_date']),
+        progressInteger: json["custom_data"]);
+  }
+}
+
+class ProgressFloatDataForGraph {
+  final String progressTitle;
+  final DateTime progressDate;
+  late double progressFloat;
+
+  ProgressFloatDataForGraph({
+    required this.progressTitle,
+    required this.progressDate,
+    required this.progressFloat,
+  });
+
+  factory ProgressFloatDataForGraph.fromJson(Map<String, dynamic> json) {
+    return ProgressFloatDataForGraph(
+        progressTitle: json['report_title'],
+        progressDate: DateTime.parse(json['progress_date']),
+        progressFloat: json["custom_float_data"]);
+  }
+}
+
+class ProgressTodoDataForGraph {
+  final String progressTitle;
+  final DateTime progressDate;
+  late bool progressTodo;
+
+  ProgressTodoDataForGraph({
+    required this.progressTitle,
+    required this.progressDate,
+    required this.progressTodo,
+  });
+
+  factory ProgressTodoDataForGraph.fromJson(Map<String, dynamic> json) {
+    return ProgressTodoDataForGraph(
+        progressTitle: json['report_title'],
+        progressDate: DateTime.parse(json['progress_date']),
+        progressTodo: json["todo"]);
   }
 }
