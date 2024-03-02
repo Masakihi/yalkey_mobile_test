@@ -120,7 +120,6 @@ class _AccountSettingListPageState extends State<AccountSettingListPage> {
                 logout(context);
               },
             ),
-            /*
             ListTile(
               //leading: Icon(Icons.photo_album),
               title: const Text('退会'),
@@ -133,8 +132,6 @@ class _AccountSettingListPageState extends State<AccountSettingListPage> {
                 );
               },
             ),
-
-             */
           ],
         ),
       ),

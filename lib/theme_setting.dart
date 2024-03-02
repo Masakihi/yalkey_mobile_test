@@ -3,15 +3,16 @@ import 'account_setting_list.dart';
 import 'display_setting_list.dart';
 
 
-class SettingListPage extends StatefulWidget {
-  const SettingListPage({Key? key}) : super(key: key);
+
+class ThemeSettingPage extends StatefulWidget {
+  const ThemeSettingPage({Key? key}) : super(key: key);
 
   @override
-  _SettingListPageState createState() => _SettingListPageState();
+  _ThemeSettingPageState createState() => _ThemeSettingPageState();
 }
 
 
-class _SettingListPageState extends State<SettingListPage> {
+class _ThemeSettingPageState extends State<ThemeSettingPage> {
 
 
   @override
@@ -24,7 +25,7 @@ class _SettingListPageState extends State<SettingListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('設定'),
+        title: Text('テーマの切り替え'),
       ),
       body: Container(
         width: double.infinity,

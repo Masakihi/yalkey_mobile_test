@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'account_setting_list.dart';
-import 'display_setting_list.dart';
 
 
-class SettingListPage extends StatefulWidget {
-  const SettingListPage({Key? key}) : super(key: key);
+class DisplaySettingListPage extends StatefulWidget {
+  const DisplaySettingListPage({Key? key}) : super(key: key);
 
   @override
-  _SettingListPageState createState() => _SettingListPageState();
+  _DisplaySettingListPageState createState() => _DisplaySettingListPageState();
 }
 
 
-class _SettingListPageState extends State<SettingListPage> {
+class _DisplaySettingListPageState extends State<DisplaySettingListPage> {
 
 
   @override
@@ -24,7 +23,7 @@ class _SettingListPageState extends State<SettingListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('設定'),
+        title: Text('表示設定'),
       ),
       body: Container(
         width: double.infinity,
@@ -32,19 +31,7 @@ class _SettingListPageState extends State<SettingListPage> {
           children: <Widget>[
             ListTile(
               //leading: Icon(Icons.map),
-              title: Text('アカウント'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AccountSettingListPage(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              //leading: Icon(Icons.photo_album),
-              title: Text('表示'),
+              title: Text('ダークテーマとライトテーマの切り替え'),
               onTap: () {
                 Navigator.push(
                   context,

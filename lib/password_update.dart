@@ -52,7 +52,7 @@ class _PasswordUpdatePageState extends State<PasswordUpdatePage> {
                     child: Column(children: [
                       Padding(
                         padding: const EdgeInsets.all(5.0), //マージン
-                        child: Text("変更前後のパスワードを以下に入力してください。更新ボタンを押すとメールアドレス宛てに再設定用のリンクが送られます。メール内のリンクをクリックした後、再度ログインしてください。"),
+                        child: Text("変更前後のパスワードを以下に入力してください。"),
                       ),
                       Padding(
                           padding: const EdgeInsets.all(5.0), //マージン
@@ -149,7 +149,7 @@ class _PasswordUpdatePageState extends State<PasswordUpdatePage> {
                               //③：formの内容をバリデート(検証)して送信するためのボタンを設置する
                               if (_formKey.currentState!.validate()) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('更新用メール送信中...')),
+                                  const SnackBar(content: Text('パスワード更新中...')),
                                 );
                                 passwordUpdate(context, oldPasswordController.text, newPasswordController.text, newPasswordController2nd.text);
                                 logout(context);

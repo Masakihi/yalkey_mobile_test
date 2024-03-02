@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:yalkey_0206_test/home_page.dart';
+import 'home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api.dart';
 import 'app.dart';
@@ -33,7 +34,6 @@ class _LoginPageState extends State<LoginPage> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('access_token', response['access'] as String);
       await prefs.setString('refresh_token', response['refresh'] as String);
-      print('loginしました');
       Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => AppPage(),
       ));
@@ -45,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Login')),
+        appBar: AppBar(title: const Text('yalkeyログイン')),
         body: SingleChildScrollView(
     child:Form(
             key: _formKey,
@@ -55,11 +55,14 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Column(children: [
+                    child:
+                    AutofillGroup(
+                        child:Column(children: [
                     Padding(
                       padding: const EdgeInsets.all(5.0), //マージン
                       child: TextFormField(
                           controller: emailController,
+                          autofillHints: const [AutofillHints.email],
                           validator: (value) {
                             if (value?.isEmpty ?? true) {
                               return '必須です';
@@ -81,6 +84,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: TextFormField(
                           obscureText: _isObscure,
                           controller: passwordController,
+                          autofillHints: const [AutofillHints.password],
                             validator: (value) {
                               if (value?.isEmpty ?? true) {
                                 return '必須です';
@@ -108,28 +112,25 @@ class _LoginPageState extends State<LoginPage> {
                       Padding(
                           padding: const EdgeInsets.all(10.0), //マージン
                           child: ElevatedButton(
-                            //onPressed: () => login(context),
                             onPressed: () {
-                              //③：formの内容をバリデート(検証)して送信するためのボタンを設置する
+                              TextInput.finishAutofillContext();
                               if (_formKey.currentState!.validate()) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(content: Text('ログイン中...')),
                                 );
-                                print(emailController.text);
-                                print(passwordController.text);
                                 login(context, emailController.text, passwordController.text);
                               }
                             },
-                            child: const Text(
-                              'Login',
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
-                            ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFFAE0103),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: const Text(
+                              'Login',
+                              style: TextStyle(
+                                color: Colors.white,
                               ),
                             ),
                         )),
@@ -139,10 +140,11 @@ class _LoginPageState extends State<LoginPage> {
                             text: TextSpan(children: [
                               const TextSpan(
                                   text: 'パスワードを忘れた方は',
+                                style: TextStyle(color: Colors.grey),
                               ),
                               TextSpan(
                                   text: 'こちら',
-                                  style: const TextStyle(color: Colors.red),
+                                  style: const TextStyle(color: Color(0xFFAE0103)),
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
                                       Navigator.push(
@@ -154,8 +156,8 @@ class _LoginPageState extends State<LoginPage> {
                                     }),
                             ])),
                       ),
-                      Padding(
-                          padding: const EdgeInsets.all(5.0), //マージン
+                      const Padding(
+                          padding: EdgeInsets.all(5.0), //マージン
                           child: Text("アカウントをお持ちでない方は\n以下から新規登録できます"),
                       ),
                       Padding(
@@ -166,24 +168,24 @@ class _LoginPageState extends State<LoginPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => RegisterPage(),
+                                  builder: (context) => const RegisterPage(),
                                 ),
                               );
                             },
-                            child: const Text(
-                              '無料で始める',
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
-                            ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFFAE0103),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
+                            child: const Text(
+                              '無料で始める',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
                           )),
-                    ]))
+                    ])))
       ]),)));
   }
 }
