@@ -100,7 +100,7 @@ class UserRepost {
   bool postBookmarked;
   bool postReposted;
   // bool postPinned;
-  // final List<String> postImageList;
+  // List<String> postImageList;
   final List<String> progressTextList;
 
   UserRepost({
@@ -348,7 +348,7 @@ class UserRepostListResponse {
   static Future<UserRepostListResponse> fetchUserRepostListResponse(
       int page) async {
     dynamic jsonData = await httpGet('home/$page', jwt: true);
-    print(jsonData);
+    // print(jsonData);
     return UserRepostListResponse.fromJson(jsonData);
   }
 }
@@ -833,8 +833,8 @@ class FollowingListResponse {
     return FollowingListResponse(followingList: followingList);
   }
 
-  static Future<FollowingListResponse> fetchFollowingListResponse(int userId) async {
-    dynamic jsonData = await httpGet('following-list/$userId', jwt: true);
+  static Future<FollowingListResponse> fetchFollowingListResponse(int userId, int page) async {
+    dynamic jsonData = await httpGet('following-list/$userId/${page}/', jwt: true);
     return FollowingListResponse.fromJson(jsonData);
   }
 }
@@ -855,8 +855,8 @@ class FollowedListResponse {
     return FollowedListResponse(followedList: followedList);
   }
 
-  static Future<FollowedListResponse> fetchFollowedListResponse(int userId) async {
-    dynamic jsonData = await httpGet('followed-list/$userId', jwt: true);
+  static Future<FollowedListResponse> fetchFollowedListResponse(int userId, int page) async {
+    dynamic jsonData = await httpGet('followed-list/$userId/${page}/', jwt: true);
     return FollowedListResponse.fromJson(jsonData);
   }
 }
@@ -958,7 +958,7 @@ class NotificationListResponse {
   }
 
   static Future<NotificationListResponse> fetchNotificationListResponse(int page) async {
-    dynamic jsonData = await httpGet('notification', jwt: true);
+    dynamic jsonData = await httpGet('notification/${page}/', jwt: true);
     return NotificationListResponse.fromJson(jsonData);
   }
 }
@@ -1039,7 +1039,7 @@ class GoalListResponse {
   }
 
   static Future<GoalListResponse> fetchGoalListResponse(int page) async {
-    dynamic jsonData = await httpGet('goal-list/', jwt: true);
+    dynamic jsonData = await httpGet('goal-list/${page}/', jwt: true);
     return GoalListResponse.fromJson(jsonData);
   }
 }
@@ -1148,7 +1148,7 @@ class MissionListResponse {
   }
 
   static Future<MissionListResponse> fetchMissionListResponse(int page) async {
-    dynamic jsonData = await httpGet('mission-list/', jwt: true);
+    dynamic jsonData = await httpGet('mission-list/${page}/', jwt: true);
     return MissionListResponse.fromJson(jsonData);
   }
 }
@@ -1309,7 +1309,7 @@ class SearchUserIdListResponse {
     return SearchUserIdListResponse(searchUserIdList: searchUserIdList);
   }
 
-  static Future<SearchUserIdListResponse> fetchSearchUserIdListResponse(int page,String keyword) async {
+  static Future<SearchUserIdListResponse> fetchSearchUserIdListResponse(int page, String keyword) async {
     dynamic jsonData = await httpGet('search-id-list/${page}/?keyword=${keyword}', jwt: true);
     return SearchUserIdListResponse.fromJson(jsonData);
   }

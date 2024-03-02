@@ -37,7 +37,7 @@ class _FollowedListPageState extends State<FollowedListPage> {
     });
 
     FollowedListResponse followedListResponse =
-    await FollowedListResponse.fetchFollowedListResponse(_page);
+    await FollowedListResponse.fetchFollowedListResponse(1, _page);
     if (mounted) {
       setState(() {
         _followedList

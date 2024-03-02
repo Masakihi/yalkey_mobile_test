@@ -289,16 +289,34 @@ class _HomePageState extends State<HomePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           if(repost.isRepost==1)
-                            Text(
-                              '${repost.repostUserName}さんがリポスト',
-                              style: const TextStyle(fontSize: 12.0, color: Colors.grey, fontStyle: FontStyle.italic),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.refresh,
+                                  color: Colors.grey,
+                                  size: 12.0,
+                                ),
+                                Text(
+                                  '${repost.repostUserName}さんがリポスト',
+                                  style: const TextStyle(fontSize: 12.0, color: Colors.grey, fontStyle: FontStyle.italic),
+                                ),
+                              ],
                             ),
                           if(repost.isRepost==1)
                             const SizedBox(height: 8.0),
                           if(repost.toPostUserName!=null)
-                            Text(
-                              '${repost.toPostUserName}さんに対する返信',
-                              style: const TextStyle(fontSize: 12.0, color: Colors.grey, fontStyle: FontStyle.italic),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.reply,
+                                  color: Colors.grey,
+                                  size: 12.0,
+                                ),
+                                Text(
+                                  '${repost.toPostUserName}さんに対する返信',
+                                  style: const TextStyle(fontSize: 12.0, color: Colors.grey, fontStyle: FontStyle.italic),
+                                  ),
+                              ],
                             ),
                           if(repost.toPostUserName!=null)
                             const SizedBox(height: 8.0),
