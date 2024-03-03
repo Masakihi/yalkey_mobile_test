@@ -14,6 +14,7 @@ class PostDetailPage extends StatefulWidget {
 class _PostDetailPageState extends State<PostDetailPage> {
   PostDetailResponse? _postDetailResponse;
   bool _isLoading = true;
+  bool _isPinned = false;
 
   @override
   void initState() {
@@ -26,6 +27,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
         await PostDetailResponse.fetchPostDetailResponse(widget.postNumber);
     setState(() {
       _postDetailResponse = postDetailResponse;
+      _isPinned = _postDetailResponse!.postDetail.postPinned;
       _isLoading = false;
     });
   }
@@ -54,6 +56,19 @@ class _PostDetailPageState extends State<PostDetailPage> {
         SnackBar(content: Text('投稿の削除に失敗しました')),
       );
     }
+  }
+
+  Future<void> _togglePin(int postNumber) async {
+    final response = await httpPost('pin/$postNumber/', {}, jwt: true);
+
+    setState(() {
+      _isPinned = !_isPinned; // ピン止めの状態を反転させる
+    });
+
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(_isPinned ? '投稿をピン止めしました' : 'ピン止めを解除しました')),
+    );
   }
 
   @override
@@ -92,6 +107,17 @@ class _PostDetailPageState extends State<PostDetailPage> {
               }
             },
             icon: Icon(Icons.delete),
+          ),
+          IconButton(
+            onPressed: () {
+              if (_postDetailResponse != null) {
+                _togglePin(_postDetailResponse!.postDetail.postNumber);
+              }
+            },
+            icon: Icon(
+              _isPinned ? Icons.push_pin : Icons.push_pin_outlined,
+              color: _isPinned ? Colors.red : Colors.grey,
+            ),
           ),
         ],
       ),
