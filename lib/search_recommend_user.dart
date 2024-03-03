@@ -90,11 +90,11 @@ class _SearchRecommendUserListPageState extends State<SearchRecommendUserListPag
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => SearchUserListPage(keyword:value),
+              builder: (context) => SearchPostListPage(keyword:value),
             ),
           );
         },
-        autofocus: true, //TextFieldが表示されるときにフォーカスする（キーボードを表示する）
+        // autofocus: true, //TextFieldが表示されるときにフォーカスする（キーボードを表示する）
         //cursorColor: Colors.white, //カーソルの色
         style: TextStyle( //テキストのスタイル
           //color: Colors.white,

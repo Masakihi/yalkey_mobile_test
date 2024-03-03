@@ -15,41 +15,41 @@ class SearchUserListPage extends StatefulWidget {
 
 class _SearchUserListPageState extends State<SearchUserListPage> {
   late List<User> _userList = []; // user_repost_list を格納するリスト
-  late ScrollController _scrollController; // ListView のスクロールを制御するコントローラー
-  bool _loading = false; // データをロード中かどうかを示すフラグ
-  int _page = 1; // 現在のページ番号
+  late ScrollController _scrollUserController; // ListView のスクロールを制御するコントローラー
+  bool _loadingUser = false; // データをロード中かどうかを示すフラグ
+  int _pageUser = 1; // 現在のページ番号
   late String searchKeyword;
 
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController()..addListener(_scrollListener);
+    _scrollUserController = ScrollController()..addListener(_scrollUserListener);
     searchKeyword = widget.keyword;
     _fetchSearchUserList(); // 最初のデータを読み込む
   }
 
   // ListView のスクロールイベントを監視するリスナー
-  void _scrollListener() {
+  void _scrollUserListener() {
     // スクロール位置が最下部に達したかどうかをチェック
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
+    if (_scrollUserController.position.pixels ==
+        _scrollUserController.position.maxScrollExtent) {
       // 最下部に達したら新しいデータをロードする
-      _loadMoreData();
+      _loadMoreUserData();
     }
   }
 
   Future<void> _fetchSearchUserList() async {
     setState(() {
-      _loading = true; // データのロード中フラグをtrueに設定
+      _loadingUser = true; // データのロード中フラグをtrueに設定
     });
 
     SearchUserListResponse searchUserListResponse =
-    await SearchUserListResponse.fetchSearchUserListResponse(_page ,searchKeyword);
+    await SearchUserListResponse.fetchSearchUserListResponse(_pageUser ,searchKeyword);
     if (mounted) {
       setState(() {
         _userList
             .addAll(searchUserListResponse.searchUserList); // 新しいデータをリストに追加
-        _loading = false; // データのロード中フラグをfalseに設定
+        _loadingUser = false; // データのロード中フラグをfalseに設定
       });
     }
     /*prefs.setStringList('user_repost_list',
@@ -58,28 +58,28 @@ class _SearchUserListPageState extends State<SearchUserListPage> {
      */
   }
 
-  Future<void> _loadMoreData() async {
-    if (!_loading) {
+  Future<void> _loadMoreUserData() async {
+    if (!_loadingUser) {
       setState(() {
-        _loading = true; // データのロード中フラグをtrueに設定
-        _page++; // ページ番号をインクリメントして新しいデータを取得
+        _loadingUser = true; // データのロード中フラグをtrueに設定
+        _pageUser++; // ページ番号をインクリメントして新しいデータを取得
       });
       await _fetchSearchUserList();
     }
   }
 
-  Future<void> _clearCache() async {
+  Future<void> _clearCacheUser() async {
     try {
       //SharedPreferences prefs = await SharedPreferences.getInstance();
       //await prefs.remove('user_repost_list');
       setState(() {
         _userList.clear();
-        _page = 1; // ページ番号をリセット
+        _pageUser = 1; // ページ番号をリセット
       });
       print("list refresh");
       await _fetchSearchUserList(); // データを再読み込み
     } catch (error) {
-      print('Error clearing cache: $error');
+      print('Error clearing User cache: $error');
     }
   }
 
@@ -131,9 +131,9 @@ class _SearchUserListPageState extends State<SearchUserListPage> {
       ),
       body:Column(
         children: <Widget>[
-          !_loading ? const SizedBox(height: 20.0)
+          !_loadingUser ? const SizedBox(height: 20.0)
               : const SizedBox.shrink(),
-          !_loading ? Container(
+          !_loadingUser ? Container(
               alignment: Alignment.centerLeft, //任意のプロパティ
               width: double.infinity,
               child: const Text(
@@ -143,15 +143,15 @@ class _SearchUserListPageState extends State<SearchUserListPage> {
               )
           )
               : const SizedBox.shrink(),
-          !_loading ? const SizedBox(height: 10.0)
+          !_loadingUser ? const SizedBox(height: 10.0)
               : const SizedBox.shrink(),
           Expanded(
             child: ListView.builder(
-              controller: _scrollController, // スクロールコントローラーを設定
+              controller: _scrollUserController, // スクロールコントローラーを設定
               itemCount: _userList.length + 1, // リストアイテム数 + ローディングインジケーター
               itemBuilder: (context, index) {
                 if (index == _userList.length) {
-                  return _loading
+                  return _loadingUser
                       ? Container(
                     alignment: Alignment.center,
                     padding: EdgeInsets.all(16.0),

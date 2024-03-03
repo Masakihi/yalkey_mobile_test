@@ -608,9 +608,18 @@ class PostListResponse {
   }
 
   static Future<PostListResponse> fetchSearchPostListResponse(
-      int page) async {
-    dynamic jsonData = await httpGet('search-list/$page', jwt: true);
+      int page, String keyword) async {
+    dynamic jsonData = await httpGet('search-list/${page}/?keyword=${keyword}', jwt: true);
     return PostListResponse.fromJson(jsonData);
+  }
+
+  static Future<PostListResponse> fetchBookmarkPostListResponse(
+      int page) async {
+    dynamic jsonData = await httpGet('user-bookmark/$page', jwt: true);
+    //print(jsonData);
+    //print("-------");
+    //print(jsonData['user_bookmark_list'][0]);
+    return PostListResponse.fromJson(jsonData['user_bookmark_list'][0]);
   }
 }
 
@@ -695,7 +704,7 @@ class YalkerProgressListResponse {
       int userId, DateTime startDate, DateTime endDate) async {
     dynamic jsonData = await httpGet(
         'yalker-progress-list/$userId/${startDate.year}/${startDate.month}/${startDate.day}/${endDate.year}/${endDate.month}/${endDate.day}/1');
-    print(jsonData);
+    // print(jsonData);
     return YalkerProgressListResponse.fromJson(jsonData);
   }
 }
@@ -1288,7 +1297,7 @@ class SearchUserListResponse {
 
   static Future<SearchUserListResponse> fetchSearchUserListResponse(int page,String keyword) async {
     dynamic jsonData = await httpGet('search-name-list/${page}/?keyword=${keyword}', jwt: true);
-    print(jsonData);
+    // print(jsonData);
     return SearchUserListResponse.fromJson(jsonData);
   }
 }

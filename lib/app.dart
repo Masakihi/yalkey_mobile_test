@@ -8,6 +8,8 @@ import 'goal_list.dart';
 import 'profile_page.dart';
 import 'notification_list.dart';
 import 'search_recommend_user.dart';
+import 'search_post.dart';
+import 'user_bookmark_list.dart';
 
 import 'following_list_page.dart';
 import 'followed_list_page.dart';
@@ -114,7 +116,14 @@ class AppPage extends StatelessWidget {
                 ),
                 ListTile(
                   title: const Text("ブックマーク"),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const UserBookmarkListPage(),
+                      ),
+                    );
+                  },
                 ),
                 ListTile(
                   title: const Text("通知"),

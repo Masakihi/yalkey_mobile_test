@@ -23,6 +23,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    _clearCache();
     _scrollController = ScrollController()..addListener(_scrollListener);
     _fetchUserRepostList(); // 最初のデータを読み込む
   }
@@ -442,19 +443,24 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                       ],
                                     ),
+                                    const SizedBox(height: 8.0),
                                     repost.postText != ''
                                         ? Text(
                                             repost.postText,
                                             style: const TextStyle(fontSize: 16.0),
                                           )
                                         : const SizedBox.shrink(),
-                                    const SizedBox(height: 4.0),
+                                    const SizedBox(height: 8.0),
                                     ...repost.progressTextList
                                         .map((progressText) => Text(
-                                            "・$progressText",
+                                            "$progressText",
                                             style: const TextStyle(
-                                                fontSize: 12.0,
-                                                fontWeight: FontWeight.bold)))
+                                                fontSize: 16.0,
+                                                //fontWeight: FontWeight.bold,
+                                                fontStyle: FontStyle.italic,
+                                                //decoration: TextDecoration.underline,
+
+                                            )))
                                         .toList(),
                                   ],
                                 ),
@@ -533,6 +539,12 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
               ),
+
+
+
+
+
+
             ],
           ),
       ),
