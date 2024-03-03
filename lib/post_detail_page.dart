@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'constant.dart';
+import 'api.dart';
 
 class PostDetailPage extends StatefulWidget {
   final int postNumber;
@@ -37,11 +38,62 @@ class _PostDetailPageState extends State<PostDetailPage> {
         ));
   }
 
+  Future<void> _deletePost(int postNumber) async {
+    final response = await httpDelete('post/delete/$postNumber/', jwt: true);
+
+    if (response == 204) {
+      // 投稿が削除された場合の処理
+      Navigator.pop(context); // 投稿詳細画面を閉じる
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('投稿を削除しました')),
+      );
+    } else {
+      // エラーが発生した場合の処理
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('投稿の削除に失敗しました')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('投稿詳細'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              if (_postDetailResponse != null) {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('削除の確認'),
+                      content: Text('本当に削除してもよろしいですか？'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('キャンセル'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            _deletePost(
+                                _postDetailResponse!.postDetail.postNumber);
+                          },
+                          child: Text('削除'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              }
+            },
+            icon: Icon(Icons.delete),
+          ),
+        ],
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())

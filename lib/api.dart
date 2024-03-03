@@ -35,6 +35,37 @@ Future httpGet(String path, {bool jwt = false}) async {
   return json.decode(utf8.decode(response.bodyBytes));
 }
 
+Future httpDelete(String path, {bool jwt = false}) async {
+  if (jwt) {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString('access_token');
+    if (token == null) {
+      throw Exception('Token does not exist');
+    } else {
+      final response = await http.delete(
+        Uri.parse('https://yalkey.com/api/v1/$path'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'JWT $token'
+        },
+      );
+      logResponse(response);
+      if (response.bodyBytes.isNotEmpty) {
+        print(response.bodyBytes);
+        logResponse(json.decode(utf8.decode(response.bodyBytes)));
+        return json.decode(utf8.decode(response.bodyBytes));
+      } else {
+        return response.statusCode;
+      }
+    }
+  }
+  final response = await http.get(
+    Uri.parse('https://yalkey.com/api/v1/$path'),
+    headers: {'Content-Type': 'application/json'},
+  );
+  return json.decode(utf8.decode(response.bodyBytes));
+}
+
 // Post（画像投稿可能）
 Future<dynamic> httpPost(String path, Map<String, dynamic>? body,
     {bool jwt = false, List<String> images = const []}) async {
