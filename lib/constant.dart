@@ -36,7 +36,7 @@ class Progress {
       reportType: json['report_type'],
       reportTitle: json['report_title'],
       reportNumber: json['report_number'],
-      progressTodo: json['progress_todo'],
+      progressTodo: json['progress_todo'] as bool,
       progressHours: json['progress_hours'],
       progressMinutes: json['progress_minutes'],
       progressCustomData: json['progress_custom_data'],
@@ -431,79 +431,168 @@ class YalkerProgressListResponse {
   }
 }
 
-class ProgressTimeDataForGraph {
-  final String progressTitle;
-  final DateTime progressDate;
-  late Duration progressDuration;
+// PostDetailの型定義
+class PostDetail {
+  final int user;
+  final String postUserIcon;
+  final int postUserNumber;
+  final String postUserId;
+  final String postUserName;
+  final String? toPostUserId;
+  final String? toPostUserName;
+  final int postUserProfileNumber;
+  final bool postUserPrivate;
+  final bool postUserSuperHardWorker;
+  final bool postUserHardWorker;
+  final bool postUserRegularCustomer;
+  final bool postUserSuperEarlyBird;
+  final bool postUserEarlyBird;
+  final int postNumber;
+  final int postType;
+  final String postText;
+  final List<Progress> progressList;
+  final List<String> progressTextList;
+  final String postCreatedAt;
+  final int postLikeNumber;
+  final bool postLiked;
+  final bool postBookmarked;
+  final bool postReposted;
+  final bool postPinned;
 
-  ProgressTimeDataForGraph({
-    required this.progressTitle,
-    required this.progressDate,
-    required this.progressDuration,
+  PostDetail({
+    required this.user,
+    required this.postUserIcon,
+    required this.postUserNumber,
+    required this.postUserId,
+    required this.postUserName,
+    this.toPostUserId,
+    this.toPostUserName,
+    required this.postUserProfileNumber,
+    required this.postUserPrivate,
+    required this.postUserSuperHardWorker,
+    required this.postUserHardWorker,
+    required this.postUserRegularCustomer,
+    required this.postUserSuperEarlyBird,
+    required this.postUserEarlyBird,
+    required this.postNumber,
+    required this.postType,
+    required this.postText,
+    required this.progressList,
+    required this.progressTextList,
+    required this.postCreatedAt,
+    required this.postLikeNumber,
+    required this.postLiked,
+    required this.postBookmarked,
+    required this.postReposted,
+    required this.postPinned,
   });
 
-  factory ProgressTimeDataForGraph.fromJson(Map<String, dynamic> json) {
-    return ProgressTimeDataForGraph(
-        progressTitle: json['report_title'],
-        progressDate: DateTime.parse(json['progress_date']),
-        progressDuration:
-            Duration(hours: json['hours'], minutes: json['minutes']));
+  factory PostDetail.fromJson(Map<String, dynamic> json) {
+    List<dynamic> progressListJson = json['progress_list'] ?? [];
+    List<Progress> progressList = progressListJson
+        .map((progressJson) => Progress.fromJson(progressJson))
+        .toList();
+    List<String> progressTextList = [];
+    if (json['progress_list'].length > 0) {
+      progressTextList.addAll(_getProgressTextList(progressList));
+    }
+    return PostDetail(
+      user: json['user'],
+      postUserIcon: json['post_user_icon'],
+      postUserNumber: json['post_user_number'],
+      postUserId: json['post_user_id'],
+      postUserName: json['post_user_name'],
+      toPostUserId: json['to_post_user_id'],
+      toPostUserName: json['to_post_user_name'],
+      postUserProfileNumber: json['post_user_profile_number'],
+      postUserPrivate: json['post_user_private'],
+      postUserSuperHardWorker: json['post_user_super_hard_worker'],
+      postUserHardWorker: json['post_user_hard_worker'],
+      postUserRegularCustomer: json['post_user_regular_customer'],
+      postUserSuperEarlyBird: json['post_user_super_early_bird'],
+      postUserEarlyBird: json['post_user_early_bird'],
+      postNumber: json['post_number'],
+      postType: json['post_type'],
+      postText: json['post_text'],
+      progressList: progressList,
+      progressTextList: progressTextList,
+      postCreatedAt: json['post_created_at'],
+      postLikeNumber: json['post_like_number'],
+      postLiked: json['post_liked'],
+      postBookmarked: json['post_bookmarked'],
+      postReposted: json['post_reposted'],
+      postPinned: json['post_pinned'],
+    );
+  }
+
+  static List<String> _getProgressTextList(List<Progress> progressList) {
+    List<String> progressTextList = [];
+    for (var progress in progressList) {
+      switch (progress.reportType) {
+        case 0: // 時間型
+          progressTextList.add(
+              '${progress.reportTitle}:${progress.progressHours}時間${progress.progressMinutes}分 (${progress.progressDate})');
+          break;
+        case 1: // None
+          break;
+        case 2: // int
+          progressTextList.add(
+              '${progress.reportTitle}:${progress.progressCustomData}${progress.progressUnit} (${progress.progressDate})');
+          break;
+        case 3: // float
+          progressTextList.add(
+              '${progress.reportTitle}:${progress.progressCustomFloatData}${progress.progressUnit} (${progress.progressDate})');
+          break;
+        case 4: // bool
+          progressTextList.add(
+              '${progress.reportTitle}:${progress.progressTodo ? '達成' : '未達成'} (${progress.progressDate})');
+          break;
+      }
+    }
+    return (progressTextList);
   }
 }
 
-class ProgressIntegerDataForGraph {
-  final String progressTitle;
-  final DateTime progressDate;
-  late int progressInteger;
+class PostDetailResponse {
+  final PostDetail postDetail;
+  final PostDetail? toPostDetail;
+  final List<PostDetail> replyList;
 
-  ProgressIntegerDataForGraph({
-    required this.progressTitle,
-    required this.progressDate,
-    required this.progressInteger,
+  PostDetailResponse({
+    required this.postDetail,
+    required this.toPostDetail,
+    required this.replyList,
   });
 
-  factory ProgressIntegerDataForGraph.fromJson(Map<String, dynamic> json) {
-    return ProgressIntegerDataForGraph(
-        progressTitle: json['report_title'],
-        progressDate: DateTime.parse(json['progress_date']),
-        progressInteger: json["custom_data"]);
+  factory PostDetailResponse.fromJson(Map<String, dynamic> json) {
+    PostDetail? toPostDetail = json['to_post_detail'] != null
+        ? PostDetail.fromJson(json['to_post_detail'])
+        : null;
+    if (json['reply_list'].isNotEmpty) {
+      print(json['reply_list']
+          .map((json) => {PostDetail.fromJson(json) as PostDetail})
+          .toList());
+    }
+    if (json['reply_list'].isNotEmpty) {
+      print(json['reply_list']
+          .map((json) => {PostDetail.fromJson(json) as PostDetail})
+          .toList()
+          .runtimeType);
+    }
+    List<PostDetail> replyList = json['reply_list'].isNotEmpty
+        ? (json['reply_list'] as List<dynamic>)
+            .map((json) => PostDetail.fromJson(json as Map<String, dynamic>))
+            .toList()
+        : [];
+    return PostDetailResponse(
+        postDetail: PostDetail.fromJson(json['post_detail']),
+        toPostDetail: toPostDetail,
+        replyList: replyList);
   }
-}
 
-class ProgressFloatDataForGraph {
-  final String progressTitle;
-  final DateTime progressDate;
-  late double progressFloat;
-
-  ProgressFloatDataForGraph({
-    required this.progressTitle,
-    required this.progressDate,
-    required this.progressFloat,
-  });
-
-  factory ProgressFloatDataForGraph.fromJson(Map<String, dynamic> json) {
-    return ProgressFloatDataForGraph(
-        progressTitle: json['report_title'],
-        progressDate: DateTime.parse(json['progress_date']),
-        progressFloat: json["custom_float_data"]);
-  }
-}
-
-class ProgressTodoDataForGraph {
-  final String progressTitle;
-  final DateTime progressDate;
-  late bool progressTodo;
-
-  ProgressTodoDataForGraph({
-    required this.progressTitle,
-    required this.progressDate,
-    required this.progressTodo,
-  });
-
-  factory ProgressTodoDataForGraph.fromJson(Map<String, dynamic> json) {
-    return ProgressTodoDataForGraph(
-        progressTitle: json['report_title'],
-        progressDate: DateTime.parse(json['progress_date']),
-        progressTodo: json["todo"]);
+  static Future<PostDetailResponse> fetchPostDetailResponse(
+      int postNumber) async {
+    dynamic jsonData = await httpGet('detail/$postNumber', jwt: true);
+    return PostDetailResponse.fromJson(jsonData);
   }
 }

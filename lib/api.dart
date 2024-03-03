@@ -22,6 +22,9 @@ Future httpGet(String path, {bool jwt = false}) async {
           'Authorization': 'JWT $token'
         },
       );
+      if (path.contains('detail')) {
+        logResponse(json.decode(utf8.decode(response.bodyBytes)));
+      }
       return json.decode(utf8.decode(response.bodyBytes));
     }
   }
