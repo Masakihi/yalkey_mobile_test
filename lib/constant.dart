@@ -13,6 +13,8 @@ class Progress {
   final double progressCustomFloatData;
   final String progressUnit;
   final String progressDate;
+  late DateTime progressDateTime;
+  late Duration progressDuration;
 
   Progress({
     required this.reportType,
@@ -25,14 +27,16 @@ class Progress {
     required this.progressCustomFloatData,
     required this.progressUnit,
     required this.progressDate,
-  });
+  })  : progressDateTime = DateTime.parse(progressDate),
+        progressDuration =
+            Duration(hours: progressHours, minutes: progressMinutes);
 
   factory Progress.fromJson(Map<String, dynamic> json) {
     return Progress(
       reportType: json['report_type'],
       reportTitle: json['report_title'],
       reportNumber: json['report_number'],
-      progressTodo: json['progress_todo'],
+      progressTodo: json['progress_todo'] as bool,
       progressHours: json['progress_hours'],
       progressMinutes: json['progress_minutes'],
       progressCustomData: json['progress_custom_data'],
@@ -70,6 +74,22 @@ class Progress {
       'progress_unit': progressUnit,
       'progress_date': progressDate,
     };
+  }
+
+  // 足し合わせるためのデータ抽出
+  dynamic extractData() {
+    switch (reportType) {
+      case 0:
+        return progressDuration;
+      case 1:
+        return;
+      case 2:
+        return progressCustomData;
+      case 3:
+        return progressCustomFloatData;
+      case 4:
+        return progressTodo;
+    }
   }
 }
 
@@ -233,7 +253,6 @@ class UserRepost {
       // print(progressTextList);
     }
     return UserRepost(
-      //dateReposted: json['repost_date'],
       isRepost: json['is_repost'],
       repostDate: json['repost_date'],
       repostUserId: json['repost_user_id'],
@@ -267,8 +286,6 @@ class UserRepost {
 
   Map<String, dynamic> toJson() {
     return {
-      // 'date_reposted': dateReposted,
-      //'repost_date': dateReposted,
       'is_repost': isRepost,
       'repost_date': repostDate,
       'repost_user_id': repostUserId,
@@ -352,8 +369,6 @@ class UserRepostListResponse {
     return UserRepostListResponse.fromJson(jsonData);
   }
 }
-
-
 
 class Post {
   final String postUserIcon;
@@ -551,7 +566,7 @@ class Post {
       'post_number': postNumber,
       'post_text': postText,
       'progress_list':
-      progressList.map((progress) => progress.toJson()).toList(),
+          progressList.map((progress) => progress.toJson()).toList(),
       'post_created_at': postCreatedAt,
       'post_like_number': postLikeNumber,
       'post_liked': postLiked,
@@ -600,16 +615,15 @@ class PostListResponse {
     List<Post> postList = [];
     if (json['post_list'] != null) {
       var postJsonList = json['post_list'] as List;
-      postList = postJsonList
-          .map((post) => Post.fromJson(post))
-          .toList();
+      postList = postJsonList.map((post) => Post.fromJson(post)).toList();
     }
     return PostListResponse(postList: postList);
   }
 
   static Future<PostListResponse> fetchSearchPostListResponse(
       int page, String keyword) async {
-    dynamic jsonData = await httpGet('search-list/${page}/?keyword=${keyword}', jwt: true);
+    dynamic jsonData =
+        await httpGet('search-list/${page}/?keyword=${keyword}', jwt: true);
     return PostListResponse.fromJson(jsonData);
   }
 
@@ -622,8 +636,6 @@ class PostListResponse {
     return PostListResponse.fromJson(jsonData['user_bookmark_list'][0]);
   }
 }
-
-
 
 // Reportの型定義
 class Report {
@@ -707,8 +719,201 @@ class YalkerProgressListResponse {
     // print(jsonData);
     return YalkerProgressListResponse.fromJson(jsonData);
   }
+
+  static Future<Map<DateTime, dynamic>> fetchDataForGraphByReportTitle(
+      int userId,
+      DateTime startDate,
+      DateTime endDate,
+      String reportTitle) async {
+    dynamic jsonData = await httpGet(
+        'yalker-progress-list/$userId/${startDate.year}/${startDate.month}/${startDate.day}/${endDate.year}/${endDate.month}/${endDate.day}/1');
+    final progressList =
+        YalkerProgressListResponse.fromJson(jsonData).progressList;
+    Map<DateTime, dynamic> date2DataMap = {};
+    for (Progress progress in progressList) {
+      if (progress.reportTitle == reportTitle) {
+        final date = DateTime.parse(progress.progressDate);
+        if (date2DataMap.containsKey(date)) {
+          // bool型なら||でつなぎ、それ以外なら足し合わせる
+          if (progress.reportType == 0) {
+            date2DataMap[date] = date2DataMap[date]! || progress.extractData();
+          } else {
+            date2DataMap[date] = date2DataMap[date]! + progress.extractData();
+          }
+        } else {
+          date2DataMap[date] = progress.extractData();
+        }
+      }
+    }
+    return date2DataMap;
+  }
 }
 
+// PostDetailの型定義
+class PostDetail {
+  final int user;
+  final String postUserIcon;
+  final int postUserNumber;
+  final String postUserId;
+  final String postUserName;
+  final String? toPostUserId;
+  final String? toPostUserName;
+  final int postUserProfileNumber;
+  final bool postUserPrivate;
+  final bool postUserSuperHardWorker;
+  final bool postUserHardWorker;
+  final bool postUserRegularCustomer;
+  final bool postUserSuperEarlyBird;
+  final bool postUserEarlyBird;
+  final int postNumber;
+  final int postType;
+  final String postText;
+  final List<Progress> progressList;
+  final List<String> progressTextList;
+  final String postCreatedAt;
+  final int postLikeNumber;
+  final bool postLiked;
+  final bool postBookmarked;
+  final bool postReposted;
+  final bool postPinned;
+
+  PostDetail({
+    required this.user,
+    required this.postUserIcon,
+    required this.postUserNumber,
+    required this.postUserId,
+    required this.postUserName,
+    this.toPostUserId,
+    this.toPostUserName,
+    required this.postUserProfileNumber,
+    required this.postUserPrivate,
+    required this.postUserSuperHardWorker,
+    required this.postUserHardWorker,
+    required this.postUserRegularCustomer,
+    required this.postUserSuperEarlyBird,
+    required this.postUserEarlyBird,
+    required this.postNumber,
+    required this.postType,
+    required this.postText,
+    required this.progressList,
+    required this.progressTextList,
+    required this.postCreatedAt,
+    required this.postLikeNumber,
+    required this.postLiked,
+    required this.postBookmarked,
+    required this.postReposted,
+    required this.postPinned,
+  });
+
+  factory PostDetail.fromJson(Map<String, dynamic> json) {
+    List<dynamic> progressListJson = json['progress_list'] ?? [];
+    List<Progress> progressList = progressListJson
+        .map((progressJson) => Progress.fromJson(progressJson))
+        .toList();
+    List<String> progressTextList = [];
+    if (json['progress_list'].length > 0) {
+      progressTextList.addAll(_getProgressTextList(progressList));
+    }
+    return PostDetail(
+      user: json['user'],
+      postUserIcon: json['post_user_icon'],
+      postUserNumber: json['post_user_number'],
+      postUserId: json['post_user_id'],
+      postUserName: json['post_user_name'],
+      toPostUserId: json['to_post_user_id'],
+      toPostUserName: json['to_post_user_name'],
+      postUserProfileNumber: json['post_user_profile_number'],
+      postUserPrivate: json['post_user_private'],
+      postUserSuperHardWorker: json['post_user_super_hard_worker'],
+      postUserHardWorker: json['post_user_hard_worker'],
+      postUserRegularCustomer: json['post_user_regular_customer'],
+      postUserSuperEarlyBird: json['post_user_super_early_bird'],
+      postUserEarlyBird: json['post_user_early_bird'],
+      postNumber: json['post_number'],
+      postType: json['post_type'],
+      postText: json['post_text'],
+      progressList: progressList,
+      progressTextList: progressTextList,
+      postCreatedAt: json['post_created_at'],
+      postLikeNumber: json['post_like_number'],
+      postLiked: json['post_liked'],
+      postBookmarked: json['post_bookmarked'],
+      postReposted: json['post_reposted'],
+      postPinned: json['post_pinned'],
+    );
+  }
+
+  static List<String> _getProgressTextList(List<Progress> progressList) {
+    List<String> progressTextList = [];
+    for (var progress in progressList) {
+      switch (progress.reportType) {
+        case 0: // 時間型
+          progressTextList.add(
+              '${progress.reportTitle}:${progress.progressHours}時間${progress.progressMinutes}分 (${progress.progressDate})');
+          break;
+        case 1: // None
+          break;
+        case 2: // int
+          progressTextList.add(
+              '${progress.reportTitle}:${progress.progressCustomData}${progress.progressUnit} (${progress.progressDate})');
+          break;
+        case 3: // float
+          progressTextList.add(
+              '${progress.reportTitle}:${progress.progressCustomFloatData}${progress.progressUnit} (${progress.progressDate})');
+          break;
+        case 4: // bool
+          progressTextList.add(
+              '${progress.reportTitle}:${progress.progressTodo ? '達成' : '未達成'} (${progress.progressDate})');
+          break;
+      }
+    }
+    return (progressTextList);
+  }
+}
+
+class PostDetailResponse {
+  final PostDetail postDetail;
+  final PostDetail? toPostDetail;
+  final List<PostDetail> replyList;
+
+  PostDetailResponse({
+    required this.postDetail,
+    required this.toPostDetail,
+    required this.replyList,
+  });
+
+  factory PostDetailResponse.fromJson(Map<String, dynamic> json) {
+    PostDetail? toPostDetail = json['to_post_detail'] != null
+        ? PostDetail.fromJson(json['to_post_detail'])
+        : null;
+    if (json['reply_list'].isNotEmpty) {
+      print(json['reply_list']
+          .map((json) => {PostDetail.fromJson(json) as PostDetail})
+          .toList());
+    }
+    if (json['reply_list'].isNotEmpty) {
+      print(json['reply_list']
+          .map((json) => {PostDetail.fromJson(json) as PostDetail})
+          .toList()
+          .runtimeType);
+    }
+    List<PostDetail> replyList = json['reply_list'].isNotEmpty
+        ? (json['reply_list'] as List<dynamic>)
+            .map((json) => PostDetail.fromJson(json as Map<String, dynamic>))
+            .toList()
+        : [];
+    return PostDetailResponse(
+        postDetail: PostDetail.fromJson(json['post_detail']),
+        toPostDetail: toPostDetail,
+        replyList: replyList);
+  }
+
+  static Future<PostDetailResponse> fetchPostDetailResponse(
+      int postNumber) async {
+    dynamic jsonData = await httpGet('detail/$postNumber', jwt: true);
+    return PostDetailResponse.fromJson(jsonData);
+  }
+}
 
 // Connectionの型定義
 class Connection {
@@ -803,7 +1008,7 @@ class Connection {
       'follower_name': followerName,
       'follower_iconimage': followerIconimage,
       'follower_user_id': followerUserId,
-      'follower_profile':followerProfile,
+      'follower_profile': followerProfile,
       'follower_profile_number': followerProfileNumber,
       'follower_private': followerPrivate,
       'follower_super_hard_worker': followerSuperHardWorker,
@@ -836,18 +1041,20 @@ class FollowingListResponse {
     List<Connection> followingList = [];
     if (json['following_list'] != null) {
       var followingJsonList = json['following_list'] as List;
-      followingList =
-          followingJsonList.map((connection) => Connection.fromJson(connection)).toList();
+      followingList = followingJsonList
+          .map((connection) => Connection.fromJson(connection))
+          .toList();
     }
     return FollowingListResponse(followingList: followingList);
   }
 
-  static Future<FollowingListResponse> fetchFollowingListResponse(int userId, int page) async {
-    dynamic jsonData = await httpGet('following-list/$userId/${page}/', jwt: true);
+  static Future<FollowingListResponse> fetchFollowingListResponse(
+      int userId, int page) async {
+    dynamic jsonData =
+        await httpGet('following-list/$userId/${page}/', jwt: true);
     return FollowingListResponse.fromJson(jsonData);
   }
 }
-
 
 class FollowedListResponse {
   final List<Connection> followedList;
@@ -858,19 +1065,20 @@ class FollowedListResponse {
     List<Connection> followedList = [];
     if (json['followed_list'] != null) {
       var followedJsonList = json['followed_list'] as List;
-      followedList =
-          followedJsonList.map((connection) => Connection.fromJson(connection)).toList();
+      followedList = followedJsonList
+          .map((connection) => Connection.fromJson(connection))
+          .toList();
     }
     return FollowedListResponse(followedList: followedList);
   }
 
-  static Future<FollowedListResponse> fetchFollowedListResponse(int userId, int page) async {
-    dynamic jsonData = await httpGet('followed-list/$userId/${page}/', jwt: true);
+  static Future<FollowedListResponse> fetchFollowedListResponse(
+      int userId, int page) async {
+    dynamic jsonData =
+        await httpGet('followed-list/$userId/${page}/', jwt: true);
     return FollowedListResponse.fromJson(jsonData);
   }
 }
-
-
 
 // Notificationの型定義
 class UserNotification {
@@ -892,7 +1100,6 @@ class UserNotification {
   final String? toUserId;
   final int? senderType;
   final int notificationType;
-
 
   UserNotification({
     required this.newNotification,
@@ -958,21 +1165,20 @@ class NotificationListResponse {
   factory NotificationListResponse.fromJson(Map<String, dynamic> json) {
     List<UserNotification> notificationList = [];
     if (json['notification_list'] != null) {
-
       var notificationJsonList = json['notification_list'] as List;
-      notificationList =
-          notificationJsonList.map((notification) => UserNotification.fromJson(notification)).toList();
+      notificationList = notificationJsonList
+          .map((notification) => UserNotification.fromJson(notification))
+          .toList();
     }
     return NotificationListResponse(notificationList: notificationList);
   }
 
-  static Future<NotificationListResponse> fetchNotificationListResponse(int page) async {
+  static Future<NotificationListResponse> fetchNotificationListResponse(
+      int page) async {
     dynamic jsonData = await httpGet('notification/${page}/', jwt: true);
     return NotificationListResponse.fromJson(jsonData);
   }
 }
-
-
 
 // Goalの型定義
 class Goal {
@@ -1039,10 +1245,8 @@ class GoalListResponse {
   factory GoalListResponse.fromJson(Map<String, dynamic> json) {
     List<Goal> goalList = [];
     if (json['goal_list'] != null) {
-
       var goalJsonList = json['goal_list'] as List;
-      goalList =
-          goalJsonList.map((goal) => Goal.fromJson(goal)).toList();
+      goalList = goalJsonList.map((goal) => Goal.fromJson(goal)).toList();
     }
     return GoalListResponse(goalList: goalList);
   }
@@ -1052,7 +1256,6 @@ class GoalListResponse {
     return GoalListResponse.fromJson(jsonData);
   }
 }
-
 
 class GoalResponse {
   final Goal goal;
@@ -1073,7 +1276,6 @@ class GoalResponse {
   }
 }
 
-
 // Missionの型定義
 class Mission {
   final int userNumber;
@@ -1088,7 +1290,6 @@ class Mission {
   final String? opportunity;
   final String dateCreated;
   final int missionNumber;
-
 
   Mission({
     required this.userNumber,
@@ -1148,7 +1349,6 @@ class MissionListResponse {
   factory MissionListResponse.fromJson(Map<String, dynamic> json) {
     List<Mission> missionList = [];
     if (json['mission_list'] != null) {
-
       var missionJsonList = json['mission_list'] as List;
       missionList =
           missionJsonList.map((mission) => Mission.fromJson(mission)).toList();
@@ -1161,12 +1361,12 @@ class MissionListResponse {
     return MissionListResponse.fromJson(jsonData);
   }
 
-  static Future<MissionListResponse> fetchMissionTodayListResponse(int page) async {
+  static Future<MissionListResponse> fetchMissionTodayListResponse(
+      int page) async {
     dynamic jsonData = await httpGet('mission-today-list/${page}/', jwt: true);
     return MissionListResponse.fromJson(jsonData);
   }
 }
-
 
 class MissionResponse {
   final Mission mission;
@@ -1182,12 +1382,11 @@ class MissionResponse {
   }
 
   static Future<MissionResponse> fetchMissionResponse(int missionNumber) async {
-    dynamic jsonData = await httpGet('mission/detail/${missionNumber}', jwt: true);
+    dynamic jsonData =
+        await httpGet('mission/detail/${missionNumber}', jwt: true);
     return MissionResponse.fromJson(jsonData);
   }
 }
-
-
 
 // Userの型定義
 class User {
@@ -1277,13 +1476,12 @@ class RecommendUserListResponse {
     return RecommendUserListResponse(recommendUserList: recommendUserList);
   }
 
-  static Future<RecommendUserListResponse> fetchRecommendUserListResponse() async {
+  static Future<RecommendUserListResponse>
+      fetchRecommendUserListResponse() async {
     dynamic jsonData = await httpGet('recommend-user-list/', jwt: true);
     return RecommendUserListResponse.fromJson(jsonData);
   }
 }
-
-
 
 class SearchUserListResponse {
   final List<User> searchUserList;
@@ -1294,19 +1492,20 @@ class SearchUserListResponse {
     List<User> searchUserList = [];
     if (json['user_list'] != null) {
       var userJsonList = json['user_list'] as List;
-      searchUserList =
-          userJsonList.map((user) => User.fromJson(user)).toList();
+      searchUserList = userJsonList.map((user) => User.fromJson(user)).toList();
     }
     return SearchUserListResponse(searchUserList: searchUserList);
   }
 
-  static Future<SearchUserListResponse> fetchSearchUserListResponse(int page,String keyword) async {
-    dynamic jsonData = await httpGet('search-name-list/${page}/?keyword=${keyword}', jwt: true);
+  static Future<SearchUserListResponse> fetchSearchUserListResponse(
+      int page, String keyword) async {
+    dynamic jsonData = await httpGet(
+        'search-name-list/${page}/?keyword=${keyword}',
+        jwt: true);
     // print(jsonData);
     return SearchUserListResponse.fromJson(jsonData);
   }
 }
-
 
 class SearchUserIdListResponse {
   final List<User> searchUserIdList;
@@ -1323,13 +1522,13 @@ class SearchUserIdListResponse {
     return SearchUserIdListResponse(searchUserIdList: searchUserIdList);
   }
 
-  static Future<SearchUserIdListResponse> fetchSearchUserIdListResponse(int page, String keyword) async {
-    dynamic jsonData = await httpGet('search-id-list/${page}/?keyword=${keyword}', jwt: true);
+  static Future<SearchUserIdListResponse> fetchSearchUserIdListResponse(
+      int page, String keyword) async {
+    dynamic jsonData =
+        await httpGet('search-id-list/${page}/?keyword=${keyword}', jwt: true);
     return SearchUserIdListResponse.fromJson(jsonData);
   }
 }
-
-
 
 // FollowRequestの型定義
 class FollowRequest {
@@ -1343,7 +1542,6 @@ class FollowRequest {
   final String? toUserId;
   final int? senderType;
   final int notificationType;
-
 
   FollowRequest({
     required this.fromUserNumber,
@@ -1397,21 +1595,17 @@ class FollowRequestListResponse {
   factory FollowRequestListResponse.fromJson(Map<String, dynamic> json) {
     List<FollowRequest> followRequestList = [];
     if (json['follow_request_list'] != null) {
-
       var followRequestJsonList = json['follow_request_list'] as List;
-      followRequestList =
-          followRequestJsonList.map((follow_request) => FollowRequest.fromJson(follow_request)).toList();
+      followRequestList = followRequestJsonList
+          .map((follow_request) => FollowRequest.fromJson(follow_request))
+          .toList();
     }
     return FollowRequestListResponse(followRequestList: followRequestList);
   }
 
-  static Future<FollowRequestListResponse> fetchFollowRequestListResponse(int page) async {
+  static Future<FollowRequestListResponse> fetchFollowRequestListResponse(
+      int page) async {
     dynamic jsonData = await httpGet('follow-request-list/${page}/', jwt: true);
     return FollowRequestListResponse.fromJson(jsonData);
   }
 }
-
-
-
-
-
