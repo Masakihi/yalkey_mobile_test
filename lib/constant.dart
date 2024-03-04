@@ -193,7 +193,7 @@ class UserRepost {
       throw Exception('Post $postNumber is already reposted.');
     } else {
       final response = await httpPost('repost/$postNumber/', null, jwt: true);
-      if (response['reposted']) {
+      if (response['post_reposted']) {
         postReposted = true;
       } else {
         throw Exception('Post $postNumber is already reposted in backend.');
@@ -206,7 +206,7 @@ class UserRepost {
       throw Exception('Post $postNumber is already unreposted.');
     } else {
       final response = await httpPost('repost/$postNumber/', null, jwt: true);
-      if (!response['reposted']) {
+      if (!response['post_reposted']) {
         postReposted = false;
       } else {
         throw Exception('Post $postNumber is already unreposted in backend.');
@@ -233,7 +233,7 @@ class UserRepost {
       // print(progressTextList);
     }
     return UserRepost(
-      //dateReposted: json['repost_date'],
+      dateReposted: json['repost_date'],
       isRepost: json['is_repost'],
       repostDate: json['repost_date'],
       repostUserId: json['repost_user_id'],
@@ -268,7 +268,7 @@ class UserRepost {
   Map<String, dynamic> toJson() {
     return {
       // 'date_reposted': dateReposted,
-      //'repost_date': dateReposted,
+      'repost_date': dateReposted,
       'is_repost': isRepost,
       'repost_date': repostDate,
       'repost_user_id': repostUserId,
@@ -622,6 +622,7 @@ class PostListResponse {
     return PostListResponse.fromJson(jsonData['user_bookmark_list'][0]);
   }
 }
+
 
 
 
@@ -1410,8 +1411,4 @@ class FollowRequestListResponse {
     return FollowRequestListResponse.fromJson(jsonData);
   }
 }
-
-
-
-
 
