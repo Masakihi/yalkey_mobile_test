@@ -7,6 +7,7 @@ import 'constant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'post_detail_page.dart';
 import 'reply_form.dart';
+import 'linkify_util.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -344,10 +345,8 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                   SizedBox(height: 8.0),
                                   repost.postText != ''
-                                      ? Text(
-                                          repost.postText,
-                                          style: TextStyle(fontSize: 16.0),
-                                        )
+                                      ? LinkifyUtil.linkifyTextWithPreviews(
+                                          repost.postText)
                                       : SizedBox.shrink(),
                                   SizedBox(height: 4.0),
                                   ...repost.progressTextList
@@ -381,13 +380,11 @@ class _HomePageState extends State<HomePage> {
                                     repost.postLiked
                                         ? Icons.favorite
                                         : Icons.favorite_border,
-                                    color: repost.postLiked
-                                        ? Colors.red
-                                        : null, // 赤色にするかどうか
+                                    color: repost.postLiked ? Colors.red : null,
                                   ),
                                 ),
                                 Text(
-                                  '${repost.postLikeNumber}', // いいね数を表示
+                                  '${repost.postLikeNumber}',
                                   style: TextStyle(
                                     fontSize: 16.0,
                                     color: repost.postLiked
@@ -402,12 +399,13 @@ class _HomePageState extends State<HomePage> {
                                 bookmark(repost);
                               },
                               icon: Icon(
-                                  repost.postBookmarked
-                                      ? Icons.bookmark
-                                      : Icons.bookmark_border,
-                                  color: repost.postBookmarked
-                                      ? Color.fromARGB(255, 255, 226, 59)
-                                      : null),
+                                repost.postBookmarked
+                                    ? Icons.bookmark
+                                    : Icons.bookmark_border,
+                                color: repost.postBookmarked
+                                    ? Color.fromARGB(255, 255, 226, 59)
+                                    : null,
+                              ),
                             ),
                             IconButton(
                               onPressed: () {
@@ -422,9 +420,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                         if (index != _userRepostList.length - 1)
                           Divider(
-                              height: 32.0,
-                              thickness: 1.0,
-                              color: Colors.grey), // 最後のポストの後には区切り線を表示しない
+                              height: 32.0, thickness: 1.0, color: Colors.grey),
                       ],
                     ),
                   ),
