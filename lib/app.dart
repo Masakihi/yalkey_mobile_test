@@ -3,9 +3,21 @@ import 'package:yalkey_0206_test/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'bottom_nav_bar.dart';
 import 'setting_list.dart';
+import 'mission_list.dart';
+import 'goal_list.dart';
+import 'profile_page.dart';
+import 'notification_list.dart';
+import 'search_recommend_user.dart';
+import 'search_post.dart';
+import 'user_bookmark_list.dart';
+
+import 'following_list_page.dart';
+import 'followed_list_page.dart';
 
 class AppPage extends StatelessWidget {
   AppPage({super.key});
+
+
 
   Future<void> logout(context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -22,7 +34,32 @@ class AppPage extends StatelessWidget {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        leading: IconButton(
+        leading:
+            /*
+        (true)?
+        GestureDetector(
+          onTap: () {
+            _scaffoldKey.currentState!.openDrawer();
+          },
+          // 対象の画像を記述
+          child: Image.network(
+            'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
+          )
+        )
+            :
+        GestureDetector(
+          onTap: () {
+            _scaffoldKey.currentState!.openDrawer();
+          },
+          // 対象の画像を記述
+          child: Image.network(
+            'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${repost.postUserIcon}',
+        ),
+
+
+
+             */
+        IconButton(
             onPressed: () => _scaffoldKey.currentState!.openDrawer(),
             icon: const Icon(Icons.person)),
         title: const Text("yalkey mobile"),
@@ -44,7 +81,14 @@ class AppPage extends StatelessWidget {
                 ),
                 ListTile(
                   title: const Text("マイページ"),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ProfilePage(),
+                      ),
+                    );
+                  },
                 ),
                 ListTile(
                   title: const Text("ホーム"),
@@ -56,11 +100,25 @@ class AppPage extends StatelessWidget {
                 ),
                 ListTile(
                   title: const Text("目標"),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const GoalListPage(),
+                      ),
+                    );
+                  },
                 ),
                 ListTile(
                   title: const Text("ミッション"),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MissionListPage(),
+                      ),
+                    );
+                  },
                 ),
                 /*
                 ListTile(
@@ -74,15 +132,58 @@ class AppPage extends StatelessWidget {
                 */
                 ListTile(
                   title: const Text("検索"),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SearchRecommendUserListPage(),
+                      ),
+                    );
+                  },
                 ),
                 ListTile(
                   title: const Text("ブックマーク"),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const UserBookmarkListPage(),
+                      ),
+                    );
+                  },
                 ),
                 ListTile(
                   title: const Text("通知"),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const NotificationListPage(),
+                      ),
+                    );
+                  },
+                ),
+                ListTile(
+                  title: const Text("フォロー"),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const FollowingListPage(),
+                      ),
+                    );
+                  },
+                ),
+                ListTile(
+                  title: const Text("フォロワー"),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const FollowedListPage(),
+                      ),
+                    );
+                  },
                 ),
                 ListTile(
                   title: const Text("設定"),

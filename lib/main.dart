@@ -5,7 +5,7 @@ import 'app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api.dart';
 
-/// [StatefulWidget]を使う場合
+// [StatefulWidget]を使う場合
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // accessTokenを取得する

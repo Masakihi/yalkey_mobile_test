@@ -14,7 +14,6 @@ class DeactivateAccountPage extends StatefulWidget {
 
 class _DeactivateAccountPageState extends State<DeactivateAccountPage> {
   final _formKey = GlobalKey<FormState>();
-  bool _isObscure = true;
 
 
   Future<void> logout(context) async {
@@ -57,7 +56,7 @@ class _DeactivateAccountPageState extends State<DeactivateAccountPage> {
                               child: ElevatedButton(
                                 onPressed: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('メール送信中...')),
+                                    const SnackBar(content: Text('退会処理中...')),
                                   );
                                   deactivateUser(context);
                                   logout(context);

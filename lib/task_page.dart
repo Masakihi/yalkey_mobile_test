@@ -43,9 +43,9 @@ class _TaskPageState extends State<TaskPage> {
         future: _missionList,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('エラーが発生しました'));
+            return const Center(child: Text('エラーが発生しました'));
           } else {
             return Column(
               children: <Widget>[
@@ -73,7 +73,6 @@ class _TaskPageState extends State<TaskPage> {
                                 //builder: (context) => TaskDetailPage(value: int.parse('352')),
                               ),
                             );
-                            print('onTap');
                           },
                         ),
                       );

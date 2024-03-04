@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'account_setting_list.dart';
+import 'display_setting_list.dart';
 
 
 class SettingListPage extends StatefulWidget {
@@ -41,14 +42,18 @@ class _SettingListPageState extends State<SettingListPage> {
                 );
               },
             ),
-            /*
             ListTile(
               //leading: Icon(Icons.photo_album),
               title: Text('表示'),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const DisplaySettingListPage(),
+                  ),
+                );
+              },
             ),
-
-             */
           ],
         ),
       ),

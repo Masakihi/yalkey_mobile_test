@@ -5,6 +5,7 @@ import 'package:yalkey_0206_test/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api.dart';
 import 'app.dart';
+import 'login_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -28,6 +29,15 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController userProfileController = TextEditingController();
 
 
+  Future<void> logout(context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),(_) => false);
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,6 +53,10 @@ class _RegisterPageState extends State<RegisterPage> {
                 Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(children: [
+                      Padding(
+                        padding: const EdgeInsets.all(5.0), //マージン
+                        child: Text("登録ボタンを押すと入力したメールアドレス宛てに確認用のリンクが送られます。確認メール内のリンクをクリックした後、アプリを再度開いてログインしてください。"),
+                      ),
                       Padding(
                           padding: const EdgeInsets.all(5.0), //マージン
                           child: TextFormField(
@@ -192,6 +206,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 //print(emailController.text);
                                 //print(passwordController.text);
                                 //login(context, emailController.text, passwordController.text);
+                                logout(context);
                               }
                             },
                             child: const Text(
