@@ -88,6 +88,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         title: Text('プロフィール編集'),
       ),
       body: SingleChildScrollView(
+
+
+
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -126,8 +129,14 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               ),
             ],
           ),
+
+
+
         ),
       ),
+
+
+
     );
   }
 }

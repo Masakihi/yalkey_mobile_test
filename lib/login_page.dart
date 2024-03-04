@@ -34,6 +34,14 @@ class _LoginPageState extends State<LoginPage> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('access_token', response['access'] as String);
       await prefs.setString('refresh_token', response['refresh'] as String);
+      final loginUserDataResponse = await httpGet('login-user-profile/', jwt: true);
+      //print(loginUserDataResponse);
+      //print(loginUserDataResponse['login_user_profile']['iconimage']);
+      await prefs.setString('login_user_name', loginUserDataResponse['login_user_profile']['name'] as String);
+      await prefs.setString('login_user_iconimage', loginUserDataResponse['login_user_profile']['iconimage'] as String);
+      await prefs.setString('login_user_id', loginUserDataResponse['login_user_profile']['user_id'] as String);
+      await prefs.setInt('login_user_number', loginUserDataResponse['login_user_profile']['user_number'] as int);
+
       Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => AppPage(),
       ));
@@ -134,28 +142,6 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                         )),
-                      Padding(
-                        padding: const EdgeInsets.all(5.0), //マージン
-                        child: RichText(
-                            text: TextSpan(children: [
-                              const TextSpan(
-                                  text: 'パスワードを忘れた方は',
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                              TextSpan(
-                                  text: 'こちら',
-                                  style: const TextStyle(color: Color(0xFFAE0103)),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => const PasswordResetPage(),
-                                        ),
-                                      );
-                                    }),
-                            ])),
-                      ),
                       const Padding(
                           padding: EdgeInsets.all(5.0), //マージン
                           child: Text("アカウントをお持ちでない方は\n以下から新規登録できます"),
@@ -185,7 +171,29 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                           )),
-                    ])))
+                          Padding(
+                            padding: const EdgeInsets.all(5.0), //マージン
+                            child: RichText(
+                                text: TextSpan(children: [
+                                  const TextSpan(
+                                    text: 'パスワードを忘れた方は',
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                  TextSpan(
+                                      text: 'こちら',
+                                      style: const TextStyle(color: Color(0xFFAE0103)),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => const PasswordResetPage(),
+                                            ),
+                                          );
+                                        }),
+                                ])),
+                          ),
+                        ])))
       ]),)));
   }
 }

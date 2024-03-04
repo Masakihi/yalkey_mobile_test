@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'api.dart';
 import 'constant.dart';
 
 class NotificationListPage extends StatefulWidget {
@@ -14,12 +15,30 @@ class _NotificationListPageState extends State<NotificationListPage> {
   bool _loading = false; // データをロード中かどうかを示すフラグ
   int _page = 1; // 現在のページ番号
 
+  late List<FollowRequest> _followRequestList = []; // user_repost_list を格納するリスト
+  late ScrollController _scrollFollowRequestController; // ListView のスクロールを制御するコントローラー
+  bool _loadingFollowRequest = false; // データをロード中かどうかを示すフラグ
+  int _pageFollowRequest = 1; // 現在のページ番号
+
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController()..addListener(_scrollListener);
     _fetchNotificationList(); // 最初のデータを読み込む
+    _scrollFollowRequestController = ScrollController()..addListener(_scrollFollowRequestListener);
+    _fetchFollowRequestList();
   }
+
+  // ListView のスクロールイベントを監視するリスナー
+  void _scrollFollowRequestListener() {
+    // スクロール位置が最下部に達したかどうかをチェック
+    if (_scrollFollowRequestController.position.pixels ==
+        _scrollFollowRequestController.position.maxScrollExtent) {
+      // 最下部に達したら新しいデータをロードする
+      _loadMoreFollowRequestData();
+    }
+  }
+
 
   // ListView のスクロールイベントを監視するリスナー
   void _scrollListener() {
@@ -51,6 +70,29 @@ class _NotificationListPageState extends State<NotificationListPage> {
      */
   }
 
+
+  Future<void> _fetchFollowRequestList() async {
+    setState(() {
+      _loadingFollowRequest = true; // データのロード中フラグをtrueに設定
+    });
+
+    FollowRequestListResponse  followRequestListResponse =
+    await FollowRequestListResponse.fetchFollowRequestListResponse(_page);
+    if (mounted) {
+      setState(() {
+        _followRequestList
+            .addAll(followRequestListResponse.followRequestList); // 新しいデータをリストに追加
+        _loadingFollowRequest = false; // データのロード中フラグをfalseに設定
+      });
+    }
+    /*prefs.setStringList('user_repost_list',
+        _userRepostList.map((repost) => jsonEncode(repost.toJson())).toList());
+
+     */
+  }
+
+
+
   Future<void> _loadMoreData() async {
     if (!_loading) {
       setState(() {
@@ -58,6 +100,16 @@ class _NotificationListPageState extends State<NotificationListPage> {
         _page++; // ページ番号をインクリメントして新しいデータを取得
       });
       await _fetchNotificationList();
+    }
+  }
+
+  Future<void> _loadMoreFollowRequestData() async {
+    if (!_loadingFollowRequest) {
+      setState(() {
+        _loadingFollowRequest = true; // データのロード中フラグをtrueに設定
+        _pageFollowRequest++; // ページ番号をインクリメントして新しいデータを取得
+      });
+      await _fetchFollowRequestList();
     }
   }
 
@@ -73,6 +125,30 @@ class _NotificationListPageState extends State<NotificationListPage> {
       await _fetchNotificationList(); // データを再読み込み
     } catch (error) {
       print('Error clearing cache: $error');
+    }
+  }
+
+  Future<void> _clearFollowRequestCache() async {
+    try {
+      //SharedPreferences prefs = await SharedPreferences.getInstance();
+      //await prefs.remove('user_repost_list');
+      setState(() {
+        _followRequestList.clear();
+        _pageFollowRequest = 1; // ページ番号をリセット
+      });
+      print("list refresh");
+      await _fetchFollowRequestList(); // データを再読み込み
+    } catch (error) {
+      print('Error clearing cache: $error');
+    }
+  }
+
+
+  Future<void> permit(context, int? user_number) async {
+    try {
+      final response = await httpPost('permit/${user_number}', {'email': 'email'});
+    } catch (error) {
+      print('Error deactivate: $error');
     }
   }
 
@@ -116,6 +192,10 @@ class _NotificationListPageState extends State<NotificationListPage> {
           ),
           body: TabBarView(
             children: <Widget>[
+
+
+
+
               RefreshIndicator(
                 displacement: 0,
                 onRefresh: () async {
@@ -183,7 +263,96 @@ class _NotificationListPageState extends State<NotificationListPage> {
                   ],
                 ),
               ),
-              Center(child: Text('リクエスト', style: TextStyle(fontSize: 50))),
+
+
+
+
+              RefreshIndicator(
+                displacement: 0,
+                onRefresh: () async {
+                  _clearFollowRequestCache();
+                },
+                child:Column(
+                  children: <Widget>[
+                    Expanded(
+                      child: ListView.builder(
+                        controller: _scrollFollowRequestController, // スクロールコントローラーを設定
+                        itemCount: _followRequestList.length + 1, // リストアイテム数 + ローディングインジケーター
+                        itemBuilder: (context, index) {
+                          if (index == _followRequestList.length) {
+                            return _loading
+                                ? Container(
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.all(16.0),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 3.0,
+                              ),
+                            )
+                                : SizedBox.shrink(); // ローディングインジケーターを表示
+                          }
+                          final follow_request = _followRequestList[index];
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    CircleAvatar(
+                                      backgroundImage: NetworkImage(
+                                        'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${follow_request.fromIconimage}',
+                                      ),
+                                    ),
+                                    SizedBox(width: 16.0),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            '${follow_request.fromName} さん(@${follow_request.fromUserId})からフォローリクエストが届いています！',
+                                            style: TextStyle(fontSize: 14.0),
+                                          ),
+                                          SizedBox(height: 4.0),
+                                        ],
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        permit(context, follow_request.fromUserNumber);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color(0xFFAE0103),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        '承認',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+
+
+
+
+
+
             ],
           ),
         ),

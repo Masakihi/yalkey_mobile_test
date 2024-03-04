@@ -17,6 +17,8 @@ import 'followed_list_page.dart';
 class AppPage extends StatelessWidget {
   AppPage({super.key});
 
+
+
   Future<void> logout(context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.clear();
@@ -32,7 +34,32 @@ class AppPage extends StatelessWidget {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        leading: IconButton(
+        leading:
+            /*
+        (true)?
+        GestureDetector(
+          onTap: () {
+            _scaffoldKey.currentState!.openDrawer();
+          },
+          // 対象の画像を記述
+          child: Image.network(
+            'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
+          )
+        )
+            :
+        GestureDetector(
+          onTap: () {
+            _scaffoldKey.currentState!.openDrawer();
+          },
+          // 対象の画像を記述
+          child: Image.network(
+            'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${repost.postUserIcon}',
+        ),
+
+
+
+             */
+        IconButton(
             onPressed: () => _scaffoldKey.currentState!.openDrawer(),
             icon: const Icon(Icons.person)),
         title: const Text("yalkey mobile"),

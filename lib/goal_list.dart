@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'constant.dart';
 import 'goal_detail.dart';
+import 'goal_create.dart';
 
 class GoalListPage extends StatefulWidget {
   const GoalListPage({Key? key}) : super(key: key);
@@ -91,6 +92,29 @@ class _GoalListPageState extends State<GoalListPage> {
         },
         child:Column(
           children: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          GoalCreatePage(),
+                      //builder: (context) => TaskDeletePage(value: int.parse('352'))
+                    ));
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFAE0103),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text(
+                '目標を追加',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
             Expanded(
               child: ListView.builder(
                 controller: _scrollController, // スクロールコントローラーを設定
@@ -117,33 +141,39 @@ class _GoalListPageState extends State<GoalListPage> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  GestureDetector( //InkWellでも同じ
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => GoalDetailPage(value: int.parse('${goal.goalNumber}')),
-                                          //builder: (context) => TaskDetailPage(value: int.parse('352')),
-                                        ),
-                                      );
-                                    },
-                                    child: Text(
-                                      goal.goalText,
-                                      style: const TextStyle(fontSize: 18.0),
+                            GestureDetector( //InkWellでも同じ
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => GoalDetailPage(value: int.parse('${goal.goalNumber}')),
+                                    //builder: (context) => TaskDetailPage(value: int.parse('352')),
+                                  ),
+                                );
+                              },
+
+
+
+                              child: Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                      Text(
+                                        goal.goalText,
+                                        style: const TextStyle(fontSize: 18.0),
+                                      ),
+                                    SizedBox(height: 4.0),
+                                    Text(
+                                      '期限：${goal.deadline.toString().substring(0, 10)} ${goal.deadline.toString().substring(11, 16)}',
+                                      style: TextStyle(
+                                          fontSize: 12.0, color: Colors.grey),
                                     ),
-                                  ),
-                                  SizedBox(height: 4.0),
-                                  Text(
-                                    '期限：${goal.deadline.toString().substring(0, 10)} ${goal.deadline.toString().substring(11, 16)}',
-                                    style: TextStyle(
-                                        fontSize: 12.0, color: Colors.grey),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
+
+
+
                             ),
                           ],
                         ),

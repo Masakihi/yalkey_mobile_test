@@ -1160,6 +1160,11 @@ class MissionListResponse {
     dynamic jsonData = await httpGet('mission-list/${page}/', jwt: true);
     return MissionListResponse.fromJson(jsonData);
   }
+
+  static Future<MissionListResponse> fetchMissionTodayListResponse(int page) async {
+    dynamic jsonData = await httpGet('mission-today-list/${page}/', jwt: true);
+    return MissionListResponse.fromJson(jsonData);
+  }
 }
 
 
@@ -1321,6 +1326,88 @@ class SearchUserIdListResponse {
   static Future<SearchUserIdListResponse> fetchSearchUserIdListResponse(int page, String keyword) async {
     dynamic jsonData = await httpGet('search-id-list/${page}/?keyword=${keyword}', jwt: true);
     return SearchUserIdListResponse.fromJson(jsonData);
+  }
+}
+
+
+
+// FollowRequestの型定義
+class FollowRequest {
+  final int? fromUserNumber;
+  final String? fromName;
+  final String? fromIconimage;
+  final String? fromUserId;
+  final int? toUserNumber;
+  final String? toName;
+  final String? toIconimage;
+  final String? toUserId;
+  final int? senderType;
+  final int notificationType;
+
+
+  FollowRequest({
+    required this.fromUserNumber,
+    required this.fromName,
+    required this.fromIconimage,
+    required this.fromUserId,
+    required this.toUserNumber,
+    required this.toName,
+    required this.toIconimage,
+    required this.toUserId,
+    required this.senderType,
+    required this.notificationType,
+  });
+
+  factory FollowRequest.fromJson(Map<String, dynamic> json) {
+    return FollowRequest(
+      fromUserNumber: json['from_user_number'],
+      fromName: json['from_name'],
+      fromIconimage: json['from_iconimage'],
+      fromUserId: json['from_user_id'],
+      toUserNumber: json['to_user_number'],
+      toName: json['to_name'],
+      toIconimage: json['to_iconimage'],
+      toUserId: json['to_user_id'],
+      senderType: json['sender_type'],
+      notificationType: json['notification_type'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'from_user_number': fromUserNumber,
+      'form_name': fromName,
+      'from_iconimage': fromIconimage,
+      'from_user_id': fromUserId,
+      'to_user_number': toUserNumber,
+      'to_name': toName,
+      'to_iconimage': toIconimage,
+      'to_user_id': toUserId,
+      'sender_type': senderType,
+      'notification_type': notificationType,
+    };
+  }
+}
+
+class FollowRequestListResponse {
+  final List<FollowRequest> followRequestList;
+
+  FollowRequestListResponse({required this.followRequestList});
+
+  factory FollowRequestListResponse.fromJson(Map<String, dynamic> json) {
+    List<FollowRequest> followRequestList = [];
+    if (json['follow_request_list'] != null) {
+
+      var followRequestJsonList = json['follow_request_list'] as List;
+      followRequestList =
+          followRequestJsonList.map((follow_request) => FollowRequest.fromJson(follow_request)).toList();
+    }
+    return FollowRequestListResponse(followRequestList: followRequestList);
+  }
+
+  static Future<FollowRequestListResponse> fetchFollowRequestListResponse(int page) async {
+    dynamic jsonData = await httpGet('follow-request-list/${page}/', jwt: true);
+    return FollowRequestListResponse.fromJson(jsonData);
   }
 }
 
