@@ -5,7 +5,7 @@ import 'app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api.dart';
 
-/// [StatefulWidget]を使う場合
+// [StatefulWidget]を使う場合
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // accessTokenを取得する
@@ -31,11 +31,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'yalkey mobile',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorSchemeSeed:const Color(0xFFAE0103),
         useMaterial3: true,
       ),
+      darkTheme: ThemeData(
+        colorSchemeSeed:const Color(0xFFAE0103),
+        useMaterial3: true,
+        brightness: Brightness.dark,
+      ),
+      themeMode: ThemeMode.system,
       home: token == null
           ? LoginPage()
           : AppPage(), // tokenがあればHomePage、なければLoginPageを表示

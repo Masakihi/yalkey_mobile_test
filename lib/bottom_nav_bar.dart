@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:yalkey_0206_test/notification_list.dart';
 import 'home_page.dart';
-import 'notification_page.dart';
+import 'notification.dart';
 import 'post_page.dart';
 import 'profile_page.dart';
-import 'task_page.dart';
+import 'mission_list.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
@@ -16,9 +17,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
   int _selectedIndex = 0;
   final List<Widget> _screens = [
     const HomePage(),
-    const NotificationPage(),
+    const NotificationListPage(),
     const PostPage(),
-    const TaskPage(),
+    //const TaskPage(),
+    const MissionListPage(),
     const ProfilePage(),
     // 他の画面をここに追加してください
   ];
@@ -73,8 +75,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
           onTap: _onItemTapped,
           showSelectedLabels: false,
           showUnselectedLabels: false,
-          selectedItemColor: Colors.red,
-          unselectedItemColor: Colors.black,
+          selectedItemColor: const Color(0xFFAE0103),
+          backgroundColor: const Color(0xFF333333),
+          unselectedItemColor: Colors.white,
           type: BottomNavigationBarType.fixed),
     );
   }
