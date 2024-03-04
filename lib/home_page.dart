@@ -345,8 +345,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                   SizedBox(height: 8.0),
                                   repost.postText != ''
-                                      ? LinkifyUtil.linkifyTextWithPreviews(
-                                          repost.postText)
+                                      ? LinkifyUtil(text: repost.postText)
                                       : SizedBox.shrink(),
                                   SizedBox(height: 4.0),
                                   ...repost.progressTextList
