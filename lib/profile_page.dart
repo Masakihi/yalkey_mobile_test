@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'profile_edit_page.dart';
 import 'bar_graph.dart';
 import 'constant.dart';
+import 'achievement_calendar.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -61,6 +62,9 @@ class _ProfilePageState extends State<ProfilePage> {
           await YalkerProgressListResponse.fetchYalkerProgressListResponse(
               59, oneMonthAgo, today);
 
+      YalkerProgressListResponse.fetchDataForGraphByReportTitle(
+          59, oneMonthAgo, today, 'アプリ開発');
+
       setState(() {
         _progressData = response.progressList;
       });
@@ -87,7 +91,8 @@ class _ProfilePageState extends State<ProfilePage> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: _profileData != null
-            ? Center(
+            ? SingleChildScrollView(
+                child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,12 +136,19 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     SizedBox(height: 20), // 余白を追加
                     MonthlyBarChart(
-                      numberOfDays: 30, // 1か月分の日数
-                      data: generateRandomData(30), // ランダムなデータ
-                    ),
+                        userId: 59,
+                        reportTitle: "アプリ開発",
+                        startDate: DateTime(2024, 2, 1),
+                        endDate: DateTime(2024, 2, 29)),
+                    SizedBox(height: 20), // 余白を追加
+                    AchievementCalendar(
+                        userId: 59,
+                        reportTitle: "boolテスト",
+                        year: 2024,
+                        month: 3),
                   ],
                 ),
-              )
+              ))
             : const Center(
                 child: CircularProgressIndicator(),
               ),
