@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'constant.dart';
 import 'api.dart';
+import 'linkify_util.dart';
+import 'reply_form.dart';
+import 'dart:convert';
 
 class PostDetailPage extends StatefulWidget {
   final int postNumber;
@@ -15,11 +18,37 @@ class _PostDetailPageState extends State<PostDetailPage> {
   PostDetailResponse? _postDetailResponse;
   bool _isLoading = true;
   bool _isPinned = false;
+  bool _liking = false;
+  bool _bookmarking = false;
+  bool _reposting = false;
 
   @override
   void initState() {
     super.initState();
     _fetchPostDetail();
+  }
+
+
+  void _showReplyForm(int postNumber) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // 画面の9割を覆うようにする
+      builder: (context) {
+        return FractionallySizedBox(
+          // 画面の9割の高さを調整
+          heightFactor: 0.9,
+          child: ReplyForm(postNumber: postNumber),
+        );
+      },
+    ).then((value) {
+      // モーダルが閉じられた後の処理
+      if (value == 'replyPosted') {
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('返信しました')),
+        );
+      }
+    });
   }
 
   Future<void> _fetchPostDetail() async {
@@ -69,6 +98,75 @@ class _PostDetailPageState extends State<PostDetailPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(_isPinned ? '投稿をピン止めしました' : 'ピン止めを解除しました')),
     );
+  }
+
+  Future<void> like(PostDetail repost) async {
+    if (_liking) {
+      return;
+    }
+    _liking = true;
+    if (repost.postLiked) {
+      await repost.unlike();
+      setState(() {});
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('いいねを解除しました')),
+      );
+    } else {
+      await repost.like();
+      setState(() {});
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('いいねしました')),
+      );
+    }
+    _liking = false;
+  }
+
+  Future<void> bookmark(PostDetail repost) async {
+    if (_bookmarking) {
+      return;
+    }
+    _bookmarking = true;
+    if (repost.postBookmarked) {
+      await repost.unbookmark();
+      setState(() {});
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('ブックマークを解除しました')),
+      );
+    } else {
+      await repost.bookmark();
+      setState(() {});
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('ブックマークしました')),
+      );
+    }
+    _bookmarking = false;
+  }
+
+  Future<void> _repost(PostDetail repost) async {
+    if (_reposting) {
+      return;
+    }
+    _reposting = true;
+    if (repost.postReposted) {
+      await repost.unrepost();
+      setState(() {});
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('リポストを解除しました')),
+      );
+    } else {
+      await repost.repost();
+      setState(() {});
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('リポストしました')),
+      );
+    }
+    _reposting = false;
   }
 
   @override
@@ -196,10 +294,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                       ),
                       SizedBox(height: 8.0),
                       post.postText != ''
-                          ? Text(
-                              post.postText,
-                              style: TextStyle(fontSize: 16.0),
-                            )
+                          ? LinkifyUtil(text: post.postText)
                           : SizedBox.shrink(),
                       SizedBox(height: 4.0),
                       ...post.progressTextList
@@ -207,6 +302,67 @@ class _PostDetailPageState extends State<PostDetailPage> {
                               style: TextStyle(
                                   fontSize: 12.0, fontWeight: FontWeight.bold)))
                           .toList(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              _showReplyForm(post.postNumber);
+                            },
+                            icon: const Icon(
+                              Icons.reply,
+                              color: Color(0xFF929292),
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  like(post);
+                                },
+                                icon: Icon(
+                                  post.postLiked
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  color: post.postLiked
+                                      ? const Color(0xFFF75D5D)
+                                      : const Color(0xFF929292), // 赤色にするかどうか
+                                ),
+                              ),
+                              Text(
+                                '${post.postLikeNumber}', // いいね数を表示
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  color: post.postLiked
+                                      ? const Color(0xFFF75D5D)
+                                      : const Color(0xFF929292),
+                                ),
+                              ),
+                            ],
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              bookmark(post);
+                            },
+                            icon: Icon(
+                                post.postBookmarked
+                                    ? Icons.bookmark
+                                    : Icons.bookmark_border,
+                                color: post.postBookmarked
+                                    ? const Color.fromRGBO(255, 196, 67, 1)
+                                    : const Color(0xFF929292)),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              _repost(post);
+                            },
+                            icon: Icon(Icons.refresh,
+                                color: post.postReposted
+                                    ? const Color.fromRGBO(102, 205, 170, 1)
+                                    : const Color(0xFF929292)),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),

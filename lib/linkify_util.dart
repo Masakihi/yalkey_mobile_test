@@ -35,6 +35,7 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
             children: _isExpanded ? _spansExpanded : _spansEclipsed,
           ),
         ),
+        SizedBox(height: 5),
         PreviewsWidget(urls: _extractUrls(widget.text)),
       ],
     );
@@ -49,6 +50,7 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
 
     int currentIndex = 0;
     int totalTextLength = 0;
+    int lastLinkStart = 0;
 
     for (var match in matches) {
       if (match.start > currentIndex) {
@@ -93,6 +95,7 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
       );
 
       currentIndex = match.end;
+      lastLinkStart = match.start;
     }
 
     if (currentIndex < text.length) {
@@ -132,6 +135,10 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
           style: TextStyle(fontSize: 16),
         ),
       );
+    } else {
+      if (lastLinkStart <= 100) {
+        _isExpanded = true;
+      }
     }
     _spansExpanded = spans;
 
