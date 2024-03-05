@@ -7,14 +7,15 @@ import 'bar_graph.dart';
 import 'constant.dart';
 import 'achievement_calendar.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+class YalkerProfilePage extends StatefulWidget {
+  final int userId;
+  const YalkerProfilePage({Key? key, required this.userId}) : super(key: key);
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _YalkerProfilePageState createState() => _YalkerProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _YalkerProfilePageState extends State<YalkerProfilePage> {
   Map<String, dynamic>? _profileData;
   late Map<String, List<Report>> _reportListMap = {
     'num_report_list': [],
@@ -30,26 +31,12 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _fetchProfileData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    // キャッシュからデータを取得
-    String? cachedProfileData = prefs.getString('profileData');
-    if (cachedProfileData != null) {
-      setState(() {
-        _profileData = json.decode(cachedProfileData);
-      });
-      return;
-    }
-
     try {
       final Map<String, dynamic> response =
-          await httpGet('login-user-profile/', jwt: true);
+          await httpGet('yalker-profile/${widget.userId}');
       setState(() {
         _profileData = response;
       });
-
-      // データをキャッシュ
-      await prefs.setString('profileData', json.encode(response));
     } catch (error) {
       print('Error fetching profile data: $error');
     }
@@ -60,7 +47,7 @@ class _ProfilePageState extends State<ProfilePage> {
       _loadingReportList = true;
     });
     ReportListResponse reportListResponse =
-        await ReportListResponse.fetchReportListResponse(59);
+        await ReportListResponse.fetchReportListResponse(widget.userId);
     if (mounted) {
       setState(() {
         reportListResponse.reportList.forEach((report) => {
@@ -104,7 +91,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         children: [
                           CircleAvatar(
                             backgroundImage: NetworkImage(
-                              _profileData!['login_user_profile']['iconimage'],
+                              _profileData!['yalker_profile']['iconimage'],
                             ),
                             radius: 40, // アイコンの半径を小さくする
                           ),
@@ -113,11 +100,11 @@ class _ProfilePageState extends State<ProfilePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                _profileData!['login_user_profile']['name'],
+                                _profileData!['yalker_profile']['name'],
                                 style: TextStyle(fontSize: 20),
                               ),
                               Text(
-                                '@${_profileData!['login_user_profile']['user_id']}',
+                                '@${_profileData!['yalker_profile']['user_id']}',
                                 style:
                                     TextStyle(fontSize: 16, color: Colors.grey),
                               ),
@@ -132,7 +119,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       SizedBox(height: 20), // 余白を追加
                       Text(
-                        '${_profileData!['login_user_profile']['profile']}',
+                        '${_profileData!['yalker_profile']['profile']}',
                         textAlign: TextAlign.start, // 左詰めに設定
                       ),
                       SizedBox(height: 20), // 余白を追加
@@ -144,20 +131,12 @@ class _ProfilePageState extends State<ProfilePage> {
                           final report =
                               _reportListMap['num_report_list']?[index];
                           return MonthlyBarChart(
-                            userId: 59,
+                            userId: widget.userId,
                             reportTitle: report!.reportName,
                             reportUnit: report.reportUnit,
                           );
                         },
-                      ),
-                      MonthlyBarChart(
-                          userId: 59, reportTitle: "アプリ開発", reportUnit: "分"),
-                      SizedBox(height: 20), // 余白を追加
-                      AchievementCalendar(
-                          userId: 59,
-                          reportTitle: "boolテスト",
-                          year: 2024,
-                          month: 3),
+                      )
                     ],
                   )
                 : const Center(
