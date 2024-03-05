@@ -28,6 +28,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
     _fetchPostDetail();
   }
 
+
   void _showReplyForm(int postNumber) {
     showModalBottomSheet(
       context: context,

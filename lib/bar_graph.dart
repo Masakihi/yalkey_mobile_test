@@ -19,6 +19,7 @@ double findMax(List<dynamic> values) {
   return maxVal;
 }
 
+
 String convertDateTime2String(DateTime dateTime) {
   return '${dateTime.year}年${dateTime.month}月${dateTime.day}日';
 }
@@ -299,5 +300,16 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
         );
       },
     );
+  }
+
+  List<DateTime> _generateDateList(DateTime startDate, DateTime endDate) {
+    List<DateTime> dates = [];
+    DateTime currentDate = startDate;
+    while (currentDate.isBefore(endDate) ||
+        currentDate.isAtSameMomentAs(endDate)) {
+      dates.add(currentDate);
+      currentDate = currentDate.add(Duration(days: 1));
+    }
+    return dates;
   }
 }

@@ -771,11 +771,17 @@ class PostDetail {
   final List<Progress> progressList;
   final List<String> progressTextList;
   final String postCreatedAt;
+  final int postLikeNumber;
+  final bool postLiked;
+  final bool postBookmarked;
+  final bool postReposted;
+  final bool postPinned;
   late int postLikeNumber;
   late bool postLiked;
   late bool postBookmarked;
   late bool postReposted;
   late bool postPinned;
+
 
   PostDetail({
     required this.user,
@@ -842,6 +848,7 @@ class PostDetail {
       postPinned: json['post_pinned'],
     );
   }
+
 
   Future<void> like() async {
     if (postLiked) {

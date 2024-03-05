@@ -60,13 +60,13 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
           _spansEclipsed.add(
             TextSpan(
               text: text.substring(currentIndex, 100),
-              style: TextStyle(color: Colors.black, fontSize: 16),
+              style: TextStyle(fontSize: 16),
             ),
           );
           _spansEclipsed.add(
             TextSpan(
               text: 'もっと見る',
-              style: TextStyle(color: Colors.blue, fontSize: 16),
+              style: TextStyle(color: const Color(0xFFAE0103), fontSize: 16),
               recognizer: TapGestureRecognizer()
                 ..onTap = () {
                   setState(() {
@@ -79,7 +79,7 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
         spans.add(
           TextSpan(
             text: text.substring(currentIndex, match.start),
-            style: TextStyle(color: Colors.black, fontSize: 16),
+            style: TextStyle(fontSize: 16),
           ),
         );
       }
@@ -89,7 +89,7 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
       spans.add(
         TextSpan(
           text: url,
-          style: TextStyle(color: Colors.blue, fontSize: 16),
+          style: TextStyle(color: const Color(0xFFAE0103), fontSize: 16),
           recognizer: TapGestureRecognizer()..onTap = () => _launchURL(url),
         ),
       );
@@ -107,7 +107,7 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
           _spansEclipsed.add(
             TextSpan(
               text: text.substring(currentIndex, 100),
-              style: TextStyle(color: Colors.black, fontSize: 16),
+              style: TextStyle(fontSize: 16),
             ),
           );
         }
@@ -115,7 +115,7 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
         _spansEclipsed.add(
           TextSpan(
             text: '...もっと見る',
-            style: TextStyle(color: Colors.blue, fontSize: 16),
+            style: TextStyle(color: const Color(0xFFAE0103), fontSize: 16),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
                 print('expandします');
@@ -132,7 +132,7 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
       spans.add(
         TextSpan(
           text: remainingText,
-          style: TextStyle(color: Colors.black, fontSize: 16),
+          style: TextStyle(fontSize: 16),
         ),
       );
     } else {
@@ -182,6 +182,12 @@ class PreviewsWidget extends StatefulWidget {
 
 class _PreviewsWidget extends State<PreviewsWidget> {
   Map<String, PreviewData> datas = {};
+  final style = const TextStyle(
+    color: Color(0xFFAE0103),
+    fontSize: 14,
+    //fontWeight: FontWeight.w500,
+    //height: 1.375,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -200,10 +206,10 @@ class _PreviewsWidget extends State<PreviewsWidget> {
               borderRadius: BorderRadius.all(
                 Radius.circular(20),
               ),
-              color: Color(0xfff7f7f8),
+              // color: Color(0xfff7f7f8),
               border: Border.all(
                 color: Colors.grey,
-                width: 1.0,
+                width: 0.5,
               ),
             ),
             child: ClipRRect(
@@ -211,6 +217,20 @@ class _PreviewsWidget extends State<PreviewsWidget> {
                 Radius.circular(20),
               ),
               child: LinkPreview(
+                linkStyle: style,
+                /*
+                metadataTextStyle: style.copyWith(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
+                metadataTitleStyle: style.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+                 */
+                padding: EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
                 enableAnimation: true,
                 onPreviewDataFetched: (data) {
                   setState(() {
