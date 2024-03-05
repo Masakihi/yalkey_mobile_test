@@ -771,11 +771,11 @@ class PostDetail {
   final List<Progress> progressList;
   final List<String> progressTextList;
   final String postCreatedAt;
-  final int postLikeNumber;
-  final bool postLiked;
-  final bool postBookmarked;
-  final bool postReposted;
-  final bool postPinned;
+  late int postLikeNumber;
+  late bool postLiked;
+  late bool postBookmarked;
+  late bool postReposted;
+  late bool postPinned;
 
   PostDetail({
     required this.user,
@@ -841,6 +841,86 @@ class PostDetail {
       postReposted: json['post_reposted'],
       postPinned: json['post_pinned'],
     );
+  }
+
+  Future<void> like() async {
+    if (postLiked) {
+      throw Exception('Post $postNumber is already liked.');
+    } else {
+      final response = await httpPost('like/$postNumber/', null, jwt: true);
+      if (response['liked']) {
+        postLiked = true;
+        postLikeNumber++;
+      } else {
+        throw Exception('Post $postNumber is already liked in backend.');
+      }
+    }
+  }
+
+  Future<void> unlike() async {
+    if (!postLiked) {
+      throw Exception('Post $postNumber is already unliked.');
+    } else {
+      final response = await httpPost('like/$postNumber/', null, jwt: true);
+      if (!response['liked']) {
+        postLiked = false;
+        postLikeNumber--;
+      } else {
+        throw Exception('Post $postNumber is already unliked in backend.');
+      }
+    }
+  }
+
+  Future<void> bookmark() async {
+    if (postBookmarked) {
+      throw Exception('Post $postNumber is already bookmarked.');
+    } else {
+      final response = await httpPost('bookmark/$postNumber/', null, jwt: true);
+      if (response['bookmarked']) {
+        postBookmarked = true;
+      } else {
+        throw Exception('Post $postNumber is already bookmarked in backend.');
+      }
+    }
+  }
+
+  Future<void> unbookmark() async {
+    if (!postBookmarked) {
+      throw Exception('Post $postNumber is already unbookmarked.');
+    } else {
+      final response = await httpPost('bookmark/$postNumber/', null, jwt: true);
+      if (!response['bookmarked']) {
+        postBookmarked = false;
+      } else {
+        throw Exception('Post $postNumber is already unbookmarked in backend.');
+      }
+    }
+  }
+
+  Future<void> repost() async {
+    if (postReposted) {
+      throw Exception('Post $postNumber is already reposted.');
+    } else {
+      final response = await httpPost('repost/$postNumber/', null, jwt: true);
+      if (response['reposted']) {
+        postReposted = true;
+      } else {
+        throw Exception('Post $postNumber is already reposted in backend.');
+      }
+    }
+  }
+
+  Future<void> unrepost() async {
+    if (!postReposted) {
+      throw Exception('Post $postNumber is already unreposted.');
+    } else {
+      final response = await httpPost('repost/$postNumber/', null, jwt: true);
+      if (!response['reposted']) {
+        postReposted = false;
+      } else {
+        throw Exception('Post $postNumber is already unreposted in backend.');
+      }
+    }
   }
 
   static List<String> _getProgressTextList(List<Progress> progressList) {
