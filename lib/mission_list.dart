@@ -3,7 +3,6 @@ import 'constant.dart';
 import 'mission_detail.dart';
 import 'mission_create.dart';
 
-
 class MissionListPage extends StatefulWidget {
   const MissionListPage({Key? key}) : super(key: key);
 
@@ -18,7 +17,8 @@ class _MissionListPageState extends State<MissionListPage> {
   int _page = 1; // 現在のページ番号
 
   late final List<Mission> _missionTodayList = []; // user_repost_list を格納するリスト
-  late ScrollController _scrollMissionTodayController; // ListView のスクロールを制御するコントローラー
+  late ScrollController
+      _scrollMissionTodayController; // ListView のスクロールを制御するコントローラー
   bool _loadingMissionToday = false; // データをロード中かどうかを示すフラグ
   int _pageMissionToday = 1;
 
@@ -27,7 +27,8 @@ class _MissionListPageState extends State<MissionListPage> {
     super.initState();
     _scrollController = ScrollController()..addListener(_scrollListener);
     _fetchMissionList(); // 最初のデータを読み込む
-    _scrollMissionTodayController = ScrollController()..addListener(_scrollMissionTodayListener);
+    _scrollMissionTodayController = ScrollController()
+      ..addListener(_scrollMissionTodayListener);
     _fetchMissionTodayList();
   }
 
@@ -55,14 +56,17 @@ class _MissionListPageState extends State<MissionListPage> {
       _loading = true; // データのロード中フラグをtrueに設定
     });
 
-    MissionListResponse  missionListResponse =
-    await MissionListResponse.fetchMissionListResponse(_page);
-    if (mounted) {
-      setState(() {
-        _missionList
-            .addAll(missionListResponse.missionList); // 新しいデータをリストに追加
-        _loading = false; // データのロード中フラグをfalseに設定
-      });
+    try {
+      MissionListResponse missionListResponse =
+          await MissionListResponse.fetchMissionListResponse(_page);
+      if (mounted) {
+        setState(() {
+          _missionList.addAll(missionListResponse.missionList); // 新しいデータをリストに追加
+          _loading = false; // データのロード中フラグをfalseに設定
+        });
+      }
+    } catch (error) {
+      print('error: $error');
     }
     /*prefs.setStringList('user_repost_list',
         _userRepostList.map((repost) => jsonEncode(repost.toJson())).toList());
@@ -70,20 +74,23 @@ class _MissionListPageState extends State<MissionListPage> {
      */
   }
 
-
   Future<void> _fetchMissionTodayList() async {
     setState(() {
       _loadingMissionToday = true; // データのロード中フラグをtrueに設定
     });
 
-    MissionListResponse  missionTodayListResponse =
-    await MissionListResponse.fetchMissionTodayListResponse(_page);
-    if (mounted) {
-      setState(() {
-        _missionTodayList
-            .addAll(missionTodayListResponse.missionList); // 新しいデータをリストに追加
-        _loadingMissionToday = false; // データのロード中フラグをfalseに設定
-      });
+    try {
+      MissionListResponse missionTodayListResponse =
+          await MissionListResponse.fetchMissionTodayListResponse(_page);
+      if (mounted) {
+        setState(() {
+          _missionTodayList
+              .addAll(missionTodayListResponse.missionList); // 新しいデータをリストに追加
+          _loadingMissionToday = false; // データのロード中フラグをfalseに設定
+        });
+      }
+    } catch (error) {
+      print('error: $error');
     }
     /*prefs.setStringList('user_repost_list',
         _userRepostList.map((repost) => jsonEncode(repost.toJson())).toList());
@@ -100,7 +107,6 @@ class _MissionListPageState extends State<MissionListPage> {
       await _fetchMissionList();
     }
   }
-
 
   Future<void> _loadMoreMissionTodayData() async {
     if (!_loadingMissionToday) {
@@ -142,21 +148,13 @@ class _MissionListPageState extends State<MissionListPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-        length: 2,
-        child:
-
-
-
-
-
-
-        Scaffold(
-      appBar: AppBar(
-        // title: const Text('ミッション一覧'),
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          // title: const Text('ミッション一覧'),
           bottom: const TabBar(
             labelColor: Color(0xFFAE0103),
             indicatorColor: Color(0xFFAE0103),
@@ -166,228 +164,225 @@ class _MissionListPageState extends State<MissionListPage> {
               //Tab(icon: Icon(Icons.brightness_5_sharp)),
             ],
           ),
-      ),
-      body:
-
-      TabBarView(
-        children: <Widget>[
-
-
-      RefreshIndicator(
-        displacement: 0,
-        onRefresh: () async {
-          _clearCache();
-        },
-        child:Column(
+        ),
+        body: TabBarView(
           children: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          MissionCreatePage(),
-                      //builder: (context) => TaskDeletePage(value: int.parse('352'))
-                    ));
+            RefreshIndicator(
+              displacement: 0,
+              onRefresh: () async {
+                _clearCache();
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFAE0103),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: const Text(
-                'ミッションを追加',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                controller: _scrollController, // スクロールコントローラーを設定
-                itemCount: _missionList.length + 1, // リストアイテム数 + ローディングインジケーター
-                itemBuilder: (context, index) {
-                  if (index == _missionList.length) {
-                    return _loading
-                        ? Container(
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.all(16.0),
-                      child: const CircularProgressIndicator(
-                        strokeWidth: 3.0,
+              child: Column(
+                children: <Widget>[
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MissionCreatePage(),
+                            //builder: (context) => TaskDeletePage(value: int.parse('352'))
+                          ));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFAE0103),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    )
-                        : const SizedBox.shrink(); // ローディングインジケーターを表示
-                  }
-                  final mission = _missionList[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 8.0, horizontal: 16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Expanded(
-                              child: Column(
+                    ),
+                    child: const Text(
+                      'ミッションを追加',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      controller: _scrollController, // スクロールコントローラーを設定
+                      itemCount:
+                          _missionList.length + 1, // リストアイテム数 + ローディングインジケーター
+                      itemBuilder: (context, index) {
+                        if (index == _missionList.length) {
+                          return _loading
+                              ? Container(
+                                  alignment: Alignment.center,
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: const CircularProgressIndicator(
+                                    strokeWidth: 3.0,
+                                  ),
+                                )
+                              : const SizedBox.shrink(); // ローディングインジケーターを表示
+                        }
+                        final mission = _missionList[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  GestureDetector( //InkWellでも同じ
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => MissionDetailPage(value: int.parse('${mission.missionNumber}')),
-                                          //builder: (context) => TaskDetailPage(value: int.parse('352')),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        GestureDetector(
+                                          //InkWellでも同じ
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    MissionDetailPage(
+                                                        value: int.parse(
+                                                            '${mission.missionNumber}')),
+                                                //builder: (context) => TaskDetailPage(value: int.parse('352')),
+                                              ),
+                                            );
+                                          },
+                                          child: Text(
+                                            mission.missionText,
+                                            style:
+                                                const TextStyle(fontSize: 18.0),
+                                          ),
                                         ),
-                                      );
-                                    },
-                                    child: Text(
-                                        mission.missionText,
-                                        style: const TextStyle(fontSize: 18.0),
-                                      ),
-                                  ),
-                                  const SizedBox(height: 4.0),
-                                  Text(
-                                    '${mission.endTime.toString().substring(0, 10)} ${mission.endTime.toString().substring(11, 16)}まで',
-                                    style: const TextStyle(
-                                        fontSize: 12.0, color: Colors.grey),
+                                        const SizedBox(height: 4.0),
+                                        Text(
+                                          '${mission.endTime.toString().substring(0, 10)} ${mission.endTime.toString().substring(11, 16)}まで',
+                                          style: const TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
+                  ),
+                ],
+              ),
+            ),
+            RefreshIndicator(
+              displacement: 0,
+              onRefresh: () async {
+                _clearMissionTodayCache();
+              },
+              child: Column(
+                children: <Widget>[
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MissionCreatePage(),
+                            //builder: (context) => TaskDeletePage(value: int.parse('352'))
+                          ));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFAE0103),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text(
+                      'ミッションを追加',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      controller:
+                          _scrollMissionTodayController, // スクロールコントローラーを設定
+                      itemCount: _missionTodayList.length +
+                          1, // リストアイテム数 + ローディングインジケーター
+                      itemBuilder: (context, index) {
+                        if (index == _missionTodayList.length) {
+                          return _loadingMissionToday
+                              ? Container(
+                                  alignment: Alignment.center,
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: const CircularProgressIndicator(
+                                    strokeWidth: 3.0,
+                                  ),
+                                )
+                              : const SizedBox.shrink(); // ローディングインジケーターを表示
+                        }
+                        final missionToday = _missionTodayList[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        CheckboxListTile(
+                                          title: Text("item"),
+                                          value: true,
+                                          onChanged: (bool? value) {},
+                                          controlAffinity:
+                                              ListTileControlAffinity.leading,
+                                        ),
+                                        GestureDetector(
+                                          //InkWellでも同じ
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    MissionDetailPage(
+                                                        value: int.parse(
+                                                            '${missionToday.missionNumber}')),
+                                                //builder: (context) => TaskDetailPage(value: int.parse('352')),
+                                              ),
+                                            );
+                                          },
+                                          child: Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Text(
+                                                  missionToday.missionText,
+                                                  style: const TextStyle(
+                                                      fontSize: 18.0),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
       ),
-
-
-
-          RefreshIndicator(
-            displacement: 0,
-            onRefresh: () async {
-              _clearMissionTodayCache();
-            },
-            child:Column(
-              children: <Widget>[
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              MissionCreatePage(),
-                          //builder: (context) => TaskDeletePage(value: int.parse('352'))
-                        ));
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFAE0103),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: const Text(
-                    'ミッションを追加',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    controller: _scrollMissionTodayController, // スクロールコントローラーを設定
-                    itemCount: _missionTodayList.length + 1, // リストアイテム数 + ローディングインジケーター
-                    itemBuilder: (context, index) {
-                      if (index == _missionTodayList.length) {
-                        return _loadingMissionToday
-                            ? Container(
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.all(16.0),
-                          child: const CircularProgressIndicator(
-                            strokeWidth: 3.0,
-                          ),
-                        )
-                            : const SizedBox.shrink(); // ローディングインジケーターを表示
-                      }
-                      final missionToday = _missionTodayList[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 8.0, horizontal: 16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      CheckboxListTile(
-                                        title: Text("item"),
-                                        value: true,
-                                        onChanged: (bool? value) {
-
-                                        },
-                                        controlAffinity: ListTileControlAffinity.leading,
-                                      ),
-                                      GestureDetector( //InkWellでも同じ
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => MissionDetailPage(value: int.parse('${missionToday.missionNumber}')),
-                                              //builder: (context) => TaskDetailPage(value: int.parse('352')),
-                                            ),
-                                          );
-                                        },
-                                        child: Expanded(
-                                          child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              Text(
-                                                missionToday.missionText,
-                                                style: const TextStyle(fontSize: 18.0),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-
-
-
-        ],
-      ),
-
-
-
-    ),
-
-
     );
-
   }
 }

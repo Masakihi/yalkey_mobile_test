@@ -16,13 +16,17 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   Map<String, dynamic>? _profileData;
-  List<Progress>? _progressData;
+  late Map<String, List<Report>> _reportListMap = {
+    'num_report_list': [],
+    'bool_report_list': []
+  };
+  late bool _loadingReportList = false;
 
   @override
   void initState() {
     super.initState();
     _fetchProfileData();
-    _fetchProgressData();
+    _fetchReportList();
   }
 
   Future<void> _fetchProfileData() async {
@@ -51,25 +55,22 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Future<void> _fetchProgressData() async {
-    try {
-      // 本日から一か月前の日付を計算
-      DateTime today = DateTime.now();
-      DateTime oneMonthAgo = today.subtract(Duration(days: 30));
-
-      // fetchYalkerProgressListResponseを呼び出してデータを取得
-      final YalkerProgressListResponse response =
-          await YalkerProgressListResponse.fetchYalkerProgressListResponse(
-              59, oneMonthAgo, today);
-
-      YalkerProgressListResponse.fetchDataForGraphByReportTitle(
-          59, oneMonthAgo, today, 'アプリ開発');
-
+  Future<void> _fetchReportList() async {
+    setState(() {
+      _loadingReportList = true;
+    });
+    ReportListResponse reportListResponse =
+        await ReportListResponse.fetchReportListResponse(59);
+    if (mounted) {
       setState(() {
-        _progressData = response.progressList;
+        reportListResponse.reportList.forEach((report) => {
+              if (report.reportType == 4)
+                {_reportListMap['bool_report_list']?.add(report)}
+              else
+                {_reportListMap['num_report_list']?.add(report)}
+            });
+        _loadingReportList = false;
       });
-    } catch (error) {
-      print('Error fetching progress data: $error');
     }
   }
 
@@ -85,74 +86,84 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('プロフィール'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: _profileData != null
-            ? SingleChildScrollView(
-                child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CircleAvatar(
-                          backgroundImage: NetworkImage(
-                            _profileData!['login_user_profile']['iconimage'],
+        appBar: AppBar(
+          title: const Text('プロフィール'),
+        ),
+        body: SingleChildScrollView(
+            child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: _profileData != null
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CircleAvatar(
+                            backgroundImage: NetworkImage(
+                              _profileData!['login_user_profile']['iconimage'],
+                            ),
+                            radius: 40, // アイコンの半径を小さくする
                           ),
-                          radius: 40, // アイコンの半径を小さくする
-                        ),
-                        SizedBox(width: 20), // アイコンと名前の間隔を設定
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              _profileData!['login_user_profile']['name'],
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            Text(
-                              '@${_profileData!['login_user_profile']['user_id']}',
-                              style:
-                                  TextStyle(fontSize: 16, color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                        Spacer(), // 編集ボタンを右端に配置するためのスペーサー
-                        ElevatedButton(
-                          onPressed: _editProfile, // 編集ボタンが押された時の処理
-                          child: Icon(Icons.edit),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20), // 余白を追加
-                    Text(
-                      '${_profileData!['login_user_profile']['profile']}',
-                      textAlign: TextAlign.start, // 左詰めに設定
-                    ),
-                    SizedBox(height: 20), // 余白を追加
-                    MonthlyBarChart(
-                        userId: 59,
-                        reportTitle: "アプリ開発",
-                        startDate: DateTime(2024, 2, 1),
-                        endDate: DateTime(2024, 2, 29)),
-                    SizedBox(height: 20), // 余白を追加
-                    AchievementCalendar(
-                        userId: 59,
-                        reportTitle: "boolテスト",
-                        year: 2024,
-                        month: 3),
-                  ],
-                ),
-              ))
-            : const Center(
-                child: CircularProgressIndicator(),
-              ),
-      ),
-    );
+                          SizedBox(width: 20), // アイコンと名前の間隔を設定
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _profileData!['login_user_profile']['name'],
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              Text(
+                                '@${_profileData!['login_user_profile']['user_id']}',
+                                style:
+                                    TextStyle(fontSize: 16, color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                          Spacer(), // 編集ボタンを右端に配置するためのスペーサー
+                          ElevatedButton(
+                            onPressed: _editProfile, // 編集ボタンが押された時の処理
+                            child: Icon(Icons.edit),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20), // 余白を追加
+                      Text(
+                        '${_profileData!['login_user_profile']['profile']}',
+                        textAlign: TextAlign.start, // 左詰めに設定
+                      ),
+                      SizedBox(height: 20), // 余白を追加
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: _reportListMap['num_report_list']?.length,
+                        itemBuilder: (context, index) {
+                          final report =
+                              _reportListMap['num_report_list']?[index];
+                          return MonthlyBarChart(
+                            userId: 59,
+                            reportTitle: report!.reportName,
+                            reportUnit: report.reportUnit,
+                          );
+                        },
+                      ),
+                      MonthlyBarChart(
+                          userId: 59, reportTitle: "アプリ開発", reportUnit: "分"),
+                      SizedBox(height: 20), // 余白を追加
+                      AchievementCalendar(
+                          userId: 59,
+                          reportTitle: "boolテスト",
+                          year: 2024,
+                          month: 3),
+                    ],
+                  )
+                : const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+          ),
+        )));
   }
 }
