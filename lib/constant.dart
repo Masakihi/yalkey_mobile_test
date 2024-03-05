@@ -771,11 +771,6 @@ class PostDetail {
   final List<Progress> progressList;
   final List<String> progressTextList;
   final String postCreatedAt;
-  final int postLikeNumber;
-  final bool postLiked;
-  final bool postBookmarked;
-  final bool postReposted;
-  final bool postPinned;
   late int postLikeNumber;
   late bool postLiked;
   late bool postBookmarked;

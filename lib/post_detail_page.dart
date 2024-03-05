@@ -4,6 +4,8 @@ import 'api.dart';
 import 'linkify_util.dart';
 import 'reply_form.dart';
 import 'dart:convert';
+import 'yalker_profile_page.dart';
+
 
 class PostDetailPage extends StatefulWidget {
   final int postNumber;
@@ -66,6 +68,14 @@ class _PostDetailPageState extends State<PostDetailPage> {
         context,
         MaterialPageRoute(
           builder: (context) => PostDetailPage(postNumber: postNumber),
+        ));
+  }
+
+  void _navigateToYalkerDetailPage(int userId) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => YalkerProfilePage(userId: userId),
         ));
   }
 
@@ -263,7 +273,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
     return InkWell(
       onTap: () {
         // ポストの詳細画面に遷移する処理を追加する
-        _navigateToPostDetailPage(post.postNumber);
+        // _navigateToPostDetailPage(post.postNumber);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -273,11 +283,31 @@ class _PostDetailPageState extends State<PostDetailPage> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                GestureDetector(
+                  onTap: () {
+                    _navigateToYalkerDetailPage(
+                        post.postUserNumber);
+                  },
+                  child: post.postUserIcon == ""
+                      ? const CircleAvatar(
+                    backgroundColor: Colors.white,
+                    backgroundImage: NetworkImage(
+                      'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
+                    ),
+                  )
+                      : CircleAvatar(
+                    backgroundImage: NetworkImage(
+                      'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${post.postUserIcon}',
+                    ),
+                  ),
+                ),
+                /*
                 CircleAvatar(
                   backgroundImage: NetworkImage(
                     'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${post.postUserIcon}',
                   ),
                 ),
+                 */
                 SizedBox(width: 16.0),
                 Expanded(
                   child: Column(

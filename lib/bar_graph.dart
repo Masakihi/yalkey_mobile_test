@@ -302,6 +302,7 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
     );
   }
 
+  /*
   List<DateTime> _generateDateList(DateTime startDate, DateTime endDate) {
     List<DateTime> dates = [];
     DateTime currentDate = startDate;
@@ -312,4 +313,5 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
     }
     return dates;
   }
+   */
 }
