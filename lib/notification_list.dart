@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:yalkey_0206_test/post_detail_page.dart';
+import 'package:yalkey_0206_test/yalker_profile_page.dart';
 import 'api.dart';
 import 'constant.dart';
 
@@ -229,14 +231,42 @@ class _NotificationListPageState extends State<NotificationListPage> {
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                    CircleAvatar(
-                                      backgroundImage: NetworkImage(
-                                        'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${notification.fromIconimage}',
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => YalkerProfilePage(userNumber: notification.fromUserNumber ?? 1),
+                                            )
+                                        );
+                                      },
+                                      child: notification.fromIconimage == ""
+                                          ? const CircleAvatar(
+                                        backgroundColor: Colors.white,
+                                        backgroundImage: NetworkImage(
+                                          'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
+                                        ),
+                                      )
+                                          : CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                          'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${notification.fromIconimage}',
+                                        ),
                                       ),
                                     ),
                                     SizedBox(width: 16.0),
                                     Expanded(
-                                      child: Column(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          if(notification.post!=null){
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => PostDetailPage(postNumber: notification.post!),
+                                                )
+                                            );
+                                          }
+                                        },
+                                        child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
@@ -250,6 +280,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
                                                 fontSize: 12.0, color: Colors.grey),
                                           ),
                                         ],
+                                      ),
                                       ),
                                     ),
                                   ],
@@ -300,9 +331,26 @@ class _NotificationListPageState extends State<NotificationListPage> {
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                    CircleAvatar(
-                                      backgroundImage: NetworkImage(
-                                        'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${follow_request.fromIconimage}',
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => YalkerProfilePage(userNumber: follow_request.fromUserNumber ?? 1),
+                                            )
+                                        );
+                                      },
+                                      child: follow_request.fromIconimage == ""
+                                          ? const CircleAvatar(
+                                        backgroundColor: Colors.white,
+                                        backgroundImage: NetworkImage(
+                                          'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
+                                        ),
+                                      )
+                                          : CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                          'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${follow_request.fromIconimage}',
+                                        ),
                                       ),
                                     ),
                                     SizedBox(width: 16.0),
@@ -346,13 +394,6 @@ class _NotificationListPageState extends State<NotificationListPage> {
                   ],
                 ),
               ),
-
-
-
-
-
-
-
             ],
           ),
         ),

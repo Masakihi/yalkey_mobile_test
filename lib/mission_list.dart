@@ -327,16 +327,20 @@ class _MissionListPageState extends State<MissionListPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Expanded(
-                                    child: Column(
+                                    child: Row(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: <Widget>[
-                                        CheckboxListTile(
-                                          title: Text("item"),
+                                        if(false)
+                                          const SizedBox(width: 16.0),
+                                        Checkbox(
+                                          activeColor: const Color(0xFFAE0103),
                                           value: true,
-                                          onChanged: (bool? value) {},
-                                          controlAffinity:
-                                              ListTileControlAffinity.leading,
+                                          onChanged: (bool? checkedValue) {
+                                            if(checkedValue!){
+                                              print("check!");
+                                            };
+                                          },
                                         ),
                                         GestureDetector(
                                           //InkWellでも同じ
@@ -352,18 +356,10 @@ class _MissionListPageState extends State<MissionListPage> {
                                               ),
                                             );
                                           },
-                                          child: Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                Text(
-                                                  missionToday.missionText,
-                                                  style: const TextStyle(
-                                                      fontSize: 18.0),
-                                                ),
-                                              ],
-                                            ),
+                                          child: Text(
+                                            missionToday.missionText,
+                                            style: const TextStyle(
+                                                fontSize: 16.0),
                                           ),
                                         ),
                                       ],
@@ -371,6 +367,10 @@ class _MissionListPageState extends State<MissionListPage> {
                                   ),
                                 ],
                               ),
+
+
+
+
                             ],
                           ),
                         );

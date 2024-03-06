@@ -1168,6 +1168,7 @@ class UserNotification {
   final int post;
   final int follow;
   */
+  final int? post;
   final bool? newNotification;
   final bool? already;
   final String? dateCreated;
@@ -1184,6 +1185,7 @@ class UserNotification {
   final int notificationType;
 
   UserNotification({
+    required this.post,
     required this.newNotification,
     required this.already,
     required this.dateCreated,
@@ -1202,6 +1204,7 @@ class UserNotification {
 
   factory UserNotification.fromJson(Map<String, dynamic> json) {
     return UserNotification(
+      post: json['Post'],
       newNotification: json['New'],
       already: json['Already'],
       dateCreated: json['Date'],
@@ -1221,6 +1224,7 @@ class UserNotification {
 
   Map<String, dynamic> toJson() {
     return {
+      'post': post,
       'New': newNotification,
       'Already': already,
       'Date': dateCreated,

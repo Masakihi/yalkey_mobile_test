@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yalkey_0206_test/yalker_profile_page.dart';
 import 'constant.dart';
 import 'search_post.dart';
 import 'search_user.dart';
@@ -155,17 +156,26 @@ class _SearchRecommendUserListPageState extends State<SearchRecommendUserListPag
                         : SizedBox.shrink(); // ローディングインジケーターを表示
                   }
                   final user = _userList[index];
-                  return Padding(
+                  return InkWell(
+                      onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => YalkerProfilePage(userNumber: user.userNumber ?? 1),
+                          )
+                      );
+                  },
+                  child:
+
+
+
+                    Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: 8.0, horizontal: 16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        GestureDetector(
-                          onTap: (){
-                            print("tap");
-                          },
-                          child:Row(
+                          Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               if (user.iconimage=="") const CircleAvatar(
@@ -297,11 +307,10 @@ class _SearchRecommendUserListPageState extends State<SearchRecommendUserListPag
                               ),
                             ],
                           ),
-                        ),
                       ],
                     ),
-                  );
-                },
+                  ));
+                  },
               ),
             ),
           ],

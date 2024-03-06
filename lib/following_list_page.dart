@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yalkey_0206_test/yalker_profile_page.dart';
 import 'constant.dart';
 
 class FollowingListPage extends StatefulWidget {
@@ -108,7 +109,16 @@ class _FollowingListPageState extends State<FollowingListPage> {
                         : SizedBox.shrink(); // ローディングインジケーターを表示
                   }
                   final following = _followingList[index];
-                  return Padding(
+                  return InkWell(
+                      onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => YalkerProfilePage(userNumber: following.followedUserNumber),
+                        )
+                    );
+                  },
+                  child: Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: 8.0, horizontal: 16.0),
                     child: Column(
@@ -254,7 +264,7 @@ class _FollowingListPageState extends State<FollowingListPage> {
                         ),
                       ],
                     ),
-                  );
+                  ));
                 },
               ),
             ),
