@@ -149,7 +149,7 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _profileData!['yalker_profile']['iconimage'] == ""
@@ -158,21 +158,21 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
                               backgroundImage: NetworkImage(
                                 'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
                               ),
-                              radius: 40,
+                              radius: 25,
                             )
                                 : CircleAvatar(
                               backgroundImage: NetworkImage(
                                 '${_profileData!['yalker_profile']['iconimage']}',
                               ),
-                              radius: 40,
+                              radius: 25,
                             ),
-                          SizedBox(width: 20), // アイコンと名前の間隔を設定
+                          SizedBox(width: 10), // アイコンと名前の間隔を設定
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 _profileData!['yalker_profile']['name'],
-                                style: TextStyle(fontSize: 20),
+                                style: TextStyle(fontSize: 19),
                               ),
                               Row(
                                 children: [
@@ -190,7 +190,7 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 8.0),
+                              const SizedBox(height: 4.0),
                               Row(
                                 children: [
                                   if (_profileData!['yalker_profile']['super_early_bird'] ??
@@ -383,103 +383,104 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
                               const SizedBox(height: 8.0),
                             ],
                           ),
-                          Spacer(), // 編集ボタンを右端に配置するためのスペーサー
-                          if (relationType==0)
-                            ElevatedButton(
-                              onPressed: _editProfile, // 編集ボタンが押された時の処理
-                              child: Text('編集'),
-                            ),
-                          if (relationType==1)
-                            ElevatedButton(
-                              onPressed: (){
-                                try {
-                                  httpPost('follow/${_profileData!['yalker_profile']['user_number']}', {"email":"email"},jwt: true);
-                                  _onPressedButton();
-                                  print(relationType);
-                                } catch (error) {
-                                  print('Error follow: $error');
-                                }
-                              },
-                              child: Text('フォロー'),
-                            ),
-                          if (relationType==2)
-                            ElevatedButton(
-                              onPressed: (){
-                                try {
-                                  httpPost('unfollow/${_profileData!['yalker_profile']['user_number']}', {"email":"email"},jwt: true);
-                                  _onPressedButton();
-                                } catch (error) {
-                                  print('Error unfollow: $error');
-                                }
-                              },
-                              child: Text('フォロー解除'),
-                            ),
-                          if (relationType==3)
-                            ElevatedButton(
-                              onPressed: (){
-                                try {
-                                  httpPost('followrequest/${_profileData!['yalker_profile']['user_number']}', {"email":"email"},jwt: true);
-                                  _onPressedButton();
-                                } catch (error) {
-                                  print('Error follow request: $error');
-                                }
-                              },
-                              child: Text('リクエスト'),
-                            ),
-                          if (relationType==4)
-                            ElevatedButton(
-                              onPressed: (){
-                                try {
-                                  httpPost('unfollowrequest/${_profileData!['yalker_profile']['user_number']}', {"email":"email"},jwt: true);
-                                  _onPressedButton();
-                                } catch (error) {
-                                  print('Error unfollow request: $error');
-                                }
-                              },
-                              child: Text('リクエスト解除'),
-                            ),
+                          // Spacer(), // 編集ボタンを右端に配置するためのスペーサー
                         ],
+                      ),
+                      SizedBox(height: 5),
+                      Row(
+                          children: [
+                            GestureDetector( //InkWellでも同じ
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => FollowingListPage(userNumber: _profileData!['yalker_profile']['user_number']),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                'フォロー ',
+                                textAlign: TextAlign.start, // 左詰めに設定
+                              ),
+                            ),
+                            SizedBox(width: 20),
+                            GestureDetector( //InkWellでも同じ
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => FollowedListPage(userNumber: _profileData!['yalker_profile']['user_number']),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                'フォロワー ',
+                                textAlign: TextAlign.start, // 左詰めに設定
+                              ),
+                            ),
+                          ]
                       ),
                       SizedBox(height: 20), // 余白を追加
                       Text(
                         '${_profileData!['yalker_profile']['profile']}',
                         textAlign: TextAlign.start, // 左詰めに設定
                       ),
-                      SizedBox(height: 20),
-                      Row(
-                        children: [
-                          GestureDetector( //InkWellでも同じ
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => FollowingListPage(userNumber: _profileData!['yalker_profile']['user_number']),
-                                ),
-                              );
-                            },
-                            child: Text(
-                              'フォロー ',
-                              textAlign: TextAlign.start, // 左詰めに設定
-                            ),
-                          ),
-                          SizedBox(width: 20),
-                          GestureDetector( //InkWellでも同じ
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => FollowedListPage(userNumber: _profileData!['yalker_profile']['user_number']),
-                                ),
-                              );
-                            },
-                            child: Text(
-                              'フォロワー ',
-                              textAlign: TextAlign.start, // 左詰めに設定
-                            ),
-                          ),
-                        ]
-                      ),
-                      SizedBox(height: 20),
+                      SizedBox(height: 10),
+                      if (relationType==0)
+                        ElevatedButton(
+                          onPressed: _editProfile, // 編集ボタンが押された時の処理
+                          child: Text('編集'),
+                        ),
+                      if (relationType==1)
+                        ElevatedButton(
+                          onPressed: (){
+                            try {
+                              httpPost('follow/${_profileData!['yalker_profile']['user_number']}', {"email":"email"},jwt: true);
+                              _onPressedButton();
+                              print(relationType);
+                            } catch (error) {
+                              print('Error follow: $error');
+                            }
+                          },
+                          child: Text('フォローする'),
+                        ),
+                      if (relationType==2)
+                        ElevatedButton(
+                          onPressed: (){
+                            try {
+                              httpPost('unfollow/${_profileData!['yalker_profile']['user_number']}', {"email":"email"},jwt: true);
+                              _onPressedButton();
+                            } catch (error) {
+                              print('Error unfollow: $error');
+                            }
+                          },
+                          child: Text('フォロー解除'),
+                        ),
+                      if (relationType==3)
+                        ElevatedButton(
+                          onPressed: (){
+                            try {
+                              httpPost('followrequest/${_profileData!['yalker_profile']['user_number']}', {"email":"email"},jwt: true);
+                              _onPressedButton();
+                            } catch (error) {
+                              print('Error follow request: $error');
+                            }
+                          },
+                          child: Text('リクエスト'),
+                        ),
+                      if (relationType==4)
+                        ElevatedButton(
+                          onPressed: (){
+                            try {
+                              httpPost('unfollowrequest/${_profileData!['yalker_profile']['user_number']}', {"email":"email"},jwt: true);
+                              _onPressedButton();
+                            } catch (error) {
+                              print('Error unfollow request: $error');
+                            }
+                          },
+                          child: Text('リクエスト解除'),
+                        ),
+                      SizedBox(height: 10),
                       ListView.builder(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yalkey_0206_test/yalker_profile_page.dart';
 import 'constant.dart';
 import 'search_user.dart';
 import 'search_user_id.dart';
@@ -485,7 +486,19 @@ class _SearchPostListPageState extends State<SearchPostListPage> {
                                 : SizedBox.shrink(); // ローディングインジケーターを表示
                           }
                           final user = _userList[index];
-                          return Padding(
+                          return InkWell(
+                              onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => YalkerProfilePage(userNumber: user.userNumber ?? 1),
+                                )
+                            );
+                          },
+                          child:
+
+
+                            Padding(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 8.0, horizontal: 16.0),
                             child: Column(
@@ -630,7 +643,12 @@ class _SearchPostListPageState extends State<SearchPostListPage> {
                                 ),
                               ],
                             ),
-                          );
+                          ));
+
+
+
+
+
                         },
                       ),
                     ),
@@ -685,7 +703,23 @@ class _SearchPostListPageState extends State<SearchPostListPage> {
                                 : SizedBox.shrink(); // ローディングインジケーターを表示
                           }
                           final userId = _userIdList[index];
-                          return Padding(
+                          return InkWell(
+                              onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => YalkerProfilePage(userNumber: userId.userNumber ?? 1),
+                                )
+                            );
+                          },
+                          child:
+
+
+
+
+
+
+                            Padding(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 8.0, horizontal: 16.0),
                             child: Column(
@@ -830,7 +864,12 @@ class _SearchPostListPageState extends State<SearchPostListPage> {
                                 ),
                               ],
                             ),
-                          );
+                          ));
+
+
+
+
+
                         },
                       ),
                     ),

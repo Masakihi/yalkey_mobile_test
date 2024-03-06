@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:yalkey_0206_test/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yalkey_0206_test/post_page.dart';
 import 'bottom_nav_bar.dart';
+import 'home_page.dart';
 import 'setting_list.dart';
 import 'mission_list.dart';
 import 'goal_list.dart';
@@ -28,6 +31,20 @@ class AppPage extends StatelessWidget {
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+
+  _launchInBrowser(String url) async {
+    //const url = 'https://pub.dev/packages/url_launcher';
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        forceSafariVC: false,
+        forceWebView: false,
+      );
+    } else {
+      throw 'このURLにはアクセスできません';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,13 +107,29 @@ class AppPage extends StatelessWidget {
                     );
                   },
                 ),
+                /*
                 ListTile(
                   title: const Text("ホーム"),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HomePage(),
+                      ),
+                    );
+                  },
                 ),
+                */
                 ListTile(
                   title: const Text("投稿"),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PostPage(),
+                      ),
+                    );
+                  },
                 ),
                 ListTile(
                   title: const Text("目標"),
@@ -181,23 +214,33 @@ class AppPage extends StatelessWidget {
                 ),
                 ListTile(
                   title: const Text("開発者への支援"),
-                  onTap: () {},
+                  onTap: () {
+                    _launchInBrowser("https://yalkey.net/ja/support-for-developer/");
+                  },
                 ),
                 ListTile(
                   title: const Text("使い方"),
-                  onTap: () {},
+                  onTap: () {
+                    _launchInBrowser("https://yalkey.net/ja/howto/");
+                  },
                 ),
                 ListTile(
                   title: const Text("このアプリについて"),
-                  onTap: () {},
+                  onTap: () {
+                    _launchInBrowser("https://yalkey.net/ja/about/");
+                  },
                 ),
                 ListTile(
                   title: const Text("便利なサイト＆ツール"),
-                  onTap: () {},
+                  onTap: () {
+                    _launchInBrowser("https://yalkey.net/ja/recommend/");
+                  },
                 ),
                 ListTile(
                   title: const Text("サポーター・協賛"),
-                  onTap: () {},
+                  onTap: () {
+                    _launchInBrowser("https://yalkey.net/ja/supporter/");
+                  },
                 )
               ],
             ),
