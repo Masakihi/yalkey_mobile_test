@@ -1,5 +1,6 @@
 import 'api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'example_data.dart';
 
 // ProgressとUserRepostの型定義
 class Progress {
@@ -777,7 +778,6 @@ class PostDetail {
   late bool postReposted;
   late bool postPinned;
 
-
   PostDetail({
     required this.user,
     required this.postUserIcon,
@@ -843,7 +843,6 @@ class PostDetail {
       postPinned: json['post_pinned'],
     );
   }
-
 
   Future<void> like() async {
     if (postLiked) {
@@ -1471,6 +1470,127 @@ class MissionResponse {
     dynamic jsonData =
         await httpGet('mission/detail/${missionNumber}', jwt: true);
     return MissionResponse.fromJson(jsonData);
+  }
+}
+
+class NewMission {
+  final int missionNumber;
+  final int userNumber;
+  final String title;
+  final String? repeat;
+  final String? reward;
+  final String? penalty;
+  final String? note;
+  final String starTime;
+  final String endTime;
+  final String? opportunity;
+  final String dateCreated;
+  late bool achieved;
+  late Map<String, bool> tasks;
+
+  NewMission({
+    required this.missionNumber,
+    required this.userNumber,
+    required this.title,
+    required this.repeat,
+    required this.reward,
+    required this.penalty,
+    required this.note,
+    required this.starTime,
+    required this.endTime,
+    required this.opportunity,
+    required this.dateCreated,
+    required this.achieved,
+    required this.tasks,
+  });
+
+  factory NewMission.fromJson(Map<String, dynamic> json) {
+    return NewMission(
+        missionNumber: json['mission_number'],
+        userNumber: json['userId'],
+        title: json['title'],
+        repeat: json['repeat'],
+        reward: json['reward'],
+        penalty: json['penalty'],
+        note: json['note'],
+        starTime: json['start_time'],
+        endTime: json['end_time'],
+        opportunity: json['opportunity'],
+        dateCreated: json['date_created'],
+        achieved: json['achieved'],
+        tasks: json['tasks']);
+  }
+
+  Future<void> handleAchieved() async {
+    // 下のようなAPIを叩いていると仮定
+    // httpPost("mission/achieve/$missionNumber",{}, jwt: true);
+    await Future.delayed(const Duration(milliseconds: 100));
+    achieved = !achieved;
+  }
+
+  Future<void> addTask(String taskTitle) async {
+    // 下のようなAPIを叩いていると仮定
+    // httpPost("mission/$missionNumber/add-task", {"task_title": taskTitle}, jwt: true);
+    await Future.delayed(const Duration(milliseconds: 100));
+    tasks[taskTitle] = false;
+  }
+
+  Future<void> deleteTask(String taskTitle) async {
+    // 下のようなAPIを叩いていると仮定
+    // httpPost("mission/$missionNumber/delete-task", {"task_title": taskTitle}, jwt: true);
+    await Future.delayed(const Duration(milliseconds: 100));
+    tasks.remove(taskTitle);
+  }
+
+  Future<void> handleTaskAchieved(String taskTitle) async {
+    // 下のようなAPIを叩いていると仮定
+    // httpPost("mission/achieve-task/$missionNumber",{}, jwt: true);
+    await Future.delayed(const Duration(milliseconds: 100));
+    tasks[taskTitle] = !tasks[taskTitle]!;
+  }
+
+  static Future<NewMission> create(Map<String, dynamic> body) async {
+    // 下のようなAPIを叩いていると仮定
+    // dynamic response = httpPost("mission/create", body, jwt: true);
+    // return NewMission.fromJson(response)
+    await Future.delayed(const Duration(milliseconds: 100));
+    return NewMission.fromJson(newMissionJsonExample);
+  }
+}
+
+class NewMissionListResponse {
+  final List<NewMission> newMissionList;
+
+  NewMissionListResponse({required this.newMissionList});
+
+  factory NewMissionListResponse.fromJson(Map<String, dynamic> json) {
+    List<NewMission> newMissionList = [];
+    if (json['mission_list'] != null) {
+      var newMissionJsonList = json['mission_list'] as List;
+      print(newMissionJsonListExample.length);
+      newMissionList = newMissionJsonList
+          .map((mission) => NewMission.fromJson(mission))
+          .toList();
+    }
+    return NewMissionListResponse(newMissionList: newMissionList);
+  }
+
+  static Future<NewMissionListResponse> fetchNewMissionListResponse(
+      int page) async {
+    // APIをたたくと仮定
+    // dynamic jsonData = await httpGet('mission-list/${page}/', jwt: true);
+    await Future.delayed(const Duration(milliseconds: 100));
+    return NewMissionListResponse.fromJson(
+        {"mission_list": newMissionJsonListExample});
+  }
+
+  static Future<NewMissionListResponse> fetchNewMissionTodayListResponse(
+      int page) async {
+    // APIをたたくと仮定
+    // dynamic jsonData = await httpGet('mission-today-list/${page}/', jwt: true);
+    await Future.delayed(const Duration(milliseconds: 100));
+    return NewMissionListResponse.fromJson(
+        {"mission_list": newMissionJsonListExample});
   }
 }
 
