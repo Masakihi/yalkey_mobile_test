@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'constant.dart';
 
 class FollowingListPage extends StatefulWidget {
-  const FollowingListPage({Key? key}) : super(key: key);
+  final int userNumber;
+  const FollowingListPage({Key? key, required this.userNumber}) : super(key: key);
 
   @override
   _FollowingListPageState createState() => _FollowingListPageState();
@@ -37,7 +38,7 @@ class _FollowingListPageState extends State<FollowingListPage> {
     });
 
     FollowingListResponse followingListResponse =
-    await FollowingListResponse.fetchFollowingListResponse(1, _page);
+    await FollowingListResponse.fetchFollowingListResponse(widget.userNumber, _page);
     if (mounted) {
       setState(() {
         _followingList

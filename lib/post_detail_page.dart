@@ -71,11 +71,11 @@ class _PostDetailPageState extends State<PostDetailPage> {
         ));
   }
 
-  void _navigateToYalkerDetailPage(int userId) {
+  void _navigateToYalkerDetailPage(int userNumber) {
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => YalkerProfilePage(userId: userId),
+          builder: (context) => YalkerProfilePage(userNumber: userNumber),
         ));
   }
 
