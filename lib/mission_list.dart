@@ -11,12 +11,13 @@ class MissionListPage extends StatefulWidget {
 }
 
 class _MissionListPageState extends State<MissionListPage> {
-  late final List<Mission> _missionList = []; // user_repost_list を格納するリスト
+  late final List<NewMission> _missionList = []; // user_repost_list を格納するリスト
   late ScrollController _scrollController; // ListView のスクロールを制御するコントローラー
   bool _loading = false; // データをロード中かどうかを示すフラグ
   int _page = 1; // 現在のページ番号
 
-  late final List<Mission> _missionTodayList = []; // user_repost_list を格納するリスト
+  late final List<NewMission> _missionTodayList =
+      []; // user_repost_list を格納するリスト
   late ScrollController
       _scrollMissionTodayController; // ListView のスクロールを制御するコントローラー
   bool _loadingMissionToday = false; // データをロード中かどうかを示すフラグ
@@ -57,11 +58,13 @@ class _MissionListPageState extends State<MissionListPage> {
     });
 
     try {
-      MissionListResponse missionListResponse =
-          await MissionListResponse.fetchMissionListResponse(_page);
+      NewMissionListResponse missionListResponse =
+          await NewMissionListResponse.fetchNewMissionListResponse(_page);
+      print(missionListResponse.newMissionList.length);
       if (mounted) {
         setState(() {
-          _missionList.addAll(missionListResponse.missionList); // 新しいデータをリストに追加
+          _missionList
+              .addAll(missionListResponse.newMissionList); // 新しいデータをリストに追加
           _loading = false; // データのロード中フラグをfalseに設定
         });
       }
@@ -80,12 +83,12 @@ class _MissionListPageState extends State<MissionListPage> {
     });
 
     try {
-      MissionListResponse missionTodayListResponse =
-          await MissionListResponse.fetchMissionTodayListResponse(_page);
+      NewMissionListResponse missionTodayListResponse =
+          await NewMissionListResponse.fetchNewMissionTodayListResponse(_page);
       if (mounted) {
         setState(() {
           _missionTodayList
-              .addAll(missionTodayListResponse.missionList); // 新しいデータをリストに追加
+              .addAll(missionTodayListResponse.newMissionList); // 新しいデータをリストに追加
           _loadingMissionToday = false; // データのロード中フラグをfalseに設定
         });
       }
@@ -243,7 +246,7 @@ class _MissionListPageState extends State<MissionListPage> {
                                             );
                                           },
                                           child: Text(
-                                            mission.missionText,
+                                            mission.title,
                                             style:
                                                 const TextStyle(fontSize: 18.0),
                                           ),
@@ -331,15 +334,14 @@ class _MissionListPageState extends State<MissionListPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: <Widget>[
-                                        if(false)
-                                          const SizedBox(width: 16.0),
                                         Checkbox(
                                           activeColor: const Color(0xFFAE0103),
-                                          value: true,
-                                          onChanged: (bool? checkedValue) {
-                                            if(checkedValue!){
-                                              print("check!");
-                                            };
+                                          value: missionToday.achieved,
+                                          onChanged:
+                                              (bool? checkedValue) async {
+                                            print("checked");
+                                            await missionToday.handleAchieved();
+                                            setState(() {});
                                           },
                                         ),
                                         GestureDetector(
@@ -357,9 +359,9 @@ class _MissionListPageState extends State<MissionListPage> {
                                             );
                                           },
                                           child: Text(
-                                            missionToday.missionText,
-                                            style: const TextStyle(
-                                                fontSize: 16.0),
+                                            missionToday.title,
+                                            style:
+                                                const TextStyle(fontSize: 16.0),
                                           ),
                                         ),
                                       ],
@@ -367,10 +369,6 @@ class _MissionListPageState extends State<MissionListPage> {
                                   ),
                                 ],
                               ),
-
-
-
-
                             ],
                           ),
                         );
