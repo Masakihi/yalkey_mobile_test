@@ -164,28 +164,6 @@ class AppPage extends StatelessWidget {
                   },
                 ),
                 ListTile(
-                  title: const Text("フォロー"),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const FollowingListPage(),
-                      ),
-                    );
-                  },
-                ),
-                ListTile(
-                  title: const Text("フォロワー"),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const FollowedListPage(),
-                      ),
-                    );
-                  },
-                ),
-                ListTile(
                   title: const Text("設定"),
                   onTap: () {
                     Navigator.push(

@@ -69,7 +69,7 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                // color: const Color(0xFFAE0103),
               ),
             ),
             IconButton(
@@ -181,7 +181,7 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
                 return Container(
                   height: 200,
                   decoration: BoxDecoration(
-                    color: Colors.grey[200], // グラフエリアの背景色
+                    //color: Colors.grey[200], // グラフエリアの背景色
                     border: Border.all(color: Colors.grey), // 枠線の色
                   ),
                   child: Stack(
@@ -204,7 +204,7 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
                                 Container(
                                   width: 20,
                                   height: height,
-                                  color: Colors.blue,
+                                  color: const Color(0xFFAE0103),
                                 ),
                                 SizedBox(height: 4),
                                 Text('${date.day}日'),
@@ -221,7 +221,7 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: const Color(0xFFAE0103),
                           ),
                         ),
                       ),

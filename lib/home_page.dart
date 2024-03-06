@@ -286,11 +286,11 @@ class _HomePageState extends State<HomePage> {
         ));
   }
 
-  void _navigateToYalkerDetailPage(int userId) {
+  void _navigateToYalkerDetailPage(int userNumber) {
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => YalkerProfilePage(userId: userId),
+          builder: (context) => YalkerProfilePage(userNumber: userNumber),
         ));
   }
 
