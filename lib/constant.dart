@@ -121,7 +121,7 @@ class UserRepost {
   bool postBookmarked;
   bool postReposted;
   // bool postPinned;
-  // List<String> postImageList;
+  final List<String> postImageList;
   final List<String> progressTextList;
 
   UserRepost({
@@ -151,7 +151,7 @@ class UserRepost {
     required this.postBookmarked,
     required this.postReposted,
     // required this.postPinned,
-    // required this.postImageList,
+    required this.postImageList,
     required this.progressTextList,
   });
 
@@ -236,9 +236,9 @@ class UserRepost {
   }
 
   factory UserRepost.fromJson(Map<String, dynamic> json) {
+    List<String> _postImageList = [];
     List<Progress> progressList = [];
     List<String> progressTextList = [];
-    List<String> postImageList = [];
     // print(json);
     // print(a.runtimeType);
     // print(a.length);
@@ -253,6 +253,14 @@ class UserRepost {
       progressTextList.addAll(_getProgressTextList(progressList));
       // print(progressTextList);
     }
+
+    if (json['post_image_list'].length > 0) {
+      print(json["post_image_list"]);
+      var postImageJsonList = json["post_image_list"] as List;
+      _postImageList =
+          postImageJsonList.map((postImage) => postImage.toString()).toList();
+    }
+
     return UserRepost(
       isRepost: json['is_repost'],
       repostDate: json['repost_date'],
@@ -280,7 +288,7 @@ class UserRepost {
       postBookmarked: json['post_bookmarked'],
       postReposted: json['post_reposted'],
       // postPinned: json['post_pinned'],
-      // postImageList: json['post_image_list'],
+      postImageList: _postImageList,
       progressTextList: progressTextList,
     );
   }
@@ -314,7 +322,7 @@ class UserRepost {
       'post_bookmarked': postBookmarked,
       'post_reposted': postReposted,
       // 'post_pinned': postPinned,
-      // 'post_image_list': postImageList,
+      'post_image_list': postImageList,
       'progress_text_list': progressTextList
     };
   }
