@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'constant.dart';
+import 'mission_model.dart';
 import 'mission_detail.dart';
 import 'mission_create.dart';
 

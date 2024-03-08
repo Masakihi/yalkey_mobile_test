@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
-import 'api.dart';
-import 'task_edit_page.dart';
-import 'task_delete_page.dart';
+import '../api.dart';
+import 'task_page.dart';
 
-
-class TaskDetailPage extends StatefulWidget {
+class TaskDeletePage extends StatefulWidget {
   // 画面遷移元からのデータを受け取る変数
   final int value;
-  const TaskDetailPage({Key? key, required this.value}) : super(key: key);
+  const TaskDeletePage({Key? key, required this.value}) : super(key: key);
 
   @override
-  _TaskDetailPageState createState() => _TaskDetailPageState();
+  _TaskDeletePageState createState() => _TaskDeletePageState();
 }
 
-
-class _TaskDetailPageState extends State<TaskDetailPage> {
+class _TaskDeletePageState extends State<TaskDeletePage> {
   // 状態を管理する変数
   late int mission_number;
   Future<dynamic>? _missionData;
-
 
   @override
   void initState() {
@@ -31,7 +27,7 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
   Future<void> _fetchMissionData() async {
     try {
       final Future<dynamic> response =
-      httpGet('mission/detail/${mission_number}', jwt: true);
+          httpGet('mission/detail/${mission_number}', jwt: true);
       setState(() {
         _missionData = response;
       });
@@ -40,12 +36,11 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Mission Detail'),
+          title: const Text('Mission Delete'),
         ),
         body: FutureBuilder(
           future: _missionData,
@@ -61,46 +56,13 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                 children: <Widget>[
                   //Text('${mission["mission_text"]}'),
                   Text('・ミッションタイトル：${mission["mission_text"]}'),
-                  Text('・繰り返し：${mission["repeat"]}'),
-                  Text('・ご褒美：${mission["reward"]}'),
-                  Text('・ペナルティ：${mission["penalty"]}'),
                   Text('・開始日：${mission["start_time"]}'),
                   Text('・終了日：${mission["opportunity"]}'),
-                  Text('・きっかけ：${mission["end_time"]}'),
-                  Text('・メモ：${mission["note"]}'),
-                  Text('・ミッション作成日：${mission["date_created"]}'),
-                  //Text('${mission}'),
-                  //Text("[mission detail]"),
+                  Text("↑このミッションを削除します。この動作は取り消せません。本当によろしいですか？"),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                        builder: (context) => TaskEditPage(value: int.parse('${mission["mission_number"]}')),
-                        //builder: (context) => TaskEditPage(value: int.parse('352'))
-                      ));
-                    },
-                    child: const Text(
-                      'Update',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFAE0103),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => TaskDeletePage(value: int.parse('${mission["mission_number"]}')),
-                            //builder: (context) => TaskDeletePage(value: int.parse('352'))
-                          ));
+                      int count = 0;
+                      Navigator.popUntil(context, (_) => count++ >= 2);
                     },
                     child: const Text(
                       'Delete',
@@ -122,4 +84,3 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
         ));
   }
 }
-

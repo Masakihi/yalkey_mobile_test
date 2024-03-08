@@ -1,25 +1,20 @@
 import 'package:flutter/material.dart';
-import 'constant.dart';
-import 'task_edit_page.dart';
-import 'mission_delete.dart';
+import 'mission_model.dart';
 
-
-class MissionDetailPage extends StatefulWidget {
+class MissionDeletePage extends StatefulWidget {
   // 画面遷移元からのデータを受け取る変数
   final int value;
-  const MissionDetailPage({Key? key, required this.value}) : super(key: key);
+  const MissionDeletePage({Key? key, required this.value}) : super(key: key);
 
   @override
-  _MissionDetailPageState createState() => _MissionDetailPageState();
+  _MissionDeletePageState createState() => _MissionDeletePageState();
 }
 
-
-class _MissionDetailPageState extends State<MissionDetailPage> {
+class _MissionDeletePageState extends State<MissionDeletePage> {
   // 状態を管理する変数
   late int missionNumber;
   Mission? missionData;
   bool loading = false; // データをロード中かどうかを示すフラグ
-
 
   @override
   void initState() {
@@ -35,7 +30,7 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
     });
 
     MissionResponse missionResponse =
-    await MissionResponse.fetchMissionResponse(missionNumber);
+        await MissionResponse.fetchMissionResponse(missionNumber);
     if (mounted) {
       setState(() {
         missionData = missionResponse.mission; // 新しいデータをリストに追加
@@ -43,7 +38,6 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -61,49 +55,49 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
       }
     }
 
-
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Mission Detail'),
+          title: const Text('Mission削除'),
         ),
-        body:
-        Column(
+        body: Column(
           children: <Widget>[
-            if (loading) Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.all(16.0),
-              child: const CircularProgressIndicator(
-                strokeWidth: 3.0,
+            if (loading)
+              Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.all(16.0),
+                child: const CircularProgressIndicator(
+                  strokeWidth: 3.0,
+                ),
               ),
-            ),
-            if (!loading)...[
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-                child:
-                Column(
+            if (!loading) ...[
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    Text(
+                      '以下のミッションを削除します。ミッション達成の記録も全て削除されますが、よろしいですか？',
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                    SizedBox(height: 12.0),
                     Text('・ミッションタイトル：${missionData?.missionText}'),
                     Text('・ご褒美：${missionData?.reward}'),
                     Text('・ペナルティ：${missionData?.penalty}'),
-                    Text('・開始日時：${missionData?.starTime.toString().substring(0, 10)} ${missionData?.starTime.toString().substring(11, 16)}'),
-                    Text('・終了日時：${missionData?.endTime.toString().substring(0, 10)} ${missionData?.endTime.toString().substring(11, 16)}'),
+                    Text(
+                        '・開始日時：${missionData?.starTime.toString().substring(0, 10)} ${missionData?.starTime.toString().substring(11, 16)}'),
+                    Text(
+                        '・終了日時：${missionData?.endTime.toString().substring(0, 10)} ${missionData?.endTime.toString().substring(11, 16)}'),
                     Text('・きっかけ：${missionData?.opportunity}'),
                     Text('・メモ：${missionData?.note}'),
-                    Text('・ミッション作成日時：${missionData?.dateCreated.toString().substring(0, 10)} ${missionData?.dateCreated.toString().substring(11, 16)}'),
+                    Text(
+                        '・ミッション作成日時：${missionData?.dateCreated.toString().substring(0, 10)} ${missionData?.dateCreated.toString().substring(11, 16)}'),
                   ],
-                ),),
-
+                ),
+              ),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            TaskEditPage(value: int.parse(
-                                '${missionData?.missionNumber}')),
-                        //builder: (context) => TaskEditPage(value: int.parse('352'))
-                      ));
+                  int count = 0;
+                  Navigator.popUntil(context, (_) => count++ >= 1);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFAE0103),
@@ -112,7 +106,7 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
                   ),
                 ),
                 child: const Text(
-                  '編集',
+                  'キャンセル',
                   style: TextStyle(
                     color: Colors.white,
                   ),
@@ -120,30 +114,25 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            MissionDeletePage(value: int.parse(
-                                '${missionData?.missionNumber}')),
-                        //builder: (context) => TaskDeletePage(value: int.parse('352'))
-                      ));
+                  int count = 0;
+                  Navigator.popUntil(context, (_) => count++ >= 2);
+                  // ここに削除の処理書く
                 },
+                child: const Text(
+                  '本当に削除する',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFAE0103),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: const Text(
-                  '削除',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
               ),
-          ]],
+            ]
+          ],
         ));
   }
 }
-

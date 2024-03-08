@@ -7,6 +7,7 @@ import 'post_detail_page.dart';
 import 'reply_form.dart';
 import 'linkify_util.dart';
 import 'yalker_profile_page.dart';
+import 'post_image.dart';
 
 const Map<String, String> badge2Explanation = {
   "超早起き": "過去1週間のうち7日間早起きしたヤルカー",
@@ -655,6 +656,9 @@ class _HomePageState extends State<HomePage> {
                                                     //decoration: TextDecoration.underline,
                                                   )))
                                           .toList(),
+                                      ImageDisplay(
+                                        imageURLs: repost.postImageList,
+                                      )
                                     ],
                                   ),
                                 ),

@@ -1,23 +1,19 @@
 import 'package:flutter/material.dart';
-import 'api.dart';
-import 'task_page.dart';
+import '../api.dart';
 
-
-class TaskDeletePage extends StatefulWidget {
+class TaskEditPage extends StatefulWidget {
   // 画面遷移元からのデータを受け取る変数
   final int value;
-  const TaskDeletePage({Key? key, required this.value}) : super(key: key);
+  const TaskEditPage({Key? key, required this.value}) : super(key: key);
 
   @override
-  _TaskDeletePageState createState() => _TaskDeletePageState();
+  _TaskEditPageState createState() => _TaskEditPageState();
 }
 
-
-class _TaskDeletePageState extends State<TaskDeletePage> {
+class _TaskEditPageState extends State<TaskEditPage> {
   // 状態を管理する変数
   late int mission_number;
   Future<dynamic>? _missionData;
-
 
   @override
   void initState() {
@@ -30,7 +26,7 @@ class _TaskDeletePageState extends State<TaskDeletePage> {
   Future<void> _fetchMissionData() async {
     try {
       final Future<dynamic> response =
-      httpGet('mission/detail/${mission_number}', jwt: true);
+          httpGet('mission/detail/${mission_number}', jwt: true);
       setState(() {
         _missionData = response;
       });
@@ -39,12 +35,11 @@ class _TaskDeletePageState extends State<TaskDeletePage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Mission Delete'),
+          title: const Text('Mission Update'),
         ),
         body: FutureBuilder(
           future: _missionData,
@@ -59,17 +54,22 @@ class _TaskDeletePageState extends State<TaskDeletePage> {
               return Column(
                 children: <Widget>[
                   //Text('${mission["mission_text"]}'),
-                  Text('・ミッションタイトル：${mission["mission_text"]}'),
-                  Text('・開始日：${mission["start_time"]}'),
-                  Text('・終了日：${mission["opportunity"]}'),
-                  Text("↑このミッションを削除します。この動作は取り消せません。本当によろしいですか？"),
+                  Text('${mission}'),
+                  Text("[mission detail]"),
                   ElevatedButton(
                     onPressed: () {
-                      int count = 0;
-                      Navigator.popUntil(context, (_) => count++ >= 2);
+                      /*
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            //builder: (context) => TaskDetailPage(value: int.parse('${mission["mission_number"]}')),
+                              builder: (context) => TaskDetailPage(value: int.parse('352'))
+                          ));
+
+                       */
                     },
                     child: const Text(
-                      'Delete',
+                      'Update',
                       style: TextStyle(
                         color: Colors.white,
                       ),
@@ -88,4 +88,3 @@ class _TaskDeletePageState extends State<TaskDeletePage> {
         ));
   }
 }
-
