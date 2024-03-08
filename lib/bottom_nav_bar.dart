@@ -4,7 +4,7 @@ import 'home_page.dart';
 import 'notification.dart';
 import 'post_page.dart';
 import 'profile_page.dart';
-import 'mission_list.dart';
+import 'mission/mission_list.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});

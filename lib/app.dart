@@ -6,7 +6,7 @@ import 'package:yalkey_0206_test/post_page.dart';
 import 'bottom_nav_bar.dart';
 import 'home_page.dart';
 import 'setting_list.dart';
-import 'mission_list.dart';
+import 'mission/mission_list.dart';
 import 'goal_list.dart';
 import 'profile_page.dart';
 import 'notification_list.dart';
@@ -20,18 +20,14 @@ import 'followed_list_page.dart';
 class AppPage extends StatelessWidget {
   AppPage({super.key});
 
-
-
   Future<void> logout(context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.clear();
-    Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),(_) => false);
+    Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (context) => LoginPage()), (_) => false);
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
 
   _launchInBrowser(String url) async {
     //const url = 'https://pub.dev/packages/url_launcher';
@@ -76,9 +72,9 @@ class AppPage extends StatelessWidget {
 
 
              */
-        IconButton(
-            onPressed: () => _scaffoldKey.currentState!.openDrawer(),
-            icon: const Icon(Icons.person)),
+            IconButton(
+                onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+                icon: const Icon(Icons.person)),
         title: const Text("yalkey mobile"),
       ),
       body: const BottomNavBar(),
@@ -169,7 +165,8 @@ class AppPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const SearchRecommendUserListPage(),
+                        builder: (context) =>
+                            const SearchRecommendUserListPage(),
                       ),
                     );
                   },
@@ -207,15 +204,12 @@ class AppPage extends StatelessWidget {
                     );
                   },
                 ),
-                const Divider(
-                    height: 32.0,
-                    thickness: 1.0,
-                    color: Colors.grey
-                ),
+                const Divider(height: 32.0, thickness: 1.0, color: Colors.grey),
                 ListTile(
                   title: const Text("開発者への支援"),
                   onTap: () {
-                    _launchInBrowser("https://yalkey.net/ja/support-for-developer/");
+                    _launchInBrowser(
+                        "https://yalkey.net/ja/support-for-developer/");
                   },
                 ),
                 ListTile(
