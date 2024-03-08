@@ -92,25 +92,11 @@ class Progress {
   }
 }
 
-class UserRepost {
-  final int isRepost;
-  final String repostDate;
-  final String repostUserId;
-  final String repostUserName;
-  final String postUserIcon;
-  final int postUserNumber;
-  final String postUserId;
-  final String postUserName;
+class Post {
+  final int postNumber;
+  final PostUser postUser;
   final String? toPostUserId;
   final String? toPostUserName;
-  final int? postUserProfileNumber;
-  final bool? postUserPrivate;
-  final bool? postUserSuperHardWorker;
-  final bool? postUserHardWorker;
-  final bool? postUserRegularCustomer;
-  final bool? postUserSuperEarlyBird;
-  final bool? postUserEarlyBird;
-  final int postNumber;
   final String postText;
   final List<Progress> progressList;
   final String postCreatedAt;
@@ -118,28 +104,22 @@ class UserRepost {
   bool postLiked;
   bool postBookmarked;
   bool postReposted;
-  // bool postPinned;
+  bool? postPinned;
   final List<String> postImageList;
   final List<String> progressTextList;
+  final int? isRepost;
+  final String? repostDate;
+  final String? repostUserId;
+  final String? repostUserName;
 
-  UserRepost({
+  Post({
     required this.isRepost,
+    required this.postUser,
+    required this.toPostUserId,
+    required this.toPostUserName,
     required this.repostDate,
     required this.repostUserId,
     required this.repostUserName,
-    required this.postUserIcon,
-    required this.postUserNumber,
-    required this.postUserId,
-    required this.postUserName,
-    required this.toPostUserId,
-    required this.toPostUserName,
-    required this.postUserProfileNumber,
-    required this.postUserPrivate,
-    required this.postUserSuperHardWorker,
-    required this.postUserHardWorker,
-    required this.postUserRegularCustomer,
-    required this.postUserSuperEarlyBird,
-    required this.postUserEarlyBird,
     required this.postNumber,
     required this.postText,
     required this.progressList,
@@ -148,7 +128,7 @@ class UserRepost {
     required this.postLiked,
     required this.postBookmarked,
     required this.postReposted,
-    // required this.postPinned,
+    required this.postPinned,
     required this.postImageList,
     required this.progressTextList,
   });
@@ -233,51 +213,45 @@ class UserRepost {
     }
   }
 
-  factory UserRepost.fromJson(Map<String, dynamic> json) {
-    List<String> _postImageList = [];
+  Future<void> delete() async {
+    final response = await httpDelete('post/delete/$postNumber/', jwt: true);
+
+    if (response != 204) {
+      // エラーが発生した場合の処理
+      throw Exception('Post $postNumber is already unreposted in backend.');
+    }
+  }
+
+  Future<void> pin() async {
+    await httpPost('pin/$postNumber/', {}, jwt: true);
+    postPinned = true;
+  }
+
+  factory Post.fromJson(Map<String, dynamic> json) {
+    List<String> postImageList = [];
     List<Progress> progressList = [];
     List<String> progressTextList = [];
-    // print(json);
-    // print(a.runtimeType);
-    // print(a.length);
     if (json['progress_list'].length > 0) {
-      // print('-------------------');
-      // print(json['progress_list']);
       var progressJsonList = json['progress_list'] as List;
       progressList = progressJsonList
           .map((progressJson) => Progress.fromJson(progressJson))
           .toList();
-      // print(_getProgressTextList(progressList));
       progressTextList.addAll(_getProgressTextList(progressList));
-      // print(progressTextList);
     }
 
-    if (json['post_image_list'].length > 0) {
-      // print(json["post_image_list"]);
-      var postImageJsonList = json["post_image_list"] as List;
-      _postImageList =
-          postImageJsonList.map((postImage) => postImage.toString()).toList();
+    if (json['post_image_list'] != null) {
+      if (json['post_image_list'].length > 0) {
+        var postImageJsonList = json["post_image_list"] as List;
+        postImageList =
+            postImageJsonList.map((postImage) => postImage.toString()).toList();
+      }
     }
 
-    return UserRepost(
-      isRepost: json['is_repost'],
-      repostDate: json['repost_date'],
-      repostUserId: json['repost_user_id'],
-      repostUserName: json['repost_user_name'],
-      postUserIcon: json['post_user_icon'],
-      postUserNumber: json['post_user_number'],
-      postUserId: json['post_user_id'],
-      postUserName: json['post_user_name'],
+    return Post(
+      postNumber: json['post_number'],
+      postUser: PostUser.fromJson(json),
       toPostUserId: json['to_post_user_id'],
       toPostUserName: json['to_post_user_name'],
-      postUserProfileNumber: json['post_user_profile_number'],
-      postUserPrivate: json['post_user_private'],
-      postUserSuperHardWorker: json['post_user_super_hard_worker'],
-      postUserHardWorker: json['post_user_hard_worker'],
-      postUserRegularCustomer: json['post_user_regular_customer'],
-      postUserSuperEarlyBird: json['post_user_super_early_bird'],
-      postUserEarlyBird: json['post_user_early_bird'],
-      postNumber: json['post_number'],
       postText: json['post_text'],
       progressList: progressList,
       postCreatedAt: json['post_created_at'],
@@ -285,44 +259,14 @@ class UserRepost {
       postLiked: json['post_liked'],
       postBookmarked: json['post_bookmarked'],
       postReposted: json['post_reposted'],
-      // postPinned: json['post_pinned'],
-      postImageList: _postImageList,
+      postPinned: json['post_pinned'],
+      postImageList: postImageList,
       progressTextList: progressTextList,
+      isRepost: json['is_repost'],
+      repostDate: json['repost_date'],
+      repostUserId: json['repost_user_id'],
+      repostUserName: json['repost_user_name'],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'is_repost': isRepost,
-      'repost_date': repostDate,
-      'repost_user_id': repostUserId,
-      'repost_user_name': repostUserName,
-      'post_user_icon': postUserIcon,
-      'post_user_number': postUserNumber,
-      'post_user_id': postUserId,
-      'post_user_name': postUserName,
-      'to_post_user_id': toPostUserId,
-      'to_post_user_name': toPostUserName,
-      'post_user_profile_number': postUserProfileNumber,
-      'post_user_private': postUserPrivate,
-      'post_user_super_hard_worker': postUserSuperHardWorker,
-      'post_user_hard_worker': postUserHardWorker,
-      'post_user_regular_customer': postUserRegularCustomer,
-      'post_user_super_early_bird': postUserSuperEarlyBird,
-      'post_user_early_bird': postUserEarlyBird,
-      'post_number': postNumber,
-      'post_text': postText,
-      'progress_list':
-          progressList.map((progress) => progress.toJson()).toList(),
-      'post_created_at': postCreatedAt,
-      'post_like_number': postLikeNumber,
-      'post_liked': postLiked,
-      'post_bookmarked': postBookmarked,
-      'post_reposted': postReposted,
-      // 'post_pinned': postPinned,
-      'post_image_list': postImageList,
-      'progress_text_list': progressTextList
-    };
   }
 
   static List<String> _getProgressTextList(List<Progress> progressList) {
@@ -353,37 +297,11 @@ class UserRepost {
   }
 }
 
-class UserRepostListResponse {
-  final List<UserRepost> userRepostList;
-
-  UserRepostListResponse({required this.userRepostList});
-
-  factory UserRepostListResponse.fromJson(Map<String, dynamic> json) {
-    List<UserRepost> userRepostList = [];
-    if (json['user_repost_list'] != null) {
-      var userRepostJsonList = json['user_repost_list'] as List;
-      userRepostList = userRepostJsonList
-          .map((userRepost) => UserRepost.fromJson(userRepost))
-          .toList();
-    }
-    return UserRepostListResponse(userRepostList: userRepostList);
-  }
-
-  static Future<UserRepostListResponse> fetchUserRepostListResponse(
-      int page) async {
-    dynamic jsonData = await httpGet('home/$page', jwt: true);
-    // print(jsonData);
-    return UserRepostListResponse.fromJson(jsonData);
-  }
-}
-
-class Post {
+class PostUser {
   final String postUserIcon;
   final int postUserNumber;
   final String postUserId;
   final String postUserName;
-  final String? toPostUserId;
-  final String? toPostUserName;
   final int? postUserProfileNumber;
   final bool? postUserPrivate;
   final bool? postUserSuperHardWorker;
@@ -391,25 +309,12 @@ class Post {
   final bool? postUserRegularCustomer;
   final bool? postUserSuperEarlyBird;
   final bool? postUserEarlyBird;
-  final int postNumber;
-  final String postText;
-  final List<Progress> progressList;
-  final String postCreatedAt;
-  int postLikeNumber;
-  bool postLiked;
-  bool postBookmarked;
-  bool postReposted;
-  // bool postPinned;
-  // final List<String> postImageList;
-  final List<String> progressTextList;
 
-  Post({
+  PostUser({
     required this.postUserIcon,
     required this.postUserNumber,
     required this.postUserId,
     required this.postUserName,
-    required this.toPostUserId,
-    required this.toPostUserName,
     required this.postUserProfileNumber,
     required this.postUserPrivate,
     required this.postUserSuperHardWorker,
@@ -417,123 +322,14 @@ class Post {
     required this.postUserRegularCustomer,
     required this.postUserSuperEarlyBird,
     required this.postUserEarlyBird,
-    required this.postNumber,
-    required this.postText,
-    required this.progressList,
-    required this.postCreatedAt,
-    required this.postLikeNumber,
-    required this.postLiked,
-    required this.postBookmarked,
-    required this.postReposted,
-    // required this.postPinned,
-    // required this.postImageList,
-    required this.progressTextList,
   });
 
-  Future<void> like() async {
-    if (postLiked) {
-      throw Exception('Post $postNumber is already liked.');
-    } else {
-      final response = await httpPost('like/$postNumber/', null, jwt: true);
-      if (response['liked']) {
-        postLiked = true;
-        postLikeNumber++;
-      } else {
-        throw Exception('Post $postNumber is already liked in backend.');
-      }
-    }
-  }
-
-  Future<void> unlike() async {
-    if (!postLiked) {
-      throw Exception('Post $postNumber is already unliked.');
-    } else {
-      final response = await httpPost('like/$postNumber/', null, jwt: true);
-      if (!response['liked']) {
-        postLiked = false;
-        postLikeNumber--;
-      } else {
-        throw Exception('Post $postNumber is already unliked in backend.');
-      }
-    }
-  }
-
-  Future<void> bookmark() async {
-    if (postBookmarked) {
-      throw Exception('Post $postNumber is already bookmarked.');
-    } else {
-      final response = await httpPost('bookmark/$postNumber/', null, jwt: true);
-      if (response['bookmarked']) {
-        postBookmarked = true;
-      } else {
-        throw Exception('Post $postNumber is already bookmarked in backend.');
-      }
-    }
-  }
-
-  Future<void> unbookmark() async {
-    if (!postBookmarked) {
-      throw Exception('Post $postNumber is already unbookmarked.');
-    } else {
-      final response = await httpPost('bookmark/$postNumber/', null, jwt: true);
-      if (!response['bookmarked']) {
-        postBookmarked = false;
-      } else {
-        throw Exception('Post $postNumber is already unbookmarked in backend.');
-      }
-    }
-  }
-
-  Future<void> repost() async {
-    if (postReposted) {
-      throw Exception('Post $postNumber is already reposted.');
-    } else {
-      final response = await httpPost('repost/$postNumber/', null, jwt: true);
-      if (response['reposted']) {
-        postReposted = true;
-      } else {
-        throw Exception('Post $postNumber is already reposted in backend.');
-      }
-    }
-  }
-
-  Future<void> unrepost() async {
-    if (!postReposted) {
-      throw Exception('Post $postNumber is already unreposted.');
-    } else {
-      final response = await httpPost('repost/$postNumber/', null, jwt: true);
-      if (!response['reposted']) {
-        postReposted = false;
-      } else {
-        throw Exception('Post $postNumber is already unreposted in backend.');
-      }
-    }
-  }
-
-  factory Post.fromJson(Map<String, dynamic> json) {
-    List<Progress> progressList = [];
-    List<String> progressTextList = [];
-    // print(json);
-    // print(a.runtimeType);
-    // print(a.length);
-    if (json['progress_list'].length > 0) {
-      // print('-------------------');
-      // print(json['progress_list']);
-      var progressJsonList = json['progress_list'] as List;
-      progressList = progressJsonList
-          .map((progressJson) => Progress.fromJson(progressJson))
-          .toList();
-      // print(_getProgressTextList(progressList));
-      progressTextList.addAll(_getProgressTextList(progressList));
-      // print(progressTextList);
-    }
-    return Post(
+  factory PostUser.fromJson(Map<String, dynamic> json) {
+    return PostUser(
       postUserIcon: json['post_user_icon'],
       postUserNumber: json['post_user_number'],
       postUserId: json['post_user_id'],
       postUserName: json['post_user_name'],
-      toPostUserId: json['to_post_user_id'],
-      toPostUserName: json['to_post_user_name'],
       postUserProfileNumber: json['post_user_profile_number'],
       postUserPrivate: json['post_user_private'],
       postUserSuperHardWorker: json['post_user_super_hard_worker'],
@@ -541,84 +337,33 @@ class Post {
       postUserRegularCustomer: json['post_user_regular_customer'],
       postUserSuperEarlyBird: json['post_user_super_early_bird'],
       postUserEarlyBird: json['post_user_early_bird'],
-      postNumber: json['post_number'],
-      postText: json['post_text'],
-      progressList: progressList,
-      postCreatedAt: json['post_created_at'],
-      postLikeNumber: json['post_like_number'],
-      postLiked: json['post_liked'],
-      postBookmarked: json['post_bookmarked'],
-      postReposted: json['post_reposted'],
-      // postPinned: json['post_pinned'],
-      // postImageList: json['post_image_list'],
-      progressTextList: progressTextList,
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'post_user_icon': postUserIcon,
-      'post_user_number': postUserNumber,
-      'post_user_id': postUserId,
-      'post_user_name': postUserName,
-      'to_post_user_id': toPostUserId,
-      'to_post_user_name': toPostUserName,
-      'post_user_profile_number': postUserProfileNumber,
-      'post_user_private': postUserPrivate,
-      'post_user_super_hard_worker': postUserSuperHardWorker,
-      'post_user_hard_worker': postUserHardWorker,
-      'post_user_regular_customer': postUserRegularCustomer,
-      'post_user_super_early_bird': postUserSuperEarlyBird,
-      'post_user_early_bird': postUserEarlyBird,
-      'post_number': postNumber,
-      'post_text': postText,
-      'progress_list':
-          progressList.map((progress) => progress.toJson()).toList(),
-      'post_created_at': postCreatedAt,
-      'post_like_number': postLikeNumber,
-      'post_liked': postLiked,
-      'post_bookmarked': postBookmarked,
-      'post_reposted': postReposted,
-      // 'post_pinned': postPinned,
-      // 'post_image_list': postImageList,
-      'progress_text_list': progressTextList
-    };
-  }
-
-  static List<String> _getProgressTextList(List<Progress> progressList) {
-    List<String> progressTextList = [];
-    for (var progress in progressList) {
-      switch (progress.reportType) {
-        case 0: // 時間型
-          progressTextList.add(
-              '${progress.reportTitle}:${progress.progressHours}時間${progress.progressMinutes}分 (${progress.progressDate})');
-          break;
-        case 1: // None
-          break;
-        case 2: // int
-          progressTextList.add(
-              '${progress.reportTitle}:${progress.progressCustomData}${progress.progressUnit} (${progress.progressDate})');
-          break;
-        case 3: // float
-          progressTextList.add(
-              '${progress.reportTitle}:${progress.progressCustomFloatData}${progress.progressUnit} (${progress.progressDate})');
-          break;
-        case 4: // bool
-          progressTextList.add(
-              '${progress.reportTitle}:${progress.progressTodo ? '達成' : '未達成'} (${progress.progressDate})');
-          break;
-      }
-    }
-    return (progressTextList);
   }
 }
 
+// Postリストのレスポンスモデル
 class PostListResponse {
   final List<Post> postList;
 
   PostListResponse({required this.postList});
 
-  factory PostListResponse.fromJson(Map<String, dynamic> json) {
+  factory PostListResponse.fromResponseUserRepostList(
+      Map<String, dynamic> json) {
+    List<Post> postList = [];
+    if (json['user_repost_list'] != null) {
+      var postJsonList = json['user_repost_list'] as List;
+      postList = postJsonList.map((post) => Post.fromJson(post)).toList();
+    }
+    return PostListResponse(postList: postList);
+  }
+
+  static Future<PostListResponse> fetchPostListResponse(int page) async {
+    dynamic jsonData = await httpGet('home/$page', jwt: true);
+    // print(jsonData);
+    return PostListResponse.fromResponseUserRepostList(jsonData);
+  }
+
+  factory PostListResponse.fromResponsePostList(Map<String, dynamic> json) {
     List<Post> postList = [];
     if (json['post_list'] != null) {
       var postJsonList = json['post_list'] as List;
@@ -627,19 +372,61 @@ class PostListResponse {
     return PostListResponse(postList: postList);
   }
 
-  static Future<PostListResponse> fetchSearchPostListResponse(
+  static Future<PostListResponse> fetchSearchPostResponse(
       int page, String keyword) async {
     dynamic jsonData =
         await httpGet('search-list/${page}/?keyword=${keyword}', jwt: true);
-    return PostListResponse.fromJson(jsonData);
+    return PostListResponse.fromResponsePostList(jsonData);
   }
 
-  static Future<PostListResponse> fetchBookmarkPostListResponse(
-      int page) async {
+  static Future<PostListResponse> fetchBookmarkPostResponse(int page) async {
     dynamic jsonData = await httpGet('user-bookmark/$page', jwt: true);
-    //print(jsonData);
-    //print("-------");
-    //print(jsonData['user_bookmark_list'][0]);
-    return PostListResponse.fromJson(jsonData['user_bookmark_list'][0]);
+    return PostListResponse.fromResponsePostList(
+        jsonData['user_bookmark_list'][0]);
+  }
+}
+
+// PostDetailPage用レスポンスモデル
+class PostDetailResponse {
+  final Post post;
+  final Post? toPost;
+  final List<Post> replyList;
+
+  PostDetailResponse({
+    required this.post,
+    required this.toPost,
+    required this.replyList,
+  });
+
+  factory PostDetailResponse.fromJson(Map<String, dynamic> json) {
+    Post? toPost = json['to_post_detail'] != null
+        ? Post.fromJson(json['to_post_detail'])
+        : null;
+    if (json['reply_list'].isNotEmpty) {
+      print(json['reply_list']
+          .map((json) => {Post.fromJson(json) as Post})
+          .toList());
+    }
+    if (json['reply_list'].isNotEmpty) {
+      print(json['reply_list']
+          .map((json) => {Post.fromJson(json) as Post})
+          .toList()
+          .runtimeType);
+    }
+    List<Post> replyList = json['reply_list'].isNotEmpty
+        ? (json['reply_list'] as List<dynamic>)
+            .map((json) => Post.fromJson(json as Map<String, dynamic>))
+            .toList()
+        : [];
+    return PostDetailResponse(
+        post: Post.fromJson(json['post_detail']),
+        toPost: toPost,
+        replyList: replyList);
+  }
+
+  static Future<PostDetailResponse> fetchPostDetailResponse(
+      int postNumber) async {
+    dynamic jsonData = await httpGet('detail/$postNumber', jwt: true);
+    return PostDetailResponse.fromJson(jsonData);
   }
 }

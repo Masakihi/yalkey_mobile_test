@@ -15,8 +15,8 @@ const Map<String, String> badge2Explanation = {
 };
 
 class PostWidget extends StatefulWidget {
-  final UserRepost userRepost;
-  const PostWidget({Key? key, required this.userRepost}) : super(key: key);
+  final Post post;
+  const PostWidget({Key? key, required this.post}) : super(key: key);
 
   @override
   _PostWidgetState createState() => _PostWidgetState();
@@ -40,7 +40,7 @@ class _PostWidgetState extends State<PostWidget> {
         return FractionallySizedBox(
           // 画面の9割の高さを調整
           heightFactor: 0.9,
-          child: ReplyForm(postNumber: widget.userRepost.postNumber),
+          child: ReplyForm(postNumber: widget.post.postNumber),
         );
       },
     ).then((value) {
@@ -59,15 +59,15 @@ class _PostWidgetState extends State<PostWidget> {
       return;
     }
     _liking = true;
-    if (widget.userRepost.postLiked) {
-      await widget.userRepost.unlike();
+    if (widget.post.postLiked) {
+      await widget.post.unlike();
       setState(() {});
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('いいねを解除しました')),
       );
     } else {
-      await widget.userRepost.like();
+      await widget.post.like();
       setState(() {});
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -82,15 +82,15 @@ class _PostWidgetState extends State<PostWidget> {
       return;
     }
     _bookmarking = true;
-    if (widget.userRepost.postBookmarked) {
-      await widget.userRepost.unbookmark();
+    if (widget.post.postBookmarked) {
+      await widget.post.unbookmark();
       setState(() {});
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('ブックマークを解除しました')),
       );
     } else {
-      await widget.userRepost.bookmark();
+      await widget.post.bookmark();
       setState(() {});
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -106,15 +106,15 @@ class _PostWidgetState extends State<PostWidget> {
       return;
     }
     _reposting = true;
-    if (widget.userRepost.postReposted) {
-      await widget.userRepost.unrepost();
+    if (widget.post.postReposted) {
+      await widget.post.unrepost();
       setState(() {});
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('リポストを解除しました')),
       );
     } else {
-      await widget.userRepost.repost();
+      await widget.post.repost();
       setState(() {});
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -129,7 +129,7 @@ class _PostWidgetState extends State<PostWidget> {
         context,
         MaterialPageRoute(
           builder: (context) =>
-              PostDetailPage(postNumber: widget.userRepost.postNumber),
+              PostDetailPage(postNumber: widget.post.postNumber),
         ));
   }
 
@@ -137,8 +137,8 @@ class _PostWidgetState extends State<PostWidget> {
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              YalkerProfilePage(userNumber: widget.userRepost.postUserNumber),
+          builder: (context) => YalkerProfilePage(
+              userNumber: widget.post.postUser.postUserNumber),
         ));
   }
 
@@ -173,7 +173,7 @@ class _PostWidgetState extends State<PostWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              if (widget.userRepost.isRepost == 1)
+              if (widget.post.isRepost == 1)
                 Row(
                   children: [
                     const Icon(
@@ -182,7 +182,7 @@ class _PostWidgetState extends State<PostWidget> {
                       size: 12.0,
                     ),
                     Text(
-                      '${widget.userRepost.repostUserName}さんがリポスト',
+                      '${widget.post.repostUserName}さんがリポスト',
                       style: const TextStyle(
                           fontSize: 12.0,
                           color: Colors.grey,
@@ -190,8 +190,8 @@ class _PostWidgetState extends State<PostWidget> {
                     ),
                   ],
                 ),
-              if (widget.userRepost.isRepost == 1) const SizedBox(height: 8.0),
-              if (widget.userRepost.toPostUserName != null)
+              if (widget.post.isRepost == 1) const SizedBox(height: 8.0),
+              if (widget.post.toPostUserName != null)
                 Row(
                   children: [
                     const Icon(
@@ -200,7 +200,7 @@ class _PostWidgetState extends State<PostWidget> {
                       size: 12.0,
                     ),
                     Text(
-                      '${widget.userRepost.toPostUserName}さんに対する返信',
+                      '${widget.post.toPostUserName}さんに対する返信',
                       style: const TextStyle(
                           fontSize: 12.0,
                           color: Colors.grey,
@@ -208,7 +208,7 @@ class _PostWidgetState extends State<PostWidget> {
                     ),
                   ],
                 ),
-              if (widget.userRepost.toPostUserName != null)
+              if (widget.post.toPostUserName != null)
                 const SizedBox(height: 8.0),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,9 +216,9 @@ class _PostWidgetState extends State<PostWidget> {
                   GestureDetector(
                     onTap: () {
                       _navigateToYalkerDetailPage(
-                          widget.userRepost.postUserNumber);
+                          widget.post.postUser.postUserNumber);
                     },
-                    child: widget.userRepost.postUserIcon == ""
+                    child: widget.post.postUser.postUserIcon == ""
                         ? const CircleAvatar(
                             backgroundColor: Colors.white,
                             backgroundImage: NetworkImage(
@@ -227,7 +227,7 @@ class _PostWidgetState extends State<PostWidget> {
                           )
                         : CircleAvatar(
                             backgroundImage: NetworkImage(
-                              'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${widget.userRepost.postUserIcon}',
+                              'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${widget.post.postUser.postUserIcon}',
                             ),
                           ),
                   ),
@@ -237,20 +237,20 @@ class _PostWidgetState extends State<PostWidget> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          widget.userRepost.postUserName,
+                          widget.post.postUser.postUserName,
                           style: const TextStyle(fontSize: 18.0),
                         ),
                         const SizedBox(height: 4.0),
                         Row(
                           children: [
-                            if (widget.userRepost.postUserPrivate ?? false)
+                            if (widget.post.postUser.postUserPrivate ?? false)
                               const Icon(
                                 Icons.lock,
                                 color: Colors.grey,
                                 size: 12.0,
                               ),
                             Text(
-                              '@${widget.userRepost.postUserId} / ${widget.userRepost.postCreatedAt.toString().substring(0, 10)} ${widget.userRepost.postCreatedAt.toString().substring(11, 16)}',
+                              '@${widget.post.postUser.postUserId} / ${widget.post.postCreatedAt.toString().substring(0, 10)} ${widget.post.postCreatedAt.toString().substring(11, 16)}',
                               style: const TextStyle(
                                   fontSize: 12.0, color: Colors.grey),
                             ),
@@ -259,7 +259,7 @@ class _PostWidgetState extends State<PostWidget> {
                         const SizedBox(height: 8.0),
                         Row(
                           children: [
-                            if (widget.userRepost.postUserSuperEarlyBird ??
+                            if (widget.post.postUser.postUserSuperEarlyBird ??
                                 false)
                               GestureDetector(
                                 behavior: HitTestBehavior.translucent,
@@ -288,7 +288,7 @@ class _PostWidgetState extends State<PostWidget> {
                                   ),
                                 ),
                               ),
-                            if (widget.userRepost.postUserSuperEarlyBird ??
+                            if (widget.post.postUser.postUserSuperEarlyBird ??
                                 false)
                               GestureDetector(
                                 behavior: HitTestBehavior.translucent,
@@ -317,7 +317,7 @@ class _PostWidgetState extends State<PostWidget> {
                                   ),
                                 ),
                               ),
-                            if (widget.userRepost.postUserSuperHardWorker ??
+                            if (widget.post.postUser.postUserSuperHardWorker ??
                                 false)
                               GestureDetector(
                                 behavior: HitTestBehavior.translucent,
@@ -346,7 +346,8 @@ class _PostWidgetState extends State<PostWidget> {
                                   ),
                                 ),
                               ),
-                            if (widget.userRepost.postUserHardWorker ?? false)
+                            if (widget.post.postUser.postUserHardWorker ??
+                                false)
                               GestureDetector(
                                 behavior: HitTestBehavior.translucent,
                                 onTap: () {
@@ -374,7 +375,7 @@ class _PostWidgetState extends State<PostWidget> {
                                   ),
                                 ),
                               ),
-                            if (widget.userRepost.postUserRegularCustomer ??
+                            if (widget.post.postUser.postUserRegularCustomer ??
                                 false)
                               GestureDetector(
                                 behavior: HitTestBehavior.translucent,
@@ -406,11 +407,11 @@ class _PostWidgetState extends State<PostWidget> {
                           ],
                         ),
                         const SizedBox(height: 8.0),
-                        widget.userRepost.postText != ''
-                            ? LinkifyUtil(text: widget.userRepost.postText)
+                        widget.post.postText != ''
+                            ? LinkifyUtil(text: widget.post.postText)
                             : const SizedBox.shrink(),
                         const SizedBox(height: 8.0),
-                        ...widget.userRepost.progressTextList
+                        ...widget.post.progressTextList
                             .map((progressText) => Text("$progressText",
                                 style: const TextStyle(
                                   fontSize: 16.0,
@@ -420,7 +421,7 @@ class _PostWidgetState extends State<PostWidget> {
                                 )))
                             .toList(),
                         ImageDisplay(
-                          imageURLs: widget.userRepost.postImageList,
+                          imageURLs: widget.post.postImageList,
                         )
                       ],
                     ),
@@ -446,19 +447,19 @@ class _PostWidgetState extends State<PostWidget> {
                           like();
                         },
                         icon: Icon(
-                          widget.userRepost.postLiked
+                          widget.post.postLiked
                               ? Icons.favorite
                               : Icons.favorite_border,
-                          color: widget.userRepost.postLiked
+                          color: widget.post.postLiked
                               ? const Color(0xFFF75D5D)
                               : const Color(0xFF929292), // 赤色にするかどうか
                         ),
                       ),
                       Text(
-                        '${widget.userRepost.postLikeNumber}', // いいね数を表示
+                        '${widget.post.postLikeNumber}', // いいね数を表示
                         style: TextStyle(
                           fontSize: 16.0,
-                          color: widget.userRepost.postLiked
+                          color: widget.post.postLiked
                               ? const Color(0xFFF75D5D)
                               : const Color(0xFF929292),
                         ),
@@ -470,10 +471,10 @@ class _PostWidgetState extends State<PostWidget> {
                       bookmark();
                     },
                     icon: Icon(
-                        widget.userRepost.postBookmarked
+                        widget.post.postBookmarked
                             ? Icons.bookmark
                             : Icons.bookmark_border,
-                        color: widget.userRepost.postBookmarked
+                        color: widget.post.postBookmarked
                             ? const Color.fromRGBO(255, 196, 67, 1)
                             : const Color(0xFF929292)),
                   ),
@@ -482,7 +483,7 @@ class _PostWidgetState extends State<PostWidget> {
                       _repost();
                     },
                     icon: Icon(Icons.refresh,
-                        color: widget.userRepost.postReposted
+                        color: widget.post.postReposted
                             ? const Color.fromRGBO(102, 205, 170, 1)
                             : const Color(0xFF929292)),
                   ),
