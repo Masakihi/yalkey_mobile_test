@@ -4,21 +4,36 @@ import 'package:yalkey_0206_test/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yalkey_0206_test/post_page.dart';
 import 'bottom_nav_bar.dart';
-import 'home_page.dart';
-import 'setting_list.dart';
+import 'setting/setting_list.dart';
 import 'mission/mission_list.dart';
-import 'goal_list.dart';
-import 'profile_page.dart';
-import 'notification_list.dart';
-import 'search_recommend_user.dart';
-import 'search_post.dart';
+import 'goal/goal_list.dart';
+import 'profile/profile_page.dart';
+import 'notification/notification_list.dart';
+import 'search/search_recommend_user.dart';
 import 'user_bookmark_list.dart';
 
-import 'following_list_page.dart';
-import 'followed_list_page.dart';
+class AppPage extends StatefulWidget {
+  const AppPage({Key? key}) : super(key: key);
 
-class AppPage extends StatelessWidget {
-  AppPage({super.key});
+  @override
+  _AppPageState createState() => _AppPageState();
+}
+
+class _AppPageState extends State<AppPage> {
+  String? loginUserIconImage;
+
+  @override
+  void initState() {
+    super.initState();
+    _getLoginUserIconImage();
+  }
+
+  Future<void> _getLoginUserIconImage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var _loginUserIconImage = prefs.getString('login_user_iconimage');
+
+    setState(() => loginUserIconImage = _loginUserIconImage);
+  }
 
   Future<void> logout(context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -72,9 +87,18 @@ class AppPage extends StatelessWidget {
 
 
              */
-            IconButton(
-                onPressed: () => _scaffoldKey.currentState!.openDrawer(),
-                icon: const Icon(Icons.person)),
+            // IconButton(
+            //     onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+            //     icon: const Icon(Icons.person)),
+            GestureDetector(
+                onTap: () => _scaffoldKey.currentState!.openDrawer(),
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(
+                    loginUserIconImage ??
+                        'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
+                  ),
+                  radius: 20, // アイコンの半径を小さくする
+                )),
         title: const Text("yalkey mobile"),
       ),
       body: const BottomNavBar(),

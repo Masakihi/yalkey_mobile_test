@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'constant.dart';
+import '../constant.dart';
 
 // 最大値を計算するためのジェネリック関数
 double findMax(List<dynamic> values) {
@@ -18,7 +18,6 @@ double findMax(List<dynamic> values) {
 
   return maxVal;
 }
-
 
 String convertDateTime2String(DateTime dateTime) {
   return '${dateTime.year}年${dateTime.month}月${dateTime.day}日';

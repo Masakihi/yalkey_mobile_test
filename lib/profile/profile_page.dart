@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'api.dart';
+import '../api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'profile_edit_page.dart';
 import 'bar_graph.dart';
-import 'constant.dart';
+import '../constant.dart';
 import 'achievement_calendar.dart';
 
 class ProfilePage extends StatefulWidget {

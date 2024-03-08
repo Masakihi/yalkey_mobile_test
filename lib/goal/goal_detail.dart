@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'constant.dart';
+import '../constant.dart';
 import 'goal_delete.dart';
 import 'goal_update.dart';
-import 'mission/task_edit_page.dart';
+import '../mission/task_edit_page.dart';
 
 class GoalDetailPage extends StatefulWidget {
   // 画面遷移元からのデータを受け取る変数

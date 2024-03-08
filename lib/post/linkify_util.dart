@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' show PreviewData;
 import 'dart:developer';
+import '../search/search_post.dart';
 
 void printAll(String _log) {
   log(_log, name: 'Response');
@@ -42,8 +43,10 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
   }
 
   void _buildTextSpans(String text) {
-    final RegExp regex =
-        RegExp(r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+');
+    final RegExp regex = RegExp(
+        r'((?:https?|ftp):\/\/[\w/\-?=%.]+\.[\w/\-&?=%.]+)|((?<=\s|^)#[\w\一-\龥ぁ-んァ-ンー]+(?=\s|$))',
+        multiLine: true);
+    final RegExp regexHash = RegExp(r'^#');
 
     final matches = regex.allMatches(text);
     final List<InlineSpan> spans = [];
@@ -86,13 +89,29 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
 
       String url = match.group(0)!;
       totalTextLength += url.length;
-      spans.add(
-        TextSpan(
+      if (regexHash.hasMatch(url)) {
+        spans.add(TextSpan(
           text: url,
           style: TextStyle(color: const Color(0xFFAE0103), fontSize: 16),
-          recognizer: TapGestureRecognizer()..onTap = () => _launchURL(url),
-        ),
-      );
+          recognizer: TapGestureRecognizer()
+            ..onTap = () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SearchPostListPage(keyword: url),
+                ),
+              );
+            },
+        ));
+      } else {
+        spans.add(
+          TextSpan(
+            text: url,
+            style: TextStyle(color: const Color(0xFFAE0103), fontSize: 16),
+            recognizer: TapGestureRecognizer()..onTap = () => _launchURL(url),
+          ),
+        );
+      }
 
       currentIndex = match.end;
       lastLinkStart = match.start;

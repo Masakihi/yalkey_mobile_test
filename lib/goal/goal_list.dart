@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'constant.dart';
+import '../constant.dart';
 import 'goal_detail.dart';
 import 'goal_create.dart';
 
@@ -38,12 +38,11 @@ class _GoalListPageState extends State<GoalListPage> {
       _loading = true; // データのロード中フラグをtrueに設定
     });
 
-    GoalListResponse  goalListResponse =
-    await GoalListResponse.fetchGoalListResponse(_page);
+    GoalListResponse goalListResponse =
+        await GoalListResponse.fetchGoalListResponse(_page);
     if (mounted) {
       setState(() {
-        _goalList
-            .addAll(goalListResponse.goalList); // 新しいデータをリストに追加
+        _goalList.addAll(goalListResponse.goalList); // 新しいデータをリストに追加
         _loading = false; // データのロード中フラグをfalseに設定
       });
     }
@@ -78,7 +77,6 @@ class _GoalListPageState extends State<GoalListPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,15 +88,14 @@ class _GoalListPageState extends State<GoalListPage> {
         onRefresh: () async {
           _clearCache();
         },
-        child:Column(
+        child: Column(
           children: <Widget>[
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          GoalCreatePage(),
+                      builder: (context) => GoalCreatePage(),
                       //builder: (context) => TaskDeletePage(value: int.parse('352'))
                     ));
               },
@@ -123,12 +120,12 @@ class _GoalListPageState extends State<GoalListPage> {
                   if (index == _goalList.length) {
                     return _loading
                         ? Container(
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.all(16.0),
-                      child: CircularProgressIndicator(
-                        strokeWidth: 3.0,
-                      ),
-                    )
+                            alignment: Alignment.center,
+                            padding: EdgeInsets.all(16.0),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3.0,
+                            ),
+                          )
                         : SizedBox.shrink(); // ローディングインジケーターを表示
                   }
                   final goal = _goalList[index];
@@ -141,27 +138,27 @@ class _GoalListPageState extends State<GoalListPage> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            GestureDetector( //InkWellでも同じ
+                            GestureDetector(
+                              //InkWellでも同じ
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => GoalDetailPage(value: int.parse('${goal.goalNumber}')),
+                                    builder: (context) => GoalDetailPage(
+                                        value: int.parse('${goal.goalNumber}')),
                                     //builder: (context) => TaskDetailPage(value: int.parse('352')),
                                   ),
                                 );
                               },
 
-
-
                               child: Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                      Text(
-                                        goal.goalText,
-                                        style: const TextStyle(fontSize: 18.0),
-                                      ),
+                                    Text(
+                                      goal.goalText,
+                                      style: const TextStyle(fontSize: 18.0),
+                                    ),
                                     SizedBox(height: 4.0),
                                     Text(
                                       '期限：${goal.deadline.toString().substring(0, 10)} ${goal.deadline.toString().substring(11, 16)}',
@@ -171,9 +168,6 @@ class _GoalListPageState extends State<GoalListPage> {
                                   ],
                                 ),
                               ),
-
-
-
                             ),
                           ],
                         ),
