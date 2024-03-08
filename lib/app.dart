@@ -4,12 +4,12 @@ import 'package:yalkey_0206_test/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yalkey_0206_test/post_page.dart';
 import 'bottom_nav_bar.dart';
-import 'setting_list.dart';
+import 'setting/setting_list.dart';
 import 'mission/mission_list.dart';
-import 'goal_list.dart';
-import 'profile_page.dart';
-import 'notification_list.dart';
-import 'search_recommend_user.dart';
+import 'goal/goal_list.dart';
+import 'profile/profile_page.dart';
+import 'notification/notification_list.dart';
+import 'search/search_recommend_user.dart';
 import 'user_bookmark_list.dart';
 
 class AppPage extends StatefulWidget {

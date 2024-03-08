@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'api.dart';
 import 'app.dart';
 import 'register_page.dart';
-import 'password_reset.dart';
+import 'setting/password_reset.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

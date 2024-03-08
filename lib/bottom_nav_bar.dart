@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:yalkey_0206_test/notification_list.dart';
+import 'notification/notification_list.dart';
 import 'home_page.dart';
-import 'notification.dart';
+import 'notification/notification.dart';
 import 'post_page.dart';
-import 'profile_page.dart';
+import 'profile/profile_page.dart';
 import 'mission/mission_list.dart';
 
 class BottomNavBar extends StatefulWidget {

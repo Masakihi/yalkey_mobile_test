@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'constant.dart';
-
+import '../constant.dart';
 
 class GoalDeletePage extends StatefulWidget {
   // 画面遷移元からのデータを受け取る変数
@@ -11,13 +10,11 @@ class GoalDeletePage extends StatefulWidget {
   _GoalDeletePageState createState() => _GoalDeletePageState();
 }
 
-
 class _GoalDeletePageState extends State<GoalDeletePage> {
   // 状態を管理する変数
   late int goalNumber;
   Goal? goalData;
   bool loading = false; // データをロード中かどうかを示すフラグ
-
 
   @override
   void initState() {
@@ -33,7 +30,7 @@ class _GoalDeletePageState extends State<GoalDeletePage> {
     });
 
     GoalResponse goalResponse =
-    await GoalResponse.fetchGoalResponse(goalNumber);
+        await GoalResponse.fetchGoalResponse(goalNumber);
     if (mounted) {
       setState(() {
         goalData = goalResponse.goal; // 新しいデータをリストに追加
@@ -41,7 +38,6 @@ class _GoalDeletePageState extends State<GoalDeletePage> {
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -59,26 +55,24 @@ class _GoalDeletePageState extends State<GoalDeletePage> {
       }
     }
 
-
     return Scaffold(
         appBar: AppBar(
           title: const Text('目標削除'),
         ),
-        body:
-        Column(
+        body: Column(
           children: <Widget>[
-            if (loading) Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.all(16.0),
-              child: const CircularProgressIndicator(
-                strokeWidth: 3.0,
+            if (loading)
+              Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.all(16.0),
+                child: const CircularProgressIndicator(
+                  strokeWidth: 3.0,
+                ),
               ),
-            ),
-            if (!loading)...[
+            if (!loading) ...[
               Padding(
                 padding: const EdgeInsets.all(10.0),
-                child:
-                Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text('・目標タイトル：${goalData?.goalText}'),
@@ -86,10 +80,13 @@ class _GoalDeletePageState extends State<GoalDeletePage> {
                     Text('・目標達成時に得られるもの：${goalData?.benefit}'),
                     Text('・目標達成できなかった場合の損失：${goalData?.loss}'),
                     Text('・メモ：${goalData?.note}'),
-                    Text('・期限：${goalData?.deadline.toString().substring(0, 10)} ${goalData?.deadline.toString().substring(11, 16)}'),
-                    Text('・目標作成日時：${goalData?.dateCreated.toString().substring(0, 10)} ${goalData?.dateCreated.toString().substring(11, 16)}'),
+                    Text(
+                        '・期限：${goalData?.deadline.toString().substring(0, 10)} ${goalData?.deadline.toString().substring(11, 16)}'),
+                    Text(
+                        '・目標作成日時：${goalData?.dateCreated.toString().substring(0, 10)} ${goalData?.dateCreated.toString().substring(11, 16)}'),
                   ],
-                ),),
+                ),
+              ),
               ElevatedButton(
                 onPressed: () {
                   int count = 0;
@@ -126,8 +123,9 @@ class _GoalDeletePageState extends State<GoalDeletePage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-              ),            ]],
+              ),
+            ]
+          ],
         ));
   }
 }
-

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'api.dart';
+import '../api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -88,9 +88,6 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         title: Text('プロフィール編集'),
       ),
       body: SingleChildScrollView(
-
-
-
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -129,14 +126,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               ),
             ],
           ),
-
-
-
         ),
       ),
-
-
-
     );
   }
 }

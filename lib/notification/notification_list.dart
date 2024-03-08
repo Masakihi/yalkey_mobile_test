@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:yalkey_0206_test/post/post_detail_page.dart';
-import 'package:yalkey_0206_test/yalker_profile_page.dart';
-import 'api.dart';
-import 'constant.dart';
+import '../profile/yalker_profile_page.dart';
+import '../api.dart';
+import '../constant.dart';
 
 class NotificationListPage extends StatefulWidget {
   const NotificationListPage({Key? key}) : super(key: key);

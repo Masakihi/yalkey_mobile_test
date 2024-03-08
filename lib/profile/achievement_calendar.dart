@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'constant.dart';
+import '../constant.dart';
 
 class AchievementCalendar extends StatelessWidget {
   final int userId;

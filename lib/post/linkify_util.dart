@@ -4,7 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' show PreviewData;
 import 'dart:developer';
-import '../search_post.dart';
+import '../search/search_post.dart';
 
 void printAll(String _log) {
   log(_log, name: 'Response');

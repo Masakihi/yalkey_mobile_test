@@ -3,7 +3,7 @@ import 'post_model.dart';
 import 'post_detail_page.dart';
 import 'reply_form.dart';
 import 'linkify_util.dart';
-import '../yalker_profile_page.dart';
+import '../profile/yalker_profile_page.dart';
 import 'post_image.dart';
 
 const Map<String, String> badge2Explanation = {

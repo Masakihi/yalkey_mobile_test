@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'post/post_widget.dart';
 import 'post/post_model.dart';
-import 'search_user.dart';
-import 'search_user_id.dart';
+import '../search/search_user.dart';
+import '../search/search_user_id.dart';
 
 class UserBookmarkListPage extends StatefulWidget {
   const UserBookmarkListPage({Key? key}) : super(key: key);
