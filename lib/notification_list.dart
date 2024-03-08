@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:yalkey_0206_test/post_detail_page.dart';
+import 'package:yalkey_0206_test/post/post_detail_page.dart';
 import 'package:yalkey_0206_test/yalker_profile_page.dart';
 import 'api.dart';
 import 'constant.dart';
@@ -12,13 +12,15 @@ class NotificationListPage extends StatefulWidget {
 }
 
 class _NotificationListPageState extends State<NotificationListPage> {
-  late List<UserNotification> _notificationList = []; // user_repost_list を格納するリスト
+  late List<UserNotification> _notificationList =
+      []; // user_repost_list を格納するリスト
   late ScrollController _scrollController; // ListView のスクロールを制御するコントローラー
   bool _loading = false; // データをロード中かどうかを示すフラグ
   int _page = 1; // 現在のページ番号
 
   late List<FollowRequest> _followRequestList = []; // user_repost_list を格納するリスト
-  late ScrollController _scrollFollowRequestController; // ListView のスクロールを制御するコントローラー
+  late ScrollController
+      _scrollFollowRequestController; // ListView のスクロールを制御するコントローラー
   bool _loadingFollowRequest = false; // データをロード中かどうかを示すフラグ
   int _pageFollowRequest = 1; // 現在のページ番号
 
@@ -27,7 +29,8 @@ class _NotificationListPageState extends State<NotificationListPage> {
     super.initState();
     _scrollController = ScrollController()..addListener(_scrollListener);
     _fetchNotificationList(); // 最初のデータを読み込む
-    _scrollFollowRequestController = ScrollController()..addListener(_scrollFollowRequestListener);
+    _scrollFollowRequestController = ScrollController()
+      ..addListener(_scrollFollowRequestListener);
     _fetchFollowRequestList();
   }
 
@@ -40,7 +43,6 @@ class _NotificationListPageState extends State<NotificationListPage> {
       _loadMoreFollowRequestData();
     }
   }
-
 
   // ListView のスクロールイベントを監視するリスナー
   void _scrollListener() {
@@ -57,8 +59,8 @@ class _NotificationListPageState extends State<NotificationListPage> {
       _loading = true; // データのロード中フラグをtrueに設定
     });
 
-    NotificationListResponse  notificationListResponse =
-    await NotificationListResponse.fetchNotificationListResponse(_page);
+    NotificationListResponse notificationListResponse =
+        await NotificationListResponse.fetchNotificationListResponse(_page);
     if (mounted) {
       setState(() {
         _notificationList
@@ -72,18 +74,17 @@ class _NotificationListPageState extends State<NotificationListPage> {
      */
   }
 
-
   Future<void> _fetchFollowRequestList() async {
     setState(() {
       _loadingFollowRequest = true; // データのロード中フラグをtrueに設定
     });
 
-    FollowRequestListResponse  followRequestListResponse =
-    await FollowRequestListResponse.fetchFollowRequestListResponse(_page);
+    FollowRequestListResponse followRequestListResponse =
+        await FollowRequestListResponse.fetchFollowRequestListResponse(_page);
     if (mounted) {
       setState(() {
-        _followRequestList
-            .addAll(followRequestListResponse.followRequestList); // 新しいデータをリストに追加
+        _followRequestList.addAll(
+            followRequestListResponse.followRequestList); // 新しいデータをリストに追加
         _loadingFollowRequest = false; // データのロード中フラグをfalseに設定
       });
     }
@@ -92,8 +93,6 @@ class _NotificationListPageState extends State<NotificationListPage> {
 
      */
   }
-
-
 
   Future<void> _loadMoreData() async {
     if (!_loading) {
@@ -145,21 +144,19 @@ class _NotificationListPageState extends State<NotificationListPage> {
     }
   }
 
-
   Future<void> permit(context, int? user_number) async {
     try {
-      final response = await httpPost('permit/${user_number}', {'email': 'email'});
+      final response =
+          await httpPost('permit/${user_number}', {'email': 'email'});
     } catch (error) {
       print('Error deactivate: $error');
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     String ifNotificationText(int notificationType) {
-      switch (notificationType){
+      switch (notificationType) {
         case 0:
           return 'あなたの投稿に返信';
         case 1:
@@ -178,225 +175,235 @@ class _NotificationListPageState extends State<NotificationListPage> {
     }
 
     return DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text('通知一覧'),
-            bottom: const TabBar(
-              labelColor: Color(0xFFAE0103),
-              indicatorColor: Color(0xFFAE0103),
-              tabs: <Widget>[
-                Tab(text: '新着通知'),
-                Tab(text: 'リクエスト'),
-                //Tab(icon: Icon(Icons.brightness_5_sharp)),
-              ],
-            ),
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('通知一覧'),
+          bottom: const TabBar(
+            labelColor: Color(0xFFAE0103),
+            indicatorColor: Color(0xFFAE0103),
+            tabs: <Widget>[
+              Tab(text: '新着通知'),
+              Tab(text: 'リクエスト'),
+              //Tab(icon: Icon(Icons.brightness_5_sharp)),
+            ],
           ),
-          body: TabBarView(
-            children: <Widget>[
-
-
-
-
-              RefreshIndicator(
-                displacement: 0,
-                onRefresh: () async {
-                  _clearCache();
-                },
-                child:Column(
-                  children: <Widget>[
-                    Expanded(
-                      child: ListView.builder(
-                        controller: _scrollController, // スクロールコントローラーを設定
-                        itemCount: _notificationList.length + 1, // リストアイテム数 + ローディングインジケーター
-                        itemBuilder: (context, index) {
-                          if (index == _notificationList.length) {
-                            return _loading
-                                ? Container(
-                              alignment: Alignment.center,
-                              padding: EdgeInsets.all(16.0),
-                              child: CircularProgressIndicator(
-                                strokeWidth: 3.0,
-                              ),
-                            )
-                                : SizedBox.shrink(); // ローディングインジケーターを表示
-                          }
-                          final notification = _notificationList[index];
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    GestureDetector(
+        ),
+        body: TabBarView(
+          children: <Widget>[
+            RefreshIndicator(
+              displacement: 0,
+              onRefresh: () async {
+                _clearCache();
+              },
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    child: ListView.builder(
+                      controller: _scrollController, // スクロールコントローラーを設定
+                      itemCount: _notificationList.length +
+                          1, // リストアイテム数 + ローディングインジケーター
+                      itemBuilder: (context, index) {
+                        if (index == _notificationList.length) {
+                          return _loading
+                              ? Container(
+                                  alignment: Alignment.center,
+                                  padding: EdgeInsets.all(16.0),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 3.0,
+                                  ),
+                                )
+                              : SizedBox.shrink(); // ローディングインジケーターを表示
+                        }
+                        final notification = _notificationList[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                YalkerProfilePage(
+                                                    userNumber: notification
+                                                            .fromUserNumber ??
+                                                        1),
+                                          ));
+                                    },
+                                    child: notification.fromIconimage == ""
+                                        ? const CircleAvatar(
+                                            backgroundColor: Colors.white,
+                                            backgroundImage: NetworkImage(
+                                              'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
+                                            ),
+                                          )
+                                        : CircleAvatar(
+                                            backgroundImage: NetworkImage(
+                                              'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${notification.fromIconimage}',
+                                            ),
+                                          ),
+                                  ),
+                                  SizedBox(width: 16.0),
+                                  Expanded(
+                                    child: GestureDetector(
                                       onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => YalkerProfilePage(userNumber: notification.fromUserNumber ?? 1),
-                                            )
-                                        );
+                                        if (notification.post != null) {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    PostDetailPage(
+                                                        postNumber:
+                                                            notification.post!),
+                                              ));
+                                        }
                                       },
-                                      child: notification.fromIconimage == ""
-                                          ? const CircleAvatar(
-                                        backgroundColor: Colors.white,
-                                        backgroundImage: NetworkImage(
-                                          'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
-                                        ),
-                                      )
-                                          : CircleAvatar(
-                                        backgroundImage: NetworkImage(
-                                          'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${notification.fromIconimage}',
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(width: 16.0),
-                                    Expanded(
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          if(notification.post!=null){
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) => PostDetailPage(postNumber: notification.post!),
-                                                )
-                                            );
-                                          }
-                                        },
-                                        child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
-                                            '${notification.fromName} さん(@${notification.fromUserId})が'+ifNotificationText(notification.notificationType)+'しました！',
+                                            '${notification.fromName} さん(@${notification.fromUserId})が' +
+                                                ifNotificationText(notification
+                                                    .notificationType) +
+                                                'しました！',
                                             style: TextStyle(fontSize: 14.0),
                                           ),
                                           SizedBox(height: 4.0),
                                           Text(
                                             '${notification.dateCreated.toString().substring(0, 10)} ${notification.dateCreated.toString().substring(11, 16)}',
                                             style: TextStyle(
-                                                fontSize: 12.0, color: Colors.grey),
+                                                fontSize: 12.0,
+                                                color: Colors.grey),
                                           ),
                                         ],
                                       ),
-                                      ),
                                     ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-
-
-
-              RefreshIndicator(
-                displacement: 0,
-                onRefresh: () async {
-                  _clearFollowRequestCache();
-                },
-                child:Column(
-                  children: <Widget>[
-                    Expanded(
-                      child: ListView.builder(
-                        controller: _scrollFollowRequestController, // スクロールコントローラーを設定
-                        itemCount: _followRequestList.length + 1, // リストアイテム数 + ローディングインジケーター
-                        itemBuilder: (context, index) {
-                          if (index == _followRequestList.length) {
-                            return _loading
-                                ? Container(
-                              alignment: Alignment.center,
-                              padding: EdgeInsets.all(16.0),
-                              child: CircularProgressIndicator(
-                                strokeWidth: 3.0,
+                                  ),
+                                ],
                               ),
-                            )
-                                : SizedBox.shrink(); // ローディングインジケーターを表示
-                          }
-                          final follow_request = _followRequestList[index];
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => YalkerProfilePage(userNumber: follow_request.fromUserNumber ?? 1),
-                                            )
-                                        );
-                                      },
-                                      child: follow_request.fromIconimage == ""
-                                          ? const CircleAvatar(
-                                        backgroundColor: Colors.white,
-                                        backgroundImage: NetworkImage(
-                                          'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
-                                        ),
-                                      )
-                                          : CircleAvatar(
-                                        backgroundImage: NetworkImage(
-                                          'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${follow_request.fromIconimage}',
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(width: 16.0),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text(
-                                            '${follow_request.fromName} さん(@${follow_request.fromUserId})からフォローリクエストが届いています！',
-                                            style: TextStyle(fontSize: 14.0),
-                                          ),
-                                          SizedBox(height: 4.0),
-                                        ],
-                                      ),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        permit(context, follow_request.fromUserNumber);
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(0xFFAE0103),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                      ),
-                                      child: const Text(
-                                        '承認',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            RefreshIndicator(
+              displacement: 0,
+              onRefresh: () async {
+                _clearFollowRequestCache();
+              },
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    child: ListView.builder(
+                      controller:
+                          _scrollFollowRequestController, // スクロールコントローラーを設定
+                      itemCount: _followRequestList.length +
+                          1, // リストアイテム数 + ローディングインジケーター
+                      itemBuilder: (context, index) {
+                        if (index == _followRequestList.length) {
+                          return _loading
+                              ? Container(
+                                  alignment: Alignment.center,
+                                  padding: EdgeInsets.all(16.0),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 3.0,
+                                  ),
+                                )
+                              : SizedBox.shrink(); // ローディングインジケーターを表示
+                        }
+                        final follow_request = _followRequestList[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                YalkerProfilePage(
+                                                    userNumber: follow_request
+                                                            .fromUserNumber ??
+                                                        1),
+                                          ));
+                                    },
+                                    child: follow_request.fromIconimage == ""
+                                        ? const CircleAvatar(
+                                            backgroundColor: Colors.white,
+                                            backgroundImage: NetworkImage(
+                                              'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
+                                            ),
+                                          )
+                                        : CircleAvatar(
+                                            backgroundImage: NetworkImage(
+                                              'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${follow_request.fromIconimage}',
+                                            ),
+                                          ),
+                                  ),
+                                  SizedBox(width: 16.0),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          '${follow_request.fromName} さん(@${follow_request.fromUserId})からフォローリクエストが届いています！',
+                                          style: TextStyle(fontSize: 14.0),
+                                        ),
+                                        SizedBox(height: 4.0),
+                                      ],
+                                    ),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      permit(context,
+                                          follow_request.fromUserNumber);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFFAE0103),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      '承認',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-      );
+      ),
+    );
   }
 }

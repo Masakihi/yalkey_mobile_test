@@ -8,7 +8,6 @@ import 'mission/mission_list.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
-
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
 }

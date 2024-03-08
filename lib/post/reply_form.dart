@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'api.dart';
+import '../api.dart';
 
 class ReplyForm extends StatefulWidget {
   final int postNumber;

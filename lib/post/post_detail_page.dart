@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'constant.dart';
-import 'api.dart';
+import '../constant.dart';
+import '../api.dart';
 import 'linkify_util.dart';
 import 'reply_form.dart';
-import 'dart:convert';
-import 'yalker_profile_page.dart';
-
+import '../yalker_profile_page.dart';
 
 class PostDetailPage extends StatefulWidget {
   final int postNumber;
@@ -29,7 +27,6 @@ class _PostDetailPageState extends State<PostDetailPage> {
     super.initState();
     _fetchPostDetail();
   }
-
 
   void _showReplyForm(int postNumber) {
     showModalBottomSheet(
@@ -285,21 +282,20 @@ class _PostDetailPageState extends State<PostDetailPage> {
               children: <Widget>[
                 GestureDetector(
                   onTap: () {
-                    _navigateToYalkerDetailPage(
-                        post.postUserNumber);
+                    _navigateToYalkerDetailPage(post.postUserNumber);
                   },
                   child: post.postUserIcon == ""
                       ? const CircleAvatar(
-                    backgroundColor: Colors.white,
-                    backgroundImage: NetworkImage(
-                      'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
-                    ),
-                  )
+                          backgroundColor: Colors.white,
+                          backgroundImage: NetworkImage(
+                            'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
+                          ),
+                        )
                       : CircleAvatar(
-                    backgroundImage: NetworkImage(
-                      'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${post.postUserIcon}',
-                    ),
-                  ),
+                          backgroundImage: NetworkImage(
+                            'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${post.postUserIcon}',
+                          ),
+                        ),
                 ),
                 /*
                 CircleAvatar(

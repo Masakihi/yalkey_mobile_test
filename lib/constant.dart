@@ -1493,7 +1493,7 @@ class SearchUserIdListResponse {
 
   factory SearchUserIdListResponse.fromJson(Map<String, dynamic> json) {
     List<User> searchUserIdList = [];
-    if (json['user_list'] != null) {
+    if (json['user_list'] != "None") {
       var userJsonList = json['user_list'] as List;
       searchUserIdList =
           userJsonList.map((user) => User.fromJson(user)).toList();
