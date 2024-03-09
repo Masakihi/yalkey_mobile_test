@@ -1,11 +1,5 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:yalkey_0206_test/home_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../api.dart';
 import '../app.dart';
-import '../login_page.dart';
 
 class GoalCreatePage extends StatefulWidget {
   const GoalCreatePage({super.key});

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:yalkey_0206_test/post/post_detail_page.dart';
 import '../profile/yalker_profile_page.dart';
 import '../api.dart';
+import 'notification_model.dart';
 import '../constant.dart';
 
 class NotificationListPage extends StatefulWidget {

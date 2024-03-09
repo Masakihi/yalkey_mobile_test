@@ -6,8 +6,7 @@ import '../followed_list_page.dart';
 import '../following_list_page.dart';
 import 'profile_edit_page.dart';
 import 'bar_graph.dart';
-import '../constant.dart';
-import 'achievement_calendar.dart';
+import 'report_model.dart';
 
 const Map<String, String> badge2Explanation = {
   "超早起き": "過去1週間のうち7日間早起きしたヤルカー",
