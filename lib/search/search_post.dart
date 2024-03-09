@@ -3,9 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../profile/yalker_profile_page.dart';
-import '../constant.dart';
-import 'search_user.dart';
-import 'search_user_id.dart';
+import 'user_model.dart';
 import '../post/post_model.dart';
 import '../post/post_widget.dart';
 

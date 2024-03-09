@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import '../profile/yalker_profile_page.dart';
-import '../constant.dart';
+import 'user_model.dart';
 import 'search_post.dart';
-import 'search_user.dart';
-import 'search_user_id.dart';
 
 class SearchRecommendUserListPage extends StatefulWidget {
   const SearchRecommendUserListPage({Key? key}) : super(key: key);

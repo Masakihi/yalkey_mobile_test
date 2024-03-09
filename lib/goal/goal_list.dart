@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constant.dart';
+import 'goal_model.dart';
 import 'goal_detail.dart';
 import 'goal_create.dart';
 

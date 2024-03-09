@@ -4,7 +4,7 @@ import '../api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'profile_edit_page.dart';
 import 'bar_graph.dart';
-import '../constant.dart';
+import 'report_model.dart';
 import 'achievement_calendar.dart';
 
 class ProfilePage extends StatefulWidget {

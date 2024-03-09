@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import '../constant.dart';
+import 'user_model.dart';
 import 'search_post.dart';
-import 'search_user.dart';
 
 class SearchUserIdListPage extends StatefulWidget {
   // 画面遷移元からのデータを受け取る変数

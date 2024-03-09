@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constant.dart';
+import 'goal_model.dart';
 
 class GoalDeletePage extends StatefulWidget {
   // 画面遷移元からのデータを受け取る変数
