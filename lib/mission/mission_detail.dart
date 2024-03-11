@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yalkey_0206_test/mission/mission_update.dart';
 import 'mission_model.dart';
 import 'task_edit_page.dart';
 import 'mission_delete.dart';
@@ -59,9 +60,13 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Mission Detail'),
+          title: const Text('ミッション詳細'),
         ),
-        body: Column(
+        body: Container(
+            width: double.infinity, //横幅いっぱいを意味する
+            // color: Colors.red, //広がっているか色をつけて確認
+            child:
+        Column(
           children: <Widget>[
             if (loading)
               Container(
@@ -78,26 +83,81 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text('・ミッションタイトル：${missionData?.missionText}'),
-                    Text('・ご褒美：${missionData?.reward}'),
-                    Text('・ペナルティ：${missionData?.penalty}'),
-                    Text(
-                        '・開始日時：${missionData?.starTime.toString().substring(0, 10)} ${missionData?.starTime.toString().substring(11, 16)}'),
-                    Text(
-                        '・終了日時：${missionData?.endTime.toString().substring(0, 10)} ${missionData?.endTime.toString().substring(11, 16)}'),
-                    Text('・きっかけ：${missionData?.opportunity}'),
-                    Text('・メモ：${missionData?.note}'),
-                    Text(
-                        '・ミッション作成日時：${missionData?.dateCreated.toString().substring(0, 10)} ${missionData?.dateCreated.toString().substring(11, 16)}'),
+
+                    if (missionData?.reward!="" && missionData?.reward!=null) Text('・ご褒美：${missionData?.reward}'),
+                    if (missionData?.penalty!="" && missionData?.penalty!=null) Text('・ペナルティ：${missionData?.penalty}'),
+                    Text('・開始日時：${missionData?.starTime.toString().substring(0, 10)} ${missionData?.starTime.toString().substring(11, 16)}'),
+                    if (missionData?.opportunity!="" && missionData?.opportunity!=null) Text('・きっかけ：${missionData?.opportunity}'),
+                    if (missionData?.note!="" && missionData?.note!=null) Text('・メモ：${missionData?.note}'),
+
+                    Text('・ミッション作成日時：${missionData?.dateCreated.toString().substring(0, 10)} ${missionData?.dateCreated.toString().substring(11, 16)}'),
+                    if (missionData?.parentMission!=null) Text('・親ミッション：${missionData?.parentMission}'),
+                    Text('・親？子？：${missionData?.missionParentType}'),
+                    Text('・所要時間：${missionData?.requiredTime}'),
+                    if (missionData?.penalty!=null) Text('・優先度：${missionData?.penalty}'),
+
+                    // Text('・繰り返しパターン：${missionData?.repeatType}'),
+
+                    if (missionData?.repeatType==0) ...[
+                      Text('・繰り返しパターン：繰り返しなし'),
+                    ],
+
+                    if (missionData?.repeatType==1) ...[
+                      Text('・繰り返しパターン：${missionData?.repeatInterval}日'),
+                      Text('・繰り返し曜日：${missionData?.repeatDayWeek}'),
+                    ],
+
+                    if (missionData?.repeatType==2) ...[
+                      Text('・繰り返しパターン：${missionData?.repeatInterval}週'),
+                      Text('・繰り返し曜日：${missionData?.repeatDayWeek}'),
+                    ],
+
+                    if (missionData?.repeatType==3) ...[
+                      Text('・繰り返しパターン：${missionData?.repeatInterval}月'),
+                      Text('・繰り返し曜日：${missionData?.repeatDayWeek}'),
+                    ],
+
+                    if (missionData?.repeatType==4) ...[
+                      Text('・繰り返しパターン：${missionData?.repeatInterval}年'),
+                      Text('・繰り返し曜日：${missionData?.repeatDayWeek}'),
+                    ],
+
+                    if (missionData?.repeatStopType==0) ...[
+                      Text('・繰り返し終了条件：指定なし'),
+                    ],
+
+                    if (missionData?.repeatStopType==1) ...[
+                      Text('・繰り返し終了条件：終了日を指定'),
+                      Text('・繰り返し終了日：${missionData?.repeatStopDate}'),
+                    ],
+
+                    if (missionData?.repeatStopType==2) ...[
+                      Text('・繰り返し終了条件：回数を指定'),
+                      Text('・繰り返し回数：${missionData?.repeatNumber}回'),
+                    ],
+
+
+
                   ],
                 ),
               ),
+
+              Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+
+
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => TaskEditPage(
-                            value: int.parse('${missionData?.missionNumber}')),
+                        builder: (context) => MissionUpdatePage(
+                          oldMission: missionData!,
+                          missionNumber: missionNumber,
+                        ),
                         //builder: (context) => TaskEditPage(value: int.parse('352'))
                       ));
                 },
@@ -137,8 +197,13 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
                   ),
                 ),
               ),
+              ]
+              ),
+              )
             ]
           ],
-        ));
+        )
+    )
+    );
   }
 }
