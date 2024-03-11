@@ -11,6 +11,7 @@ import 'profile/profile_page.dart';
 import 'notification/notification_list.dart';
 import 'search/search_recommend_user.dart';
 import 'user_bookmark_list.dart';
+import 'profile/profile_page.dart';
 
 class AppPage extends StatefulWidget {
   const AppPage({Key? key}) : super(key: key);
@@ -20,19 +21,37 @@ class AppPage extends StatefulWidget {
 }
 
 class _AppPageState extends State<AppPage> {
+  String? loginUserName;
   String? loginUserIconImage;
+  String? loginUserId;
+  int? loginUserNumber;
 
   @override
   void initState() {
     super.initState();
-    _getLoginUserIconImage();
+    _getLoginUserData();
   }
 
-  Future<void> _getLoginUserIconImage() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var _loginUserIconImage = prefs.getString('login_user_iconimage');
+  void _navigateToYalkerDetailPage() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const ProfilePage(),
+        ));
+  }
 
-    setState(() => loginUserIconImage = _loginUserIconImage);
+  Future<void> _getLoginUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var _loginUserName = prefs.getString('login_user_name');
+    var _loginUserIconImage = prefs.getString('login_user_iconimage');
+    var _loginUserId = prefs.getString('login_user_id');
+    var _loginUserNumber = prefs.getInt('login_user_number');
+    setState(() => {
+          loginUserName = _loginUserName,
+          loginUserIconImage = _loginUserIconImage,
+          loginUserId = _loginUserId,
+          loginUserNumber = _loginUserNumber,
+        });
   }
 
   Future<void> logout(context) async {
@@ -62,54 +81,49 @@ class _AppPageState extends State<AppPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        leading:
-            /*
-        (true)?
-        GestureDetector(
-          onTap: () {
-            _scaffoldKey.currentState!.openDrawer();
-          },
-          // 対象の画像を記述
-          child: Image.network(
-            'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
-          )
-        )
-            :
-        GestureDetector(
-          onTap: () {
-            _scaffoldKey.currentState!.openDrawer();
-          },
-          // 対象の画像を記述
-          child: Image.network(
-            'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${repost.postUserIcon}',
-        ),
-
-
-
-             */
-            // IconButton(
-            //     onPressed: () => _scaffoldKey.currentState!.openDrawer(),
-            //     icon: const Icon(Icons.person)),
-            GestureDetector(
-                onTap: () => _scaffoldKey.currentState!.openDrawer(),
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage(
-                    loginUserIconImage ??
-                        'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
-                  ),
-                  radius: 20, // アイコンの半径を小さくする
-                )),
+        leading: GestureDetector(
+            onTap: () => _scaffoldKey.currentState!.openDrawer(),
+            child: CircleAvatar(
+              backgroundImage: NetworkImage(
+                loginUserIconImage ??
+                    'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
+              ),
+              radius: 20, // アイコンの半径を小さくする
+            )),
         title: const Text("yalkey mobile"),
       ),
-      body: const BottomNavBar(),
       drawer: SizedBox(
-        width: 225,
+        width: 250,
         child: Drawer(
           child: Container(
             // 外側の余白（マージン）
             margin: EdgeInsets.all(8),
             child: ListView(
+              shrinkWrap: false,
+              physics: AlwaysScrollableScrollPhysics(),
               children: [
+                Padding(
+                  padding: EdgeInsets.only(left: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      GestureDetector(
+                        onTap: () => _navigateToYalkerDetailPage(),
+                        child: ClipOval(
+                          child: Image.network(
+                            loginUserIconImage ??
+                                'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
+                            width: 40,
+                            height: 40,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Text('@${loginUserId ?? ''}'),
+                      Text(loginUserName ?? ''),
+                    ],
+                  ),
+                ),
                 ListTile(
                   title: const Text("ログアウト"),
                   onTap: () {
@@ -265,6 +279,7 @@ class _AppPageState extends State<AppPage> {
           ),
         ),
       ),
+      body: const BottomNavBar(),
     );
   }
 }

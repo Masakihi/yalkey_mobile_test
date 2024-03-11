@@ -13,6 +13,7 @@ class _HomePageState extends State<HomePage> {
   late List<Post> _postList = []; // user_repost_list を格納するリスト
   late ScrollController _scrollController; // ListView のスクロールを制御するコントローラー
   bool _loading = false; // データをロード中かどうかを示すフラグ
+  bool firstLoad = true;
   int _page = 1; // 現在のページ番号
 
   @override
@@ -36,6 +37,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _fetchPostList() async {
     setState(() {
       _loading = true; // データのロード中フラグをtrueに設定
+      firstLoad = false;
     });
     PostListResponse postListResponse =
         await PostListResponse.fetchPostListResponse(_page);
@@ -86,7 +88,7 @@ class _HomePageState extends State<HomePage> {
                 itemCount: _postList.length + 1, // リストアイテム数 + ローディングインジケーター
                 itemBuilder: (context, index) {
                   if (index == _postList.length) {
-                    return _loading
+                    return _loading && firstLoad
                         ? Container(
                             alignment: Alignment.center,
                             padding: const EdgeInsets.all(16.0),

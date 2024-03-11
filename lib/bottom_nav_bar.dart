@@ -5,79 +5,77 @@ import 'notification/notification.dart';
 import 'post_page.dart';
 import 'profile/profile_page.dart';
 import 'mission/mission_list.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({super.key});
+  const BottomNavBar({Key? key}) : super(key: key);
+
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-  int _selectedIndex = 0;
   final List<Widget> _screens = [
     const HomePage(),
     const NotificationListPage(),
     const PostPage(),
-    //const TaskPage(),
     const MissionListPage(),
     const ProfilePage(),
-    // 他の画面をここに追加してください
   ];
-
-  final PageController _pageController = PageController();
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      _pageController.animateToPage(index,
-          duration: const Duration(milliseconds: 500), curve: Curves.ease);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        children: _screens,
-        onPageChanged: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
+    return PersistentTabView(
+      context,
+      controller: PersistentTabController(initialIndex: 0),
+      screens: _screens,
+      items: [
+        PersistentBottomNavBarItem(
+          icon: Icon(Icons.home),
+          title: null,
+          activeColorPrimary: Colors.red, // 選択時のアイコンの色
+          inactiveColorPrimary: Colors.white, // 非選択時のアイコンの色
+        ),
+        PersistentBottomNavBarItem(
+          icon: Icon(Icons.notifications),
+          title: null,
+          activeColorPrimary: Colors.red,
+          inactiveColorPrimary: Colors.white,
+        ),
+        PersistentBottomNavBarItem(
+          icon: Icon(Icons.post_add),
+          title: null,
+          activeColorPrimary: Colors.red,
+          inactiveColorPrimary: Colors.white,
+        ),
+        PersistentBottomNavBarItem(
+          icon: Icon(Icons.task),
+          title: null,
+          activeColorPrimary: Colors.red,
+          inactiveColorPrimary: Colors.white,
+        ),
+        PersistentBottomNavBarItem(
+          icon: Icon(Icons.person),
+          title: null,
+          activeColorPrimary: Colors.red,
+          inactiveColorPrimary: Colors.white,
+        ),
+      ],
+      decoration: NavBarDecoration(
+        colorBehindNavBar: Colors.transparent,
+        borderRadius: BorderRadius.circular(10.0),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.notifications),
-              label: 'Notification',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.post_add),
-              label: 'Post',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.task),
-              label: 'Task',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-            // 他のボタンも同様に追加してください
-          ],
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          selectedItemColor: const Color(0xFFAE0103),
-          backgroundColor: const Color(0xFF333333),
-          unselectedItemColor: Colors.white,
-          type: BottomNavigationBarType.fixed),
+      confineInSafeArea: true,
+      backgroundColor: Colors.black,
+      handleAndroidBackButtonPress: true,
+      resizeToAvoidBottomInset: true,
+      stateManagement: true,
+      hideNavigationBarWhenKeyboardShows: true,
+      popAllScreensOnTapOfSelectedTab: true,
+      popActionScreens: PopActionScreensType.all,
+      bottomScreenMargin: 0.0,
+      navBarHeight: kBottomNavigationBarHeight,
+      navBarStyle: NavBarStyle.style6,
     );
   }
 }
