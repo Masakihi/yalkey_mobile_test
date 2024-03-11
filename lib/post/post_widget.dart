@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../profile/yalker_repost.dart';
 import 'post_model.dart';
 import 'post_detail_page.dart';
 import 'reply_form.dart';
@@ -191,6 +192,24 @@ class _PostWidgetState extends State<PostWidget> {
                   ],
                 ),
               if (widget.post.isRepost == 1) const SizedBox(height: 8.0),
+              if (widget.post.postPinned == true)
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.push_pin,
+                      color: Colors.grey,
+                      size: 12.0,
+                    ),
+                    Text(
+                      'ピン留めされた投稿',
+                      style: const TextStyle(
+                          fontSize: 12.0,
+                          color: Colors.grey,
+                          fontStyle: FontStyle.italic),
+                    ),
+                  ],
+                ),
+              if (widget.post.postPinned == true) const SizedBox(height: 8.0),
               if (widget.post.toPostUserName != null)
                 Row(
                   children: [
@@ -288,7 +307,7 @@ class _PostWidgetState extends State<PostWidget> {
                                   ),
                                 ),
                               ),
-                            if (widget.post.postUser.postUserSuperEarlyBird ??
+                            if (widget.post.postUser.postUserEarlyBird ??
                                 false)
                               GestureDetector(
                                 behavior: HitTestBehavior.translucent,

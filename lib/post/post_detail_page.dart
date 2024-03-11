@@ -122,7 +122,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text(
-                                  '元の投稿',
+                                  '返信先の投稿',
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 const SizedBox(height: 8.0), // 適宜間隔を設ける

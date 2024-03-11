@@ -97,7 +97,7 @@ class _AppPageState extends State<AppPage> {
                     loginUserIconImage ??
                         'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
                   ),
-                  radius: 20, // アイコンの半径を小さくする
+                  radius: 5, // アイコンの半径を小さくする
                 )),
         title: const Text("yalkey mobile"),
       ),
@@ -110,12 +110,6 @@ class _AppPageState extends State<AppPage> {
             margin: EdgeInsets.all(8),
             child: ListView(
               children: [
-                ListTile(
-                  title: const Text("ログアウト"),
-                  onTap: () {
-                    logout(context);
-                  },
-                ),
                 ListTile(
                   title: const Text("マイページ"),
                   onTap: () {
