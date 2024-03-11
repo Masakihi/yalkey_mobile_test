@@ -49,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
       await prefs.setInt('login_user_number',
           loginUserDataResponse['login_user_profile']['user_number'] as int);
 
-      Navigator.of(context).push(MaterialPageRoute(
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (context) => AppPage(),
       ));
     } catch (error) {

@@ -39,7 +39,7 @@ class _UserBookmarkListPageState extends State<UserBookmarkListPage> {
       _loading = true; // データのロード中フラグをtrueに設定
     });
     PostListResponse bookmarkPostListResponse =
-        await PostListResponse.fetchPostListResponse(_page);
+        await PostListResponse.fetchBookmarkPostResponse(_page);
     if (mounted) {
       setState(() {
         _bookmarkPostList

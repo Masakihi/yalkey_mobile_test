@@ -357,6 +357,32 @@ class PostListResponse {
     return PostListResponse(postList: postList);
   }
 
+  factory PostListResponse.fromResponseYalkerRepostList(
+      Map<String, dynamic> json) {
+    List<Post> postList = [];
+    List<Post> pinnedPostList = [];
+    if (json['pinned_repost_list'] != null) {
+      var pinnedPostJsonList = json['pinned_repost_list'] as List;
+      pinnedPostList = pinnedPostJsonList.map((post) => Post.fromJson(post)).toList();
+    }
+    if (json['repost_list'] != null) {
+      var postJsonList = json['repost_list'] as List;
+      postList = postJsonList.map((post) => Post.fromJson(post)).toList();
+    }
+    postList = pinnedPostList + postList;
+    return PostListResponse(postList: postList);
+  }
+
+  factory PostListResponse.fromResponseYalkerPinnedRepostList(
+      Map<String, dynamic> json) {
+    List<Post> postList = [];
+    if (json['pinned_repost_list'] != null) {
+      var postJsonList = json['pinned_repost_list'] as List;
+      postList = postJsonList.map((post) => Post.fromJson(post)).toList();
+    }
+    return PostListResponse(postList: postList);
+  }
+
   static Future<PostListResponse> fetchPostListResponse(int page) async {
     dynamic jsonData = await httpGet('home/$page', jwt: true);
     // print(jsonData);
@@ -384,6 +410,29 @@ class PostListResponse {
     return PostListResponse.fromResponsePostList(
         jsonData['user_bookmark_list'][0]);
   }
+
+  static Future<PostListResponse> fetchAllPostResponse(
+      int page) async {
+    dynamic jsonData =
+    await httpGet('latest-post/${page}', jwt: true);
+    return PostListResponse.fromResponseUserRepostList(jsonData);
+  }
+
+  static Future<PostListResponse> fetchYalkerPostResponse(
+      int page, int userNumber) async {
+    dynamic jsonData =
+    await httpGet('yalker-detail-repost-list/${userNumber}/${page}', jwt: true);
+    return PostListResponse.fromResponseYalkerRepostList(jsonData);
+  }
+
+  static Future<PostListResponse> fetchYalkerPinnedPostResponse(
+      int page, int userNumber) async {
+    dynamic jsonData =
+    await httpGet('yalker-detail-repost-list/${userNumber}/${page}', jwt: true);
+    return PostListResponse.fromResponseYalkerPinnedRepostList(jsonData);
+  }
+
+
 }
 
 // PostDetailPage用レスポンスモデル

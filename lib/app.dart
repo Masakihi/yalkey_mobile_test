@@ -81,15 +81,43 @@ class _AppPageState extends State<AppPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        leading: GestureDetector(
-            onTap: () => _scaffoldKey.currentState!.openDrawer(),
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(
-                loginUserIconImage ??
-                    'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
-              ),
-              radius: 20, // アイコンの半径を小さくする
-            )),
+        leading:
+            /*
+        (true)?
+        GestureDetector(
+          onTap: () {
+            _scaffoldKey.currentState!.openDrawer();
+          },
+          // 対象の画像を記述
+          child: Image.network(
+            'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
+          )
+        )
+            :
+        GestureDetector(
+          onTap: () {
+            _scaffoldKey.currentState!.openDrawer();
+          },
+          // 対象の画像を記述
+          child: Image.network(
+            'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${repost.postUserIcon}',
+        ),
+
+
+
+             */
+            // IconButton(
+            //     onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+            //     icon: const Icon(Icons.person)),
+            GestureDetector(
+                onTap: () => _scaffoldKey.currentState!.openDrawer(),
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(
+                    loginUserIconImage ??
+                        'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
+                  ),
+                  radius: 5, // アイコンの半径を小さくする
+                )),
         title: const Text("yalkey mobile"),
       ),
       drawer: SizedBox(
@@ -123,12 +151,6 @@ class _AppPageState extends State<AppPage> {
                       Text(loginUserName ?? ''),
                     ],
                   ),
-                ),
-                ListTile(
-                  title: const Text("ログアウト"),
-                  onTap: () {
-                    logout(context);
-                  },
                 ),
                 ListTile(
                   title: const Text("マイページ"),

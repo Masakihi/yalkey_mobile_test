@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../api.dart';
 import 'mission_model.dart';
 
 class MissionDeletePage extends StatefulWidget {
@@ -57,82 +58,142 @@ class _MissionDeletePageState extends State<MissionDeletePage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Mission削除'),
+          title: const Text('ミッション削除'),
         ),
-        body: Column(
-          children: <Widget>[
-            if (loading)
-              Container(
-                alignment: Alignment.center,
-                padding: const EdgeInsets.all(16.0),
-                child: const CircularProgressIndicator(
-                  strokeWidth: 3.0,
-                ),
-              ),
-            if (!loading) ...[
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      '以下のミッションを削除します。ミッション達成の記録も全て削除されますが、よろしいですか？',
-                      style: TextStyle(fontSize: 16.0),
+        body: Container(
+            width: double.infinity, //横幅いっぱいを意味する
+            // color: Colors.red, //広がっているか色をつけて確認
+            child:
+            Column(
+              children: <Widget>[
+                if (loading)
+                  Container(
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.all(16.0),
+                    child: const CircularProgressIndicator(
+                      strokeWidth: 3.0,
                     ),
-                    SizedBox(height: 12.0),
-                    Text('・ミッションタイトル：${missionData?.missionText}'),
-                    Text('・ご褒美：${missionData?.reward}'),
-                    Text('・ペナルティ：${missionData?.penalty}'),
-                    Text(
-                        '・開始日時：${missionData?.starTime.toString().substring(0, 10)} ${missionData?.starTime.toString().substring(11, 16)}'),
-                    Text(
-                        '・終了日時：${missionData?.endTime.toString().substring(0, 10)} ${missionData?.endTime.toString().substring(11, 16)}'),
-                    Text('・きっかけ：${missionData?.opportunity}'),
-                    Text('・メモ：${missionData?.note}'),
-                    Text(
-                        '・ミッション作成日時：${missionData?.dateCreated.toString().substring(0, 10)} ${missionData?.dateCreated.toString().substring(11, 16)}'),
-                  ],
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  int count = 0;
-                  Navigator.popUntil(context, (_) => count++ >= 1);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFAE0103),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
                   ),
-                ),
-                child: const Text(
-                  'キャンセル',
-                  style: TextStyle(
-                    color: Colors.white,
+                if (!loading) ...[
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          '以下のミッションを削除します。ミッション達成の記録も全て削除されますが、よろしいですか？',
+                          style: TextStyle(fontSize: 16.0),
+                        ),
+                        SizedBox(height: 12.0),
+                        Text('・ミッションタイトル：${missionData?.missionText}'),
+
+                        if (missionData?.reward!="" && missionData?.reward!=null) Text('・ご褒美：${missionData?.reward}'),
+                        if (missionData?.penalty!="" && missionData?.penalty!=null) Text('・ペナルティ：${missionData?.penalty}'),
+                        Text('・開始日時：${missionData?.starTime.toString().substring(0, 10)} ${missionData?.starTime.toString().substring(11, 16)}'),
+                        if (missionData?.opportunity!="" && missionData?.opportunity!=null) Text('・きっかけ：${missionData?.opportunity}'),
+                        if (missionData?.note!="" && missionData?.note!=null) Text('・メモ：${missionData?.note}'),
+
+                        Text('・ミッション作成日時：${missionData?.dateCreated.toString().substring(0, 10)} ${missionData?.dateCreated.toString().substring(11, 16)}'),
+                        if (missionData?.parentMission!=null) Text('・親ミッション：${missionData?.parentMission}'),
+                        Text('・親？子？：${missionData?.missionParentType}'),
+                        Text('・所要時間：${missionData?.requiredTime}'),
+                        if (missionData?.penalty!=null) Text('・優先度：${missionData?.penalty}'),
+
+                        // Text('・繰り返しパターン：${missionData?.repeatType}'),
+
+                        if (missionData?.repeatType==0) ...[
+                          Text('・繰り返しパターン：繰り返しなし'),
+                        ],
+
+                        if (missionData?.repeatType==1) ...[
+                          Text('・繰り返しパターン：${missionData?.repeatInterval}日'),
+                          Text('・繰り返し曜日：${missionData?.repeatDayWeek}'),
+                        ],
+
+                        if (missionData?.repeatType==2) ...[
+                          Text('・繰り返しパターン：${missionData?.repeatInterval}週'),
+                          Text('・繰り返し曜日：${missionData?.repeatDayWeek}'),
+                        ],
+
+                        if (missionData?.repeatType==3) ...[
+                          Text('・繰り返しパターン：${missionData?.repeatInterval}月'),
+                          Text('・繰り返し曜日：${missionData?.repeatDayWeek}'),
+                        ],
+
+                        if (missionData?.repeatType==4) ...[
+                          Text('・繰り返しパターン：${missionData?.repeatInterval}年'),
+                          Text('・繰り返し曜日：${missionData?.repeatDayWeek}'),
+                        ],
+
+                        if (missionData?.repeatStopType==0) ...[
+                          Text('・繰り返し終了条件：指定なし'),
+                        ],
+
+                        if (missionData?.repeatStopType==1) ...[
+                          Text('・繰り返し終了条件：終了日を指定'),
+                          Text('・繰り返し終了日：${missionData?.repeatStopDate}'),
+                        ],
+
+                        if (missionData?.repeatStopType==2) ...[
+                          Text('・繰り返し終了条件：回数を指定'),
+                          Text('・繰り返し回数：${missionData?.repeatNumber}回'),
+                        ],
+
+
+
+                      ],
+                    ),
                   ),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  int count = 0;
-                  Navigator.popUntil(context, (_) => count++ >= 2);
-                  // ここに削除の処理書く
-                },
-                child: const Text(
-                  '本当に削除する',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFAE0103),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-            ]
-          ],
-        ));
+
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          ElevatedButton(
+                            onPressed: () {
+                              int count = 0;
+                              Navigator.popUntil(context, (_) => count++ >= 1);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFAE0103),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: const Text(
+                              'キャンセル',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              int count = 0;
+                              Navigator.popUntil(context, (_) => count++ >= 2);
+                              await httpPost('mission-delete/${missionNumber}', null, jwt: true);
+                            },
+                            child: const Text(
+                              '本当に削除する',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFAE0103),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                        ]
+                    ),
+                  )
+                ]
+              ],
+            )
+        )
+    );
   }
 }

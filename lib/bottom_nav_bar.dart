@@ -33,31 +33,31 @@ class _BottomNavBarState extends State<BottomNavBar> {
         PersistentBottomNavBarItem(
           icon: Icon(Icons.home),
           title: null,
-          activeColorPrimary: Colors.red, // 選択時のアイコンの色
+          activeColorPrimary: const Color(0xFFAE0103), // 選択時のアイコンの色
           inactiveColorPrimary: Colors.white, // 非選択時のアイコンの色
         ),
         PersistentBottomNavBarItem(
           icon: Icon(Icons.notifications),
           title: null,
-          activeColorPrimary: Colors.red,
+          activeColorPrimary: const Color(0xFFAE0103),
           inactiveColorPrimary: Colors.white,
         ),
         PersistentBottomNavBarItem(
           icon: Icon(Icons.post_add),
           title: null,
-          activeColorPrimary: Colors.red,
+          activeColorPrimary: const Color(0xFFAE0103),
           inactiveColorPrimary: Colors.white,
         ),
         PersistentBottomNavBarItem(
           icon: Icon(Icons.task),
           title: null,
-          activeColorPrimary: Colors.red,
+          activeColorPrimary: const Color(0xFFAE0103),
           inactiveColorPrimary: Colors.white,
         ),
         PersistentBottomNavBarItem(
           icon: Icon(Icons.person),
           title: null,
-          activeColorPrimary: Colors.red,
+          activeColorPrimary: const Color(0xFFAE0103),
           inactiveColorPrimary: Colors.white,
         ),
       ],
