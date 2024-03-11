@@ -177,14 +177,17 @@ class _MissionListPageState extends State<MissionListPage> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('ミッション'),
-          bottom: const TabBar(
-            labelColor: Color(0xFFAE0103),
-            indicatorColor: Color(0xFFAE0103),
-            tabs: <Widget>[
-              Tab(text: '一覧'),
-              Tab(text: '今日'),
-              //Tab(icon: Icon(Icons.brightness_5_sharp)),
+          flexibleSpace: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              TabBar(
+                labelColor: Color(0xFFAE0103),
+                indicatorColor: Color(0xFFAE0103),
+                tabs: <Widget>[
+                  Tab(text: 'ミッション一覧'),
+                  Tab(text: '今日'),
+                ],
+              ),
             ],
           ),
         ),
@@ -197,28 +200,6 @@ class _MissionListPageState extends State<MissionListPage> {
               },
               child: Column(
                 children: <Widget>[
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MissionCreatePage(),
-                            //builder: (context) => TaskDeletePage(value: int.parse('352'))
-                          ));
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFAE0103),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text(
-                      'ミッションを追加',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
                   Expanded(
                     child: ListView.builder(
                       controller: _scrollController, // スクロールコントローラーを設定
@@ -302,28 +283,6 @@ class _MissionListPageState extends State<MissionListPage> {
               },
               child: Column(
                 children: <Widget>[
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MissionCreatePage(),
-                            //builder: (context) => TaskDeletePage(value: int.parse('352'))
-                          ));
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFAE0103),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text(
-                      'ミッションを追加',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
                   Expanded(
                     child: ListView.builder(
                       controller:
@@ -403,6 +362,18 @@ class _MissionListPageState extends State<MissionListPage> {
               ),
             ),
           ],
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: ()  {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MissionCreatePage(),
+                  //builder: (context) => TaskDeletePage(value: int.parse('352'))
+                ));
+          },
+          icon: new Icon(Icons.add),
+          label: Text("ミッション"),
         ),
       ),
     );

@@ -4,8 +4,6 @@ import 'package:yalkey_0206_test/login_page.dart';
 import 'app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'dart:io';
 
 // [StatefulWidget]を使う場合
 void main() async {
@@ -15,27 +13,6 @@ void main() async {
   var accessToken = prefs.getString('access_token');
   var refreshToken = prefs.getString('refresh_token');
   var loginUserIconImage = prefs.getString('login_user_iconimage');
-
-  // // ネットワーク接続状態を取得
-  // var connectivityResult = await Connectivity().checkConnectivity();
-
-  // // オフラインの場合はアプリを終了
-  // if (connectivityResult == ConnectivityResult.none) {
-  //   runApp(MaterialApp(
-  //     builder: (context, child) => AlertDialog(
-  //       title: const Text('ネットワーク接続エラー'),
-  //       content: const Text('ネットワークに接続していません。アプリを終了します。'),
-  //       actions: [
-  //         ElevatedButton(
-  //           onPressed: () => exit(0),
-  //           child: const Text('終了'),
-  //         ),
-  //       ],
-  //     ),
-  //   ));
-  //   return;
-  // }
-
   if (true) {
     final response =
         await httpPost('token/refresh/', {'refresh': refreshToken});
