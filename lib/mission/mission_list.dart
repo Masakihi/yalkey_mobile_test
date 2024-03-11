@@ -177,12 +177,12 @@ class _MissionListPageState extends State<MissionListPage> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          // title: const Text('ミッション一覧'),
+          title: const Text('ミッション'),
           bottom: const TabBar(
             labelColor: Color(0xFFAE0103),
             indicatorColor: Color(0xFFAE0103),
             tabs: <Widget>[
-              Tab(text: 'ミッション一覧'),
+              Tab(text: '一覧'),
               Tab(text: '今日'),
               //Tab(icon: Icon(Icons.brightness_5_sharp)),
             ],

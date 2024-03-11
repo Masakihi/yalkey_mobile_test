@@ -49,7 +49,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
       bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+              icon: Icon(Icons.groups),
               label: 'Home',
             ),
             BottomNavigationBarItem(
@@ -75,7 +75,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
           showSelectedLabels: false,
           showUnselectedLabels: false,
           selectedItemColor: const Color(0xFFAE0103),
-          backgroundColor: const Color(0xFF333333),
+          backgroundColor: Colors.black12,
           unselectedItemColor: Colors.white,
           type: BottomNavigationBarType.fixed),
     );
