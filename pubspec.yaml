@@ -18,8 +18,6 @@ dependencies:
   url_launcher: ^6.0.0
   flutter_link_previewer: ^3.2.2
   provider: ^6.1.2
-  persistent_bottom_nav_bar: ^5.0.2
-  connectivity_plus: ^5.0.2
 
 dev_dependencies:
   flutter_test:

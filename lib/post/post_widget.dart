@@ -24,7 +24,6 @@ class PostWidget extends StatefulWidget {
 }
 
 class _PostWidgetState extends State<PostWidget> {
-  late Post _post = widget.post;
   bool _liking = false;
   bool _bookmarking = false;
   bool _reposting = false;
@@ -126,22 +125,16 @@ class _PostWidgetState extends State<PostWidget> {
     _reposting = false;
   }
 
-  void _navigateToPostDetailPage() async {
-    final updatedPost = await Navigator.push(
+  void _navigateToPostDetailPage() {
+    Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) =>
               PostDetailPage(postNumber: widget.post.postNumber),
         ));
-
-    if (updatedPost != null) {
-      setState(() {
-        _post = updatedPost;
-      });
-    }
   }
 
-  void _navigateToYalkerDetailPage() {
+  void _navigateToYalkerDetailPage(i) {
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -241,7 +234,8 @@ class _PostWidgetState extends State<PostWidget> {
                 children: <Widget>[
                   GestureDetector(
                     onTap: () {
-                      _navigateToYalkerDetailPage();
+                      _navigateToYalkerDetailPage(
+                          widget.post.postUser.postUserNumber);
                     },
                     child: widget.post.postUser.postUserIcon == ""
                         ? const CircleAvatar(

@@ -141,7 +141,7 @@ class MissionListResponse {
   async {
     dynamic jsonData = await httpGet('mission-daily-list/${year}/${month}/${day}/${page}/', jwt: true);
     //dynamic jsonData = await httpGet('mission-daily-list/2024/3/10/1/', jwt: true);
-    print(jsonData);
+    //print(jsonData);
     return MissionListResponse.fromJson(jsonData);
   }
 }
