@@ -179,17 +179,14 @@ class _NotificationListPageState extends State<NotificationListPage> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          flexibleSpace: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              TabBar(
-                labelColor: Color(0xFFAE0103),
-                indicatorColor: Color(0xFFAE0103),
-                tabs: <Widget>[
-                  Tab(text: '新着通知'),
-                  Tab(text: 'リクエスト'),
-                ],
-              ),
+          title: const Text('通知一覧'),
+          bottom: const TabBar(
+            labelColor: Color(0xFFAE0103),
+            indicatorColor: Color(0xFFAE0103),
+            tabs: <Widget>[
+              Tab(text: '新着通知'),
+              Tab(text: 'リクエスト'),
+              //Tab(icon: Icon(Icons.brightness_5_sharp)),
             ],
           ),
         ),
