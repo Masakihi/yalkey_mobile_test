@@ -1,0 +1,27 @@
+name: yalkey_0206_test
+description: "A new Flutter project."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.6 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^0.13.0
+  shared_preferences: ^2.2.2
+  cupertino_icons: ^1.0.2
+  image_picker: ^0.8.4+3
+  flutter_local_notifications: ^9.2.0
+  timezone: ^0.8.0
+  path_provider: ^2.0.2
+  url_launcher: ^6.0.0
+  flutter_link_previewer: ^3.2.2
+  provider: ^6.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+flutter:
+  uses-material-design: true
