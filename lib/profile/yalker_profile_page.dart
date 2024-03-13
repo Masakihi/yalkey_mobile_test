@@ -6,7 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../followed_list_page.dart';
 import '../following_list_page.dart';
 import 'profile_edit_page.dart';
-import 'bar_graph.dart';
+import 'bar_graph copy.dart';
+import 'achievement_calendar.dart';
 import 'report_model.dart';
 import '../post/linkify_util.dart';
 
@@ -490,7 +491,20 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
                             reportUnit: report.reportUnit,
                           );
                         },
-                      )
+                      ),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: _reportListMap['bool_report_list']?.length,
+                        itemBuilder: (context, index) {
+                          final report =
+                              _reportListMap['bool_report_list']?[index];
+                          return AchievementCalendar(
+                            userId: widget.userNumber,
+                            reportTitle: report!.reportName,
+                          );
+                        },
+                      ),
                     ],
                   )
                 : const Center(
