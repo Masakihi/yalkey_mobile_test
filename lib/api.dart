@@ -8,7 +8,23 @@ void logResponse(dynamic response) {
   log(response.toString(), name: 'Response');
 }
 
+
+Future<void> checkInternetConnection() async {
+  try {
+    final result = await InternetAddress.lookup('google.com');
+    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+      // インターネット接続が確立している場合
+      return;
+    }
+  } on SocketException catch (_) {
+    // インターネット接続が確立していない場合
+    throw Exception('No internet connection');
+  }
+}
+
 Future httpGet(String path, {bool jwt = false}) async {
+  await checkInternetConnection(); // インターネット接続を確認
+
   if (jwt) {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('access_token');
@@ -36,6 +52,9 @@ Future httpGet(String path, {bool jwt = false}) async {
 }
 
 Future httpDelete(String path, {bool jwt = false}) async {
+
+  await checkInternetConnection(); // インターネット接続を確認
+
   if (jwt) {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('access_token');
@@ -66,9 +85,11 @@ Future httpDelete(String path, {bool jwt = false}) async {
   return json.decode(utf8.decode(response.bodyBytes));
 }
 
-// Post（画像投稿可能）
+
 Future<dynamic> httpPost(String path, Map<String, dynamic>? body,
     {bool jwt = false, List<String> images = const []}) async {
+  await checkInternetConnection(); // インターネット接続を確認
+
   if (jwt) {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('access_token');
@@ -125,6 +146,7 @@ Future<dynamic> httpPost(String path, Map<String, dynamic>? body,
     return json.decode(responseBody);
   }
 }
+
 
 
 // Post（プロフィール画像追加可能）

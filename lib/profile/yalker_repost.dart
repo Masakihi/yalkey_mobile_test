@@ -36,8 +36,10 @@ class _YalkerRepostPageState extends State<YalkerRepostPage> {
   int relationType = 1;
 
   late List<Post> _postList = []; // user_repost_list を格納するリスト
+  late List<Post> _pinnedPostList = [];
   late ScrollController _scrollController; // ListView のスクロールを制御するコントローラー
   bool _loading = false; // データをロード中かどうかを示すフラグ
+  bool _loadingPinnedPost = false;
   int _page = 1; // 現在のページ番号
 
   @override
@@ -68,6 +70,19 @@ class _YalkerRepostPageState extends State<YalkerRepostPage> {
     }
   }
 
+  Future<void> _fetchPinnedPostList() async {
+    setState(() {
+      _loadingPinnedPost = true; // データのロード中フラグをtrueに設定
+    });
+    PostListResponse postListResponse =
+    await PostListResponse.fetchYalkerPinnedPostResponse(widget.userNumber, 1);
+    if (mounted) {
+      setState(() {
+        _pinnedPostList.addAll(postListResponse.postList); // 新しいデータをリストに追加
+        _loadingPinnedPost = false; // データのロード中フラグをfalseに設定
+      });
+    }
+  }
 
   Future<void> _fetchPostList() async {
     setState(() {

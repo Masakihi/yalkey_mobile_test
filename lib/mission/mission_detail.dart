@@ -67,8 +67,6 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
             // color: Colors.red, //広がっているか色をつけて確認
             child: SingleChildScrollView(
         child:
-
-
         Column(
           children: <Widget>[
             if (loading)

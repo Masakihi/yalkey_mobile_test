@@ -3,6 +3,10 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+<<<<<<< HEAD
+=======
+  connectivity_plus
+>>>>>>> origin/master
   file_selector_windows
   url_launcher_windows
 )
