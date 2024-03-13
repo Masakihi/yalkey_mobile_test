@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'post_model.dart';
 import 'post_widget.dart';
 
@@ -15,10 +16,16 @@ class _PostDetailPageState extends State<PostDetailPage> {
   PostDetailResponse? _postDetailResponse;
   bool _isLoading = true;
 
+  String? loginUserName;
+  String? loginUserIconImage;
+  String? loginUserId;
+  int? loginUserNumber;
+
   @override
   void initState() {
     super.initState();
     _fetchPostDetail();
+    _getLoginUserData();
   }
 
   Future<void> _fetchPostDetail() async {
@@ -30,12 +37,28 @@ class _PostDetailPageState extends State<PostDetailPage> {
     });
   }
 
+  Future<void> _getLoginUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var _loginUserName = prefs.getString('login_user_name');
+    var _loginUserIconImage = prefs.getString('login_user_iconimage');
+    var _loginUserId = prefs.getString('login_user_id');
+    var _loginUserNumber = prefs.getInt('login_user_number');
+    setState(() => {
+      loginUserName = _loginUserName,
+      loginUserIconImage = _loginUserIconImage,
+      loginUserId = _loginUserId,
+      loginUserNumber = _loginUserNumber,
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('投稿詳細'),
         actions: [
+          if (loginUserNumber==_postDetailResponse?.post.postUser.postUserNumber)
           IconButton(
             onPressed: () {
               if (_postDetailResponse != null) {
@@ -72,6 +95,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
             },
             icon: const Icon(Icons.delete),
           ),
+          if (loginUserNumber==_postDetailResponse?.post.postUser.postUserNumber)
           IconButton(
             onPressed: () async {
               if (_postDetailResponse != null) {

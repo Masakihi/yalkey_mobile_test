@@ -85,6 +85,7 @@ class _MissionDeletePageState extends State<MissionDeletePage> {
                           style: TextStyle(fontSize: 16.0),
                         ),
                         SizedBox(height: 12.0),
+                        Text('・ミッション番号：${missionNumber}'),
                         Text('・ミッションタイトル：${missionData?.missionText}'),
 
                         if (missionData?.reward!="" && missionData?.reward!=null) Text('・ご褒美：${missionData?.reward}'),
@@ -172,7 +173,7 @@ class _MissionDeletePageState extends State<MissionDeletePage> {
                             onPressed: () async {
                               int count = 0;
                               Navigator.popUntil(context, (_) => count++ >= 2);
-                              await httpDelete('mission/delete/${missionNumber}', jwt: true);
+                              await httpDelete('mission/delete/${missionNumber}/', jwt: true);
                             },
                             child: const Text(
                               '本当に削除する',

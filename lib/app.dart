@@ -112,14 +112,47 @@ class _AppPageState extends State<AppPage> {
             //     icon: const Icon(Icons.person)),
             GestureDetector(
                 onTap: () => _scaffoldKey.currentState!.openDrawer(),
-                child: CircleAvatar(
+                child: Padding(
+                padding: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
+                child:
+
+                ClipOval(
+                  child: Image.network(
+                    loginUserIconImage ??
+                        'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
+                    width: 20,
+                    height: 20,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                ),
+
+                /*
+                CircleAvatar(
                   backgroundImage: NetworkImage(
                     loginUserIconImage ??
                         'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
                   ),
                   radius: 5, // アイコンの半径を小さくする
-                )),
+                )
+
+                 */
+            ),
         title: const Text("yalkey mobile"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                  const SearchRecommendUserListPage(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       drawer: SizedBox(
         width: 250,
@@ -132,7 +165,7 @@ class _AppPageState extends State<AppPage> {
               physics: AlwaysScrollableScrollPhysics(),
               children: [
                 Padding(
-                  padding: EdgeInsets.only(left: 16.0),
+                  padding: EdgeInsets.fromLTRB(16.0, 10.0, 0, 0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -142,19 +175,32 @@ class _AppPageState extends State<AppPage> {
                           child: Image.network(
                             loginUserIconImage ??
                                 'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
-                            width: 40,
-                            height: 40,
+                            width: 50,
+                            height: 50,
                             fit: BoxFit.cover,
                           ),
                         ),
                       ),
+                      SizedBox(height: 5),
+                      Text(
+                        loginUserName ?? '',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      SizedBox(height: 5),
                       Text('@${loginUserId ?? ''}'),
-                      Text(loginUserName ?? ''),
                     ],
                   ),
                 ),
+                const Divider(height: 32.0, thickness: 0.1, color: Colors.grey),
                 ListTile(
-                  title: const Text("マイページ"),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(Icons.person),
+                      SizedBox(width: 15),
+                      Text('マイページ'),
+                    ],
+                  ),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -165,7 +211,14 @@ class _AppPageState extends State<AppPage> {
                   },
                 ),
                 ListTile(
-                  title: const Text("目標"),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(Icons.flag),
+                      SizedBox(width: 15),
+                      Text('目標'),
+                    ],
+                  ),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -176,7 +229,14 @@ class _AppPageState extends State<AppPage> {
                   },
                 ),
                 ListTile(
-                  title: const Text("検索"),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(Icons.search),
+                      SizedBox(width: 15),
+                      Text('検索'),
+                    ],
+                  ),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -188,7 +248,14 @@ class _AppPageState extends State<AppPage> {
                   },
                 ),
                 ListTile(
-                  title: const Text("ブックマーク"),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(Icons.bookmark),
+                      SizedBox(width: 15),
+                      Text('ブックマーク'),
+                    ],
+                  ),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -199,18 +266,14 @@ class _AppPageState extends State<AppPage> {
                   },
                 ),
                 ListTile(
-                  title: const Text("通知"),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const NotificationListPage(),
-                      ),
-                    );
-                  },
-                ),
-                ListTile(
-                  title: const Text("設定"),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(Icons.settings),
+                      SizedBox(width: 15),
+                      Text('設定'),
+                    ],
+                  ),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -220,34 +283,69 @@ class _AppPageState extends State<AppPage> {
                     );
                   },
                 ),
-                const Divider(height: 32.0, thickness: 1.0, color: Colors.grey),
+                const Divider(height: 32.0, thickness: 0.1, color: Colors.grey),
                 ListTile(
-                  title: const Text("開発者への支援"),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(Icons.medication),
+                      SizedBox(width: 15),
+                      Text('開発者を支援'),
+                    ],
+                  ),
                   onTap: () {
                     _launchInBrowser(
                         "https://yalkey.net/ja/support-for-developer/");
                   },
                 ),
                 ListTile(
-                  title: const Text("使い方"),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(Icons.help),
+                      SizedBox(width: 15),
+                      Text('使い方'),
+                    ],
+                  ),
                   onTap: () {
                     _launchInBrowser("https://yalkey.net/ja/howto/");
                   },
                 ),
                 ListTile(
-                  title: const Text("このアプリについて"),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(Icons.info),
+                      SizedBox(width: 15),
+                      Text('アプリについて'),
+                    ],
+                  ),
                   onTap: () {
                     _launchInBrowser("https://yalkey.net/ja/about/");
                   },
                 ),
                 ListTile(
-                  title: const Text("便利なサイト＆ツール"),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(Icons.school),
+                      SizedBox(width: 15),
+                      Text('便利なツール'),
+                    ],
+                  ),
                   onTap: () {
                     _launchInBrowser("https://yalkey.net/ja/recommend/");
                   },
                 ),
                 ListTile(
-                  title: const Text("サポーター・協賛"),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(Icons.redeem),
+                      SizedBox(width: 15),
+                      Text('協賛・サポート'),
+                    ],
+                  ),
                   onTap: () {
                     _launchInBrowser("https://yalkey.net/ja/supporter/");
                   },
