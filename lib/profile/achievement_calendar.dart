@@ -125,7 +125,7 @@ class _AchievementCalendarState extends State<AchievementCalendar> {
         child: Text(
           date.day.toString(),
           style: TextStyle(
-            color: date.month == today.month ? Colors.white : Colors.white24,
+            color: date.month == _selectedMonth ? Colors.white : Colors.white24,
           ),
         ),
       ),
