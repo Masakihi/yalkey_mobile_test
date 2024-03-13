@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 import 'home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api.dart';
@@ -57,6 +58,18 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  _launchInBrowser(String url) async {
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        forceSafariVC: false,
+        forceWebView: false,
+      );
+    } else {
+      throw 'このURLにはアクセスできません';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
                           return null;
                         },
                         decoration: const InputDecoration(
-                          labelText: "email",
+                          labelText: "メールアドレス",
                           hintText: "sample@yalkey.com",
                           /*
                               border: OutlineInputBorder(
@@ -105,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                           return null;
                         },
                         decoration: InputDecoration(
-                          labelText: "Password",
+                          labelText: "パスワード",
                           hintText: "ここにパスワードを入力",
                           suffixIcon: IconButton(
                             icon: Icon(_isObscure
@@ -151,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       )),
                   const Padding(
-                    padding: EdgeInsets.all(5.0), //マージン
+                    padding: EdgeInsets.all(10.0), //マージン
                     child: Text("アカウントをお持ちでない方は\n以下から新規登録できます"),
                   ),
                   Padding(
@@ -180,7 +193,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       )),
                   Padding(
-                    padding: const EdgeInsets.all(5.0), //マージン
+                    padding: const EdgeInsets.all(10.0), //マージン
                     child: RichText(
                         text: TextSpan(children: [
                       const TextSpan(
@@ -192,13 +205,7 @@ class _LoginPageState extends State<LoginPage> {
                           style: const TextStyle(color: Color(0xFFAE0103)),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const PasswordResetPage(),
-                                ),
-                              );
+                              _launchInBrowser("https://yalkey.com/password-reset/");
                             }),
                     ])),
                   ),

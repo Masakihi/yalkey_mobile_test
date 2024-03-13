@@ -172,7 +172,7 @@ class _MissionDeletePageState extends State<MissionDeletePage> {
                             onPressed: () async {
                               int count = 0;
                               Navigator.popUntil(context, (_) => count++ >= 2);
-                              await httpPost('mission-delete/${missionNumber}', null, jwt: true);
+                              await httpDelete('mission/delete/${missionNumber}', jwt: true);
                             },
                             child: const Text(
                               '本当に削除する',

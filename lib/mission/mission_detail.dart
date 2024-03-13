@@ -65,7 +65,8 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
         body: Container(
             width: double.infinity, //横幅いっぱいを意味する
             // color: Colors.red, //広がっているか色をつけて確認
-            child:
+            child: SingleChildScrollView(
+        child:
         Column(
           children: <Widget>[
             if (loading)
@@ -203,7 +204,12 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
             ]
           ],
         )
+
+
+
     )
+        )
+
     );
   }
 }

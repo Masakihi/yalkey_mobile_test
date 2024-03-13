@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../api.dart';
 import '../app.dart';
 import '../login_page.dart';
+import 'mission_list.dart';
 
 class MissionCreatePage extends StatefulWidget {
   const MissionCreatePage({super.key});
@@ -208,9 +209,8 @@ class _MissionCreateState extends State<MissionCreatePage> {
       );
 
       // ホーム画面に戻る
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => AppPage(),
-      ));
+      int count = 0;
+      Navigator.popUntil(context, (_) => count++ >= 1);
     } catch (error) {
       // エラーメッセージを表示
       ScaffoldMessenger.of(context).showSnackBar(
@@ -267,10 +267,9 @@ class _MissionCreateState extends State<MissionCreatePage> {
         ),
       );
 
-      // ホーム画面に戻る
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => AppPage(),
-      ));
+      int count = 0;
+      Navigator.popUntil(context, (_) => count++ >= 1);
+
     } catch (error) {
       // エラーメッセージを表示
       ScaffoldMessenger.of(context).showSnackBar(
@@ -488,6 +487,7 @@ class _MissionCreateState extends State<MissionCreatePage> {
                             print(missionTextController.text);
                             if (_repeatSettingData != null){
                               print('繰り返し: ${_repeatSettingData!.isRepeat}');
+                              print(_repeatSettingData);
                               _postMissionDataRepeat(_repeatSettingData!);
                             }else{
                               _postMissionData();

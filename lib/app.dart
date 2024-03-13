@@ -21,6 +21,7 @@ class AppPage extends StatefulWidget {
 }
 
 class _AppPageState extends State<AppPage> {
+
   String? loginUserName;
   String? loginUserIconImage;
   String? loginUserId;
@@ -163,30 +164,6 @@ class _AppPageState extends State<AppPage> {
                     );
                   },
                 ),
-                /*
-                ListTile(
-                  title: const Text("ホーム"),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomePage(),
-                      ),
-                    );
-                  },
-                ),
-                */
-                ListTile(
-                  title: const Text("投稿"),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const PostPage(),
-                      ),
-                    );
-                  },
-                ),
                 ListTile(
                   title: const Text("目標"),
                   onTap: () {
@@ -198,27 +175,6 @@ class _AppPageState extends State<AppPage> {
                     );
                   },
                 ),
-                ListTile(
-                  title: const Text("ミッション"),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MissionListPage(),
-                      ),
-                    );
-                  },
-                ),
-                /*
-                ListTile(
-                  title: const Text("レポート編集"),
-                  onTap: () {},
-                ),
-                ListTile(
-                  title: const Text("CSVデータ出力"),
-                  onTap: () {},
-                ),
-                */
                 ListTile(
                   title: const Text("検索"),
                   onTap: () {

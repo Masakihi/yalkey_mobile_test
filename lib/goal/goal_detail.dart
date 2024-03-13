@@ -61,7 +61,13 @@ class _GoalDetailPageState extends State<GoalDetailPage> {
         appBar: AppBar(
           title: const Text('目標 詳細'),
         ),
-        body: SingleChildScrollView(
+        body: Container(
+    width: double.infinity, //横幅いっぱいを意味する
+    // color: Colors.red, //広がっているか色をつけて確認
+    child:
+
+
+    SingleChildScrollView(
           child: Column(
             children: <Widget>[
               if (loading)
@@ -269,6 +275,9 @@ class _GoalDetailPageState extends State<GoalDetailPage> {
               ]
             ],
           ),
-        ));
+        )
+
+        )
+    );
   }
 }
