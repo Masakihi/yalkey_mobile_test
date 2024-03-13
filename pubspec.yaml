@@ -21,6 +21,7 @@ dependencies:
   persistent_bottom_nav_bar: ^5.0.2
   connectivity_plus: ^5.0.2
   fl_chart: ^0.66.2
+  table_calendar: ^3.1.0
 
 dev_dependencies:
   flutter_test:

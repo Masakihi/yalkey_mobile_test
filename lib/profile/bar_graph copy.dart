@@ -167,6 +167,7 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const Divider(height: 4.0, thickness: 0.3, color: Color(0xFF929292)),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

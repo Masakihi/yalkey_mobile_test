@@ -6,9 +6,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'api.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:io';
+import 'package:intl/date_symbol_data_local.dart';
 
 // [StatefulWidget]を使う場合
 void main() async {
+  initializeDateFormatting('jp');
   WidgetsFlutterBinding.ensureInitialized();
   // accessTokenを取得する
   SharedPreferences prefs = await SharedPreferences.getInstance();
