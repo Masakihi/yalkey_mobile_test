@@ -18,7 +18,8 @@ void main() async {
   print("hogehoge");
 
   // // ネットワーク接続状態を取得
-  // var connectivityResult = await Connectivity().checkConnectivity();
+  var connectivityResult = await Connectivity().checkConnectivity();
+
 
   // // オフラインの場合はアプリを終了します。ほげほげ
   // if (connectivityResult == ConnectivityResult.none) {
