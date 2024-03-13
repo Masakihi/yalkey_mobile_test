@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yalkey_0206_test/post_page.dart';
 import 'post/post_widget.dart';
 import 'post/post_model.dart';
 
@@ -130,115 +131,134 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return DefaultTabController(
         length: 2,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text('コミュニティ'),
-            bottom: const TabBar(
-              labelColor: Color(0xFFAE0103),
-              indicatorColor: Color(0xFFAE0103),
-              tabs: <Widget>[
-                Tab(text: 'フォロー中'),
-                Tab(text: '全体'),
-                //Tab(icon: Icon(Icons.brightness_5_sharp)),
+          child:  Scaffold(
+              appBar: AppBar(
+                flexibleSpace: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      TabBar(
+                        labelColor: Color(0xFFAE0103),
+                        indicatorColor: Color(0xFFAE0103),
+                        tabs: <Widget>[
+                        Tab(text: 'フォロー中'),
+                        Tab(text: '全体'),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+      body: TabBarView(
+        children: <Widget>[
+
+
+          RefreshIndicator(
+            displacement: 0,
+            onRefresh: () async {
+              _clearCache();
+            },
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  child: ListView.builder(
+                    controller: _scrollController, // スクロールコントローラーを設定
+                    itemCount: _postList.length + 1, // リストアイテム数 + ローディングインジケーター
+                    itemBuilder: (context, index) {
+                      if (index == _postList.length) {
+                        return _loading
+                            ? Container(
+                                alignment: Alignment.center,
+                                padding: const EdgeInsets.all(16.0),
+                                child: const CircularProgressIndicator(
+                                  strokeWidth: 3.0,
+                                ),
+                              )
+                            : const SizedBox.shrink(); // ローディングインジケーターを表示
+                      }
+                      final post = _postList[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            PostWidget(post: post),
+                            if (index != _postList.length - 1)
+                              const Divider(
+                                  height: 4.0,
+                                  thickness: 0.3,
+                                  color: Color(0xFF929292)), // 最後のポストの後には区切り線を表示しない
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
           ),
-          body: TabBarView(children: <Widget>[
-            RefreshIndicator(
-              displacement: 0,
-              onRefresh: () async {
-                _clearCache();
-              },
-              child: Column(
-                children: <Widget>[
-                  Expanded(
-                    child: ListView.builder(
-                      controller: _scrollController, // スクロールコントローラーを設定
-                      itemCount:
-                          _postList.length + 1, // リストアイテム数 + ローディングインジケーター
-                      itemBuilder: (context, index) {
-                        if (index == _postList.length) {
-                          return _loading
-                              ? Container(
-                                  alignment: Alignment.center,
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: const CircularProgressIndicator(
-                                    strokeWidth: 3.0,
-                                  ),
-                                )
-                              : const SizedBox.shrink(); // ローディングインジケーターを表示
-                        }
-                        final post = _postList[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              PostWidget(post: post),
-                              if (index != _postList.length - 1)
-                                const Divider(
-                                    height: 4.0,
-                                    thickness: 0.3,
-                                    color: Color(
-                                        0xFF929292)), // 最後のポストの後には区切り線を表示しない
-                            ],
+
+
+
+          RefreshIndicator(
+            displacement: 0,
+            onRefresh: () async {
+              _clearAllPostCache();
+            },
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  child: ListView.builder(
+                    controller: _scrollAllController, // スクロールコントローラーを設定
+                    itemCount: _postAllList.length + 1, // リストアイテム数 + ローディングインジケーター
+                    itemBuilder: (context, index) {
+                      if (index == _postAllList.length) {
+                        return _loadingAll
+                            ? Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.all(16.0),
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 3.0,
                           ),
-                        );
-                      },
-                    ),
+                        )
+                            : const SizedBox.shrink(); // ローディングインジケーターを表示
+                      }
+                      final post = _postAllList[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            PostWidget(post: post),
+                            if (index != _postAllList.length - 1)
+                              const Divider(
+                                  height: 4.0,
+                                  thickness: 0.3,
+                                  color: Color(0xFF929292)), // 最後のポストの後には区切り線を表示しない
+                          ],
+                        ),
+                      );
+                    },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            RefreshIndicator(
-              displacement: 0,
-              onRefresh: () async {
-                _clearAllPostCache();
+          ),
+        ]
+        ),
+            floatingActionButton: FloatingActionButton.extended(
+              onPressed: ()  {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PostPage(),
+                  ),
+                );
               },
-              child: Column(
-                children: <Widget>[
-                  Expanded(
-                    child: ListView.builder(
-                      controller: _scrollAllController, // スクロールコントローラーを設定
-                      itemCount:
-                          _postAllList.length + 1, // リストアイテム数 + ローディングインジケーター
-                      itemBuilder: (context, index) {
-                        if (index == _postAllList.length) {
-                          return _loadingAll
-                              ? Container(
-                                  alignment: Alignment.center,
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: const CircularProgressIndicator(
-                                    strokeWidth: 3.0,
-                                  ),
-                                )
-                              : const SizedBox.shrink(); // ローディングインジケーターを表示
-                        }
-                        final post = _postAllList[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              PostWidget(post: post),
-                              if (index != _postAllList.length - 1)
-                                const Divider(
-                                    height: 4.0,
-                                    thickness: 0.3,
-                                    color: Color(
-                                        0xFF929292)), // 最後のポストの後には区切り線を表示しない
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
+              icon: new Icon(Icons.add),
+              label: Text("投稿"),
             ),
-          ]),
-        ));
+          )
+    );
   }
 }

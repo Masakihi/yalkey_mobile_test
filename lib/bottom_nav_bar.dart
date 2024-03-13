@@ -10,6 +10,7 @@ import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({Key? key}) : super(key: key);
 
+
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
 }
@@ -18,7 +19,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final List<Widget> _screens = [
     const HomePage(),
     const NotificationListPage(),
-    const PostPage(),
     const MissionListPage(),
     const ProfilePage(),
   ];
@@ -38,12 +38,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
         ),
         PersistentBottomNavBarItem(
           icon: Icon(Icons.notifications),
-          title: null,
-          activeColorPrimary: const Color(0xFFAE0103),
-          inactiveColorPrimary: Colors.white,
-        ),
-        PersistentBottomNavBarItem(
-          icon: Icon(Icons.post_add),
           title: null,
           activeColorPrimary: const Color(0xFFAE0103),
           inactiveColorPrimary: Colors.white,

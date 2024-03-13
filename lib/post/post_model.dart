@@ -419,14 +419,14 @@ class PostListResponse {
   }
 
   static Future<PostListResponse> fetchYalkerPostResponse(
-      int page, int userNumber) async {
+      int userNumber, int page) async {
     dynamic jsonData =
     await httpGet('yalker-detail-repost-list/${userNumber}/${page}', jwt: true);
     return PostListResponse.fromResponseYalkerRepostList(jsonData);
   }
 
   static Future<PostListResponse> fetchYalkerPinnedPostResponse(
-      int page, int userNumber) async {
+      int userNumber, int page) async {
     dynamic jsonData =
     await httpGet('yalker-detail-repost-list/${userNumber}/${page}', jwt: true);
     return PostListResponse.fromResponseYalkerPinnedRepostList(jsonData);

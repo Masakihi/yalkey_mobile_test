@@ -24,6 +24,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
       _scrollFollowRequestController; // ListView のスクロールを制御するコントローラー
   bool _loadingFollowRequest = false; // データをロード中かどうかを示すフラグ
   int _pageFollowRequest = 1; // 現在のページ番号
+  late List<bool> permitButtonPush = [];
 
   @override
   void initState() {
@@ -86,6 +87,10 @@ class _NotificationListPageState extends State<NotificationListPage> {
       setState(() {
         _followRequestList.addAll(
             followRequestListResponse.followRequestList); // 新しいデータをリストに追加
+        for (var i = 0; i < _followRequestList.length; i++) {
+          permitButtonPush.add(false);
+        }
+        //print(permitButtonPush);
         _loadingFollowRequest = false; // データのロード中フラグをfalseに設定
       });
     }
@@ -136,6 +141,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
       //await prefs.remove('user_repost_list');
       setState(() {
         _followRequestList.clear();
+        permitButtonPush.clear();
         _pageFollowRequest = 1; // ページ番号をリセット
       });
       print("list refresh");
@@ -148,7 +154,8 @@ class _NotificationListPageState extends State<NotificationListPage> {
   Future<void> permit(context, int? user_number) async {
     try {
       final response =
-          await httpPost('permit/${user_number}', {'email': 'email'});
+          await httpPost('permit/${user_number}/', null, jwt: true);
+      //print(response);
     } catch (error) {
       print('Error deactivate: $error');
     }
@@ -175,18 +182,26 @@ class _NotificationListPageState extends State<NotificationListPage> {
       }
     }
 
+    String newNotificationCheck(bool newNotification) {
+      if (newNotification) return "【New】";
+      else return "";
+    }
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('通知一覧'),
-          bottom: const TabBar(
-            labelColor: Color(0xFFAE0103),
-            indicatorColor: Color(0xFFAE0103),
-            tabs: <Widget>[
-              Tab(text: '新着通知'),
-              Tab(text: 'リクエスト'),
-              //Tab(icon: Icon(Icons.brightness_5_sharp)),
+          flexibleSpace: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              TabBar(
+                labelColor: Color(0xFFAE0103),
+                indicatorColor: Color(0xFFAE0103),
+                tabs: <Widget>[
+                  Tab(text: '新着通知'),
+                  Tab(text: 'リクエスト'),
+                ],
+              ),
             ],
           ),
         ),
@@ -271,7 +286,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
                                             CrossAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
-                                            '${notification.fromName} さん(@${notification.fromUserId})が' +
+                                            newNotificationCheck(notification.newNotification!) + '${notification.fromName} さん(@${notification.fromUserId})が' +
                                                 ifNotificationText(notification
                                                     .notificationType) +
                                                 'しました！',
@@ -375,21 +390,31 @@ class _NotificationListPageState extends State<NotificationListPage> {
                                   ),
                                   ElevatedButton(
                                     onPressed: () {
-                                      permit(context,
-                                          follow_request.fromUserNumber);
+                                      permit(context, follow_request.fromUserNumber);
+                                      setState(() {
+                                        // ボタンが押されたらisButtonPressedの値を切り替える
+                                        permitButtonPush[index] = !permitButtonPush[index];
+                                      });
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFFAE0103),
+                                      backgroundColor: permitButtonPush[index]? Colors.white: const Color(0xFFAE0103),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                     ),
-                                    child: const Text(
-                                      '承認',
+                                    child: permitButtonPush[index]?
+
+                                    const Text('承認済み',
+                                      style: TextStyle(
+                                        color: const Color(0xFFAE0103),
+                                      ),
+                                    )
+                                        :
+                                    const Text('承認する',
                                       style: TextStyle(
                                         color: Colors.white,
                                       ),
-                                    ),
+                                    )
                                   ),
                                 ],
                               ),

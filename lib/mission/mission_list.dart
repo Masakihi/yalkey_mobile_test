@@ -19,18 +19,27 @@ class _MissionListPageState extends State<MissionListPage> {
   bool _loading = false; // データをロード中かどうかを示すフラグ
   int _page = 1; // 現在のページ番号
 
-  late final List<Mission> _missionTodayList =
-      []; // user_repost_list を格納するリスト
+  late final List<Mission> _missionTomorrowList = []; // user_repost_list を格納するリスト
+  late ScrollController
+  _scrollMissionTomorrowController; // ListView のスクロールを制御するコントローラー
+  bool _loadingMissionTomorrow = false; // データをロード中かどうかを示すフラグ
+  int _pageMissionTomorrow = 1;
+
+  late final List<Mission> _missionTodayList = []; // user_repost_list を格納するリスト
   late ScrollController
       _scrollMissionTodayController; // ListView のスクロールを制御するコントローラー
   bool _loadingMissionToday = false; // データをロード中かどうかを示すフラグ
   int _pageMissionToday = 1;
 
-  Map<int, bool> checkboxToday = {
-    //'Option 1': false,
-    // 1 : false,
-    // Add more options if needed
-  };
+  late final List<Mission> _missionYesterdayList = []; // user_repost_list を格納するリスト
+  late ScrollController _scrollMissionYesterdayController; // ListView のスクロールを制御するコントローラー
+  bool _loadingMissionYesterday = false; // データをロード中かどうかを示すフラグ
+  int _pageMissionYesterday = 1;
+
+
+  Map<int, bool> checkboxTomorrow = {};
+  Map<int, bool> checkboxToday = {};
+  Map<int, bool> checkboxYesterday = {};
 
 
 
@@ -38,10 +47,16 @@ class _MissionListPageState extends State<MissionListPage> {
   void initState() {
     super.initState();
     _scrollController = ScrollController()..addListener(_scrollListener);
-    _fetchMissionList(); // 最初のデータを読み込む
+    _scrollMissionTomorrowController = ScrollController()
+      ..addListener(_scrollMissionTomorrowListener);
     _scrollMissionTodayController = ScrollController()
       ..addListener(_scrollMissionTodayListener);
+    _scrollMissionYesterdayController = ScrollController()
+      ..addListener(_scrollMissionYesterdayListener);
+    _fetchMissionList(); // 最初のデータを読み込む
+    _fetchMissionTomorrowList();
     _fetchMissionTodayList();
+    _fetchMissionYesterdayList();
   }
 
   // ListView のスクロールイベントを監視するリスナー
@@ -54,12 +69,30 @@ class _MissionListPageState extends State<MissionListPage> {
     }
   }
 
+  void _scrollMissionTomorrowListener() {
+    // スクロール位置が最下部に達したかどうかをチェック
+    if (_scrollMissionTomorrowController.position.pixels ==
+        _scrollMissionTomorrowController.position.maxScrollExtent) {
+      // 最下部に達したら新しいデータをロードする
+      _loadMoreMissionTomorrowData();
+    }
+  }
+
   void _scrollMissionTodayListener() {
     // スクロール位置が最下部に達したかどうかをチェック
     if (_scrollMissionTodayController.position.pixels ==
         _scrollMissionTodayController.position.maxScrollExtent) {
       // 最下部に達したら新しいデータをロードする
       _loadMoreMissionTodayData();
+    }
+  }
+
+  void _scrollMissionYesterdayListener() {
+    // スクロール位置が最下部に達したかどうかをチェック
+    if (_scrollMissionYesterdayController.position.pixels ==
+        _scrollMissionYesterdayController.position.maxScrollExtent) {
+      // 最下部に達したら新しいデータをロードする
+      _loadMoreMissionYesterdayData();
     }
   }
 
@@ -77,6 +110,38 @@ class _MissionListPageState extends State<MissionListPage> {
           _missionList
               .addAll(missionListResponse.missionList); // 新しいデータをリストに追加
           _loading = false; // データのロード中フラグをfalseに設定
+        });
+      }
+    } catch (error) {
+      print('error: $error');
+    }
+    /*prefs.setStringList('user_repost_list',
+        _userRepostList.map((repost) => jsonEncode(repost.toJson())).toList());
+
+     */
+  }
+
+  Future<void> _fetchMissionTomorrowList() async {
+    setState(() {
+      _loadingMissionTomorrow = true; // データのロード中フラグをtrueに設定
+    });
+
+    DateTime tomorrow = DateTime.now().add(const Duration(days: 1));
+
+    try {
+      MissionListResponse missionTomorrowListResponse =
+      await MissionListResponse.fetchMissionDailyListResponse(tomorrow.year, tomorrow.month, tomorrow.day, _pageMissionTomorrow);
+      if (mounted) {
+        setState(() {
+          _missionTomorrowList
+              .addAll(missionTomorrowListResponse.missionList); // 新しいデータをリストに追加
+
+          for(Mission mission in _missionTomorrowList){
+            checkboxTomorrow[mission.missionNumber] = mission.achieved!;
+          }
+
+
+          _loadingMissionTomorrow = false; // データのロード中フラグをfalseに設定
         });
       }
     } catch (error) {
@@ -120,6 +185,39 @@ class _MissionListPageState extends State<MissionListPage> {
      */
   }
 
+
+  Future<void> _fetchMissionYesterdayList() async {
+    setState(() {
+      _loadingMissionYesterday = true; // データのロード中フラグをtrueに設定
+    });
+
+    DateTime yesterday = DateTime.now().subtract(const Duration(days: 1));
+
+    try {
+      MissionListResponse missionYesterdayListResponse =
+      await MissionListResponse.fetchMissionDailyListResponse(yesterday.year, yesterday.month, yesterday.day, _pageMissionYesterday);
+      if (mounted) {
+        setState(() {
+          _missionYesterdayList
+              .addAll(missionYesterdayListResponse.missionList); // 新しいデータをリストに追加
+
+          for(Mission mission in _missionYesterdayList){
+            checkboxYesterday[mission.missionNumber] = mission.achieved!;
+          }
+
+
+          _loadingMissionYesterday = false; // データのロード中フラグをfalseに設定
+        });
+      }
+    } catch (error) {
+      print('error: $error');
+    }
+    /*prefs.setStringList('user_repost_list',
+        _userRepostList.map((repost) => jsonEncode(repost.toJson())).toList());
+
+     */
+  }
+
   Future<void> _loadMoreData() async {
     if (!_loading) {
       setState(() {
@@ -127,6 +225,16 @@ class _MissionListPageState extends State<MissionListPage> {
         _page++; // ページ番号をインクリメントして新しいデータを取得
       });
       await _fetchMissionList();
+    }
+  }
+
+  Future<void> _loadMoreMissionTomorrowData() async {
+    if (!_loadingMissionTomorrow) {
+      setState(() {
+        _loadingMissionTomorrow = true; // データのロード中フラグをtrueに設定
+        _pageMissionTomorrow++; // ページ番号をインクリメントして新しいデータを取得
+      });
+      await _fetchMissionTomorrowList();
     }
   }
 
@@ -140,6 +248,16 @@ class _MissionListPageState extends State<MissionListPage> {
     }
   }
 
+  Future<void> _loadMoreMissionYesterdayData() async {
+    if (!_loadingMissionYesterday) {
+      setState(() {
+        _loadingMissionYesterday = true; // データのロード中フラグをtrueに設定
+        _pageMissionYesterday++; // ページ番号をインクリメントして新しいデータを取得
+      });
+      await _fetchMissionYesterdayList();
+    }
+  }
+
   Future<void> _clearCache() async {
     try {
       //SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -150,6 +268,22 @@ class _MissionListPageState extends State<MissionListPage> {
       });
       print("list refresh");
       await _fetchMissionList(); // データを再読み込み
+    } catch (error) {
+      // print('Error clearing cache: $error');
+    }
+  }
+
+
+  Future<void> _clearMissionTomorrowCache() async {
+    try {
+      //SharedPreferences prefs = await SharedPreferences.getInstance();
+      //await prefs.remove('user_repost_list');
+      setState(() {
+        _missionTomorrowList.clear();
+        _pageMissionTomorrow = 1; // ページ番号をリセット
+      });
+      print("list refresh");
+      await _fetchMissionTomorrowList(); // データを再読み込み
     } catch (error) {
       // print('Error clearing cache: $error');
     }
@@ -170,21 +304,41 @@ class _MissionListPageState extends State<MissionListPage> {
     }
   }
 
+  Future<void> _clearMissionYesterdayCache() async {
+    try {
+      //SharedPreferences prefs = await SharedPreferences.getInstance();
+      //await prefs.remove('user_repost_list');
+      setState(() {
+        _missionYesterdayList.clear();
+        _pageMissionYesterday = 1; // ページ番号をリセット
+      });
+      print("list refresh");
+      await _fetchMissionYesterdayList(); // データを再読み込み
+    } catch (error) {
+      // print('Error clearing cache: $error');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('ミッション'),
-          bottom: const TabBar(
-            labelColor: Color(0xFFAE0103),
-            indicatorColor: Color(0xFFAE0103),
-            tabs: <Widget>[
-              Tab(text: '一覧'),
-              Tab(text: '今日'),
-              //Tab(icon: Icon(Icons.brightness_5_sharp)),
+          flexibleSpace: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              TabBar(
+                labelColor: Color(0xFFAE0103),
+                indicatorColor: Color(0xFFAE0103),
+                tabs: <Widget>[
+                  Tab(text: '一覧'),
+                  Tab(text: '明日'),
+                  Tab(text: '今日'),
+                  Tab(text: '昨日'),
+                ],
+              ),
             ],
           ),
         ),
@@ -197,28 +351,6 @@ class _MissionListPageState extends State<MissionListPage> {
               },
               child: Column(
                 children: <Widget>[
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MissionCreatePage(),
-                            //builder: (context) => TaskDeletePage(value: int.parse('352'))
-                          ));
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFAE0103),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text(
-                      'ミッションを追加',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
                   Expanded(
                     child: ListView.builder(
                       controller: _scrollController, // スクロールコントローラーを設定
@@ -294,6 +426,94 @@ class _MissionListPageState extends State<MissionListPage> {
             ),
 
 
+            RefreshIndicator(
+              displacement: 0,
+              onRefresh: () async {
+                _clearMissionTomorrowCache();
+              },
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    child: ListView.builder(
+                      controller:
+                      _scrollMissionTomorrowController, // スクロールコントローラーを設定
+                      itemCount: _missionTomorrowList.length +
+                          1, // リストアイテム数 + ローディングインジケーター
+                      itemBuilder: (context, index) {
+                        if (index == _missionTomorrowList.length) {
+                          return _loadingMissionTomorrow
+                              ? Container(
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.all(16.0),
+                            child: const CircularProgressIndicator(
+                              strokeWidth: 3.0,
+                            ),
+                          )
+                              : const SizedBox.shrink(); // ローディングインジケーターを表示
+                        }
+                        final missionTomorrow = _missionTomorrowList[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16.0),
+                          child: Row(
+                            children: <Widget>[
+                              Checkbox(
+                                activeColor: const Color(0xFFAE0103),
+                                value: checkboxTomorrow[missionTomorrow.missionNumber], //missionToday.achieved,
+                                onChanged:
+                                    (bool? checkedValue) async {
+                                  // print("checked");
+                                  // await missionToday.handleAchieved();
+                                      DateTime tomorrow = DateTime.now().add(const Duration(days: 1));
+                                  if (checkboxTomorrow[missionTomorrow.missionNumber] == true){
+                                    print("mission-done-remove");
+                                    await httpPost('mission-done-remove-daily/${missionTomorrow.missionNumber}/${tomorrow.year}/${tomorrow.month}/${tomorrow.day}/', null, jwt:true);
+
+                                  }else{
+                                    print("mission-done");
+                                    await httpPost('mission-done-daily/${missionTomorrow.missionNumber}/${tomorrow.year}/${tomorrow.month}/${tomorrow.day}/', null, jwt:true);
+
+                                  }
+                                  setState(() {
+                                    checkboxTomorrow[missionTomorrow.missionNumber] = checkedValue!;
+                                  });
+                                  if (checkboxTomorrow[missionTomorrow.missionNumber]==true){
+                                    _showAlertDialog(context);
+                                  }
+                                },
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  // テキストをタップしたときの処理
+                                  // // print('Text at index $index tapped');
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          MissionDetailPage(
+                                              value: int.parse(
+                                                  '${missionTomorrow.missionNumber}')),
+                                      //builder: (context) => TaskDetailPage(value: int.parse('352')),
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  '${missionTomorrow.missionText}',  //missionToday.title,
+                                  style:
+                                  const TextStyle(fontSize: 16.0),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+
 
             RefreshIndicator(
               displacement: 0,
@@ -302,28 +522,6 @@ class _MissionListPageState extends State<MissionListPage> {
               },
               child: Column(
                 children: <Widget>[
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MissionCreatePage(),
-                            //builder: (context) => TaskDeletePage(value: int.parse('352'))
-                          ));
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFAE0103),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text(
-                      'ミッションを追加',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
                   Expanded(
                     child: ListView.builder(
                       controller:
@@ -355,13 +553,14 @@ class _MissionListPageState extends State<MissionListPage> {
                                     (bool? checkedValue) async {
                                   // print("checked");
                                   // await missionToday.handleAchieved();
+                                      DateTime now = DateTime.now();
                                       if (checkboxToday[missionToday.missionNumber] == true){
                                         print("mission-done-remove");
-                                        await httpPost('mission-done-remove/${missionToday.missionNumber}/', null, jwt:true);
+                                        await httpPost('mission-done-remove-daily/${missionToday.missionNumber}/${now.year}/${now.month}/${now.day}/', null, jwt:true);
 
                                       }else{
                                         print("mission-done");
-                                        await httpPost('mission-done/${missionToday.missionNumber}/', null, jwt:true);
+                                        await httpPost('mission-done-daily/${missionToday.missionNumber}/${now.year}/${now.month}/${now.day}/', null, jwt:true);
 
                                       }
                                   setState(() {
@@ -402,7 +601,108 @@ class _MissionListPageState extends State<MissionListPage> {
                 ],
               ),
             ),
+
+
+            RefreshIndicator(
+              displacement: 0,
+              onRefresh: () async {
+                _clearMissionYesterdayCache();
+              },
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    child: ListView.builder(
+                      controller:
+                      _scrollMissionYesterdayController, // スクロールコントローラーを設定
+                      itemCount: _missionYesterdayList.length +
+                          1, // リストアイテム数 + ローディングインジケーター
+                      itemBuilder: (context, index) {
+                        if (index == _missionYesterdayList.length) {
+                          return _loadingMissionYesterday
+                              ? Container(
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.all(16.0),
+                            child: const CircularProgressIndicator(
+                              strokeWidth: 3.0,
+                            ),
+                          )
+                              : const SizedBox.shrink(); // ローディングインジケーターを表示
+                        }
+                        final missionYesterday = _missionYesterdayList[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16.0),
+                          child: Row(
+                            children: <Widget>[
+                              Checkbox(
+                                activeColor: const Color(0xFFAE0103),
+                                value: checkboxYesterday[missionYesterday.missionNumber], //missionToday.achieved,
+                                onChanged:
+                                    (bool? checkedValue) async {
+                                  // print("checked");
+                                  // await missionToday.handleAchieved();
+                                      DateTime yesterday = DateTime.now().subtract(const Duration(days: 1));
+                                  if (checkboxToday[missionYesterday.missionNumber] == true){
+                                    print("mission-done-remove");
+                                    await httpPost('mission-done-remove-daily/${missionYesterday.missionNumber}/${yesterday.year}/${yesterday.month}/${yesterday.day}/', null, jwt:true);
+
+                                  }else{
+                                    print("mission-done");
+                                    await httpPost('mission-done-daily/${missionYesterday.missionNumber}/${yesterday.year}/${yesterday.month}/${yesterday.day}/', null, jwt:true);
+
+                                  }
+                                  setState(() {
+                                    checkboxYesterday[missionYesterday.missionNumber] = checkedValue!;
+                                  });
+                                  if (checkboxYesterday[missionYesterday.missionNumber]==true){
+                                    _showAlertDialog(context);
+                                  }
+                                },
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  // テキストをタップしたときの処理
+                                  // // print('Text at index $index tapped');
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          MissionDetailPage(
+                                              value: int.parse(
+                                                  '${missionYesterday.missionNumber}')),
+                                      //builder: (context) => TaskDetailPage(value: int.parse('352')),
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  '${missionYesterday.missionText}',  //missionToday.title,
+                                  style:
+                                  const TextStyle(fontSize: 16.0),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
           ],
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: ()  {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MissionCreatePage(),
+                  //builder: (context) => TaskDeletePage(value: int.parse('352'))
+                ));
+          },
+          icon: new Icon(Icons.add),
+          label: Text("ミッション"),
         ),
       ),
     );
