@@ -83,6 +83,7 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    Text('・ミッション番号：${missionNumber}'),
                     Text('・ミッションタイトル：${missionData?.missionText}'),
 
                     if (missionData?.reward!="" && missionData?.reward!=null) Text('・ご褒美：${missionData?.reward}'),

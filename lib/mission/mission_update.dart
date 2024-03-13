@@ -58,6 +58,62 @@ class _MissionUpdateState extends State<MissionUpdatePage> {
     _selectedEndDate = DateTime(dt.year, dt.month, dt.day);
     _selectedEndTime = TimeOfDay(hour: dt.hour, minute: dt.minute);
     // _fetchReportList();
+
+    bool _isRepeated=false;
+    int _repeatInterval = oldMissionData!.repeatInterval;
+    String _repeatOption='日';
+    EndCondition _endCondition = EndCondition.none;
+    DateTime _endDate = DateTime.now();
+    int _repeatCount = 10;
+    List<bool> _selections = List.generate(7, (_) => true);
+
+
+    if(oldMissionData?.repeatType!=0) {
+      _isRepeated=true;
+    }else{
+      _isRepeated=false;
+    }
+
+
+    if(oldMissionData!.repeatType==1){
+      _repeatOption = '日';
+    }else if(oldMissionData!.repeatType==2){
+      _repeatOption = '週';
+    }else if(oldMissionData!.repeatType==3){
+      _repeatOption = '月';
+    }else if(oldMissionData!.repeatType==4){
+      _repeatOption = '年';
+    }
+
+
+    if(oldMissionData!.repeatStopType==1){
+      _endCondition = EndCondition.endDate;
+    }else if(oldMissionData!.repeatStopType==2){
+      _endCondition = EndCondition.repeatCount;
+    }
+    _repeatCount = oldMissionData!.repeatNumber;
+
+    for (var i = 0; i < oldMissionData!.repeatDayWeek.length; i++) {
+      if(oldMissionData!.repeatDayWeek[i]=="0") _selections[i]=false;
+    }
+
+    print(oldMissionData!.repeatStopDate);
+    _endDate = DateTime(DateTime.parse(oldMissionData!.repeatStopDate.substring(0,10)).year, DateTime.parse(oldMissionData!.repeatStopDate.substring(0,10)).month, DateTime.parse(oldMissionData!.repeatStopDate.substring(0,10)).day);
+    print(_endDate);
+
+
+    if (oldMissionData?.repeatType!=0){
+      _repeatSettingData = RepeatSettingData(
+          isRepeat: _isRepeated,
+          repeatInterval: _repeatInterval,
+          repeatOption: _repeatOption,
+          endCondition: _endCondition,
+          endDate: _endDate,
+          repeatCount: _repeatCount,
+          selectionList: _selections
+      );
+    }
+
   }
 
   void _showRepeatForm() {
@@ -211,7 +267,7 @@ class _MissionUpdateState extends State<MissionUpdatePage> {
       print(data);
 
       //final response = await httpPost('mission-form/', data, jwt: true);
-      final response = await httpPost('mission-update/${missionNumber}', data, jwt: true);
+      final response = await httpPost('mission/update/${missionNumber}/', data, jwt: true);
 
       // 成功メッセージを表示
       ScaffoldMessenger.of(context).showSnackBar(
@@ -271,7 +327,8 @@ class _MissionUpdateState extends State<MissionUpdatePage> {
 
       print(data);
 
-      final response = await httpPost('mission-form/', data, jwt: true);
+      // final response = await httpPost('mission-form/', data, jwt: true);
+      final response = await httpPost('mission/update/${missionNumber}/', data, jwt: true);
 
       // 成功メッセージを表示
       ScaffoldMessenger.of(context).showSnackBar(

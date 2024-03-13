@@ -586,11 +586,13 @@ class _MissionListPageState extends State<MissionListPage> {
                                     ),
                                   );
                                 },
-                                child: Text(
+                                child:
+                                Text(
                                   '${missionToday.missionText}',  //missionToday.title,
                                   style:
                                   const TextStyle(fontSize: 16.0),
                                 ),
+
                               ),
                             ],
                           ),
