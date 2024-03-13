@@ -12,8 +12,14 @@ void printAll(String _log) {
 
 class LinkifyUtil extends StatefulWidget {
   final String text;
+  final bool withPreview;
+  final int maxWords;
 
-  const LinkifyUtil({Key? key, required this.text}) : super(key: key);
+  const LinkifyUtil(
+      {Key? key, required this.text, bool? withPreview, int? maxWords})
+      : withPreview = withPreview ?? true,
+        maxWords = maxWords ?? 100,
+        super(key: key);
 
   @override
   _LinkifyUtilState createState() => _LinkifyUtilState();
@@ -36,8 +42,8 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
             children: _isExpanded ? _spansExpanded : _spansEclipsed,
           ),
         ),
-        SizedBox(height: 5),
-        PreviewsWidget(urls: _extractUrls(widget.text)),
+        const SizedBox(height: 5),
+        if (widget.withPreview) PreviewsWidget(urls: _extractUrls(widget.text)),
       ],
     );
   }
@@ -58,11 +64,11 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
     for (var match in matches) {
       if (match.start > currentIndex) {
         totalTextLength += match.start - currentIndex;
-        if (totalTextLength > 100) {
+        if (totalTextLength > widget.maxWords) {
           _spansEclipsed = [...spans];
           _spansEclipsed.add(
             TextSpan(
-              text: text.substring(currentIndex, 100),
+              text: text.substring(currentIndex, widget.maxWords),
               style: TextStyle(fontSize: 16),
             ),
           );
@@ -120,12 +126,12 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
     if (currentIndex < text.length) {
       final remainingText = text.substring(currentIndex);
       totalTextLength = text.length;
-      if (totalTextLength > 100) {
+      if (totalTextLength > widget.maxWords) {
         if (_spansEclipsed.isEmpty) {
           _spansEclipsed = [...spans];
           _spansEclipsed.add(
             TextSpan(
-              text: text.substring(currentIndex, 100),
+              text: text.substring(currentIndex, widget.maxWords),
               style: TextStyle(fontSize: 16),
             ),
           );
@@ -155,14 +161,14 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
         ),
       );
     } else {
-      if (lastLinkStart <= 100) {
+      if (lastLinkStart <= widget.maxWords) {
         _isExpanded = true;
       }
     }
     _spansExpanded = spans;
 
     // print(totalTextLength);
-    if (totalTextLength <= 100) {
+    if (totalTextLength <= widget.maxWords) {
       _isExpanded = true;
     }
   }

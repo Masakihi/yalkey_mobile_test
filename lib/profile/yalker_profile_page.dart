@@ -8,6 +8,7 @@ import '../following_list_page.dart';
 import 'profile_edit_page.dart';
 import 'bar_graph.dart';
 import 'report_model.dart';
+import '../post/linkify_util.dart';
 
 const Map<String, String> badge2Explanation = {
   "超早起き": "過去1週間のうち7日間早起きしたヤルカー",
@@ -164,193 +165,193 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
                           SizedBox(width: 20), // アイコンと名前の間隔を設定
 
                           Flexible(
-                            child:
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _profileData!['yalker_profile']['name'],
-                                style: TextStyle(fontSize: 24),
-                              ),
-                              Row(
-                                children: [
-                                  if (_profileData!['yalker_profile']['lock'] ??
-                                      false)
-                                    const Icon(
-                                      Icons.lock,
-                                      color: Colors.grey,
-                                      size: 14.0,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _profileData!['yalker_profile']['name'],
+                                  style: TextStyle(fontSize: 24),
+                                ),
+                                Row(
+                                  children: [
+                                    if (_profileData!['yalker_profile']
+                                            ['lock'] ??
+                                        false)
+                                      const Icon(
+                                        Icons.lock,
+                                        color: Colors.grey,
+                                        size: 14.0,
+                                      ),
+                                    Text(
+                                      '@${_profileData!['yalker_profile']['user_id']}',
+                                      style: const TextStyle(
+                                          fontSize: 14.0, color: Colors.grey),
                                     ),
-                                  Text(
-                                    '@${_profileData!['yalker_profile']['user_id']}',
-                                    style: const TextStyle(
-                                        fontSize: 14.0, color: Colors.grey),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8.0),
-                              Row(
-                                children: [
-                                  if (_profileData!['yalker_profile']
-                                          ['super_early_bird'] ??
-                                      false)
-                                    GestureDetector(
-                                      behavior: HitTestBehavior.translucent,
-                                      onTap: () {
-                                        _showExplanation(context,
-                                            badge2Explanation['超早起き']!);
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 3, vertical: 1),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFFAE0103),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                          child: const Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 3, vertical: 1),
-                                            child: Text(
-                                              "超早起き",
-                                              style: TextStyle(
-                                                  fontSize: 10.0,
-                                                  color: Colors.white),
+                                  ],
+                                ),
+                                const SizedBox(height: 8.0),
+                                Row(
+                                  children: [
+                                    if (_profileData!['yalker_profile']
+                                            ['super_early_bird'] ??
+                                        false)
+                                      GestureDetector(
+                                        behavior: HitTestBehavior.translucent,
+                                        onTap: () {
+                                          _showExplanation(context,
+                                              badge2Explanation['超早起き']!);
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 3, vertical: 1),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFFAE0103),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: const Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 3, vertical: 1),
+                                              child: Text(
+                                                "超早起き",
+                                                style: TextStyle(
+                                                    fontSize: 10.0,
+                                                    color: Colors.white),
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  if (_profileData!['yalker_profile']['lock'] ??
-                                      false)
-                                    GestureDetector(
-                                      behavior: HitTestBehavior.translucent,
-                                      onTap: () {
-                                        _showExplanation(context,
-                                            badge2Explanation['early_bird']!);
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 3, vertical: 1),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFFAE0103),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                          child: const Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 3, vertical: 1),
-                                            child: Text(
-                                              "早起き",
-                                              style: TextStyle(
-                                                  fontSize: 10.0,
-                                                  color: Colors.white),
+                                    if (_profileData!['yalker_profile']
+                                            ['lock'] ??
+                                        false)
+                                      GestureDetector(
+                                        behavior: HitTestBehavior.translucent,
+                                        onTap: () {
+                                          _showExplanation(context,
+                                              badge2Explanation['early_bird']!);
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 3, vertical: 1),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFFAE0103),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: const Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 3, vertical: 1),
+                                              child: Text(
+                                                "早起き",
+                                                style: TextStyle(
+                                                    fontSize: 10.0,
+                                                    color: Colors.white),
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  if (_profileData!['yalker_profile']
-                                          ['super_hard_worker'] ??
-                                      false)
-                                    GestureDetector(
-                                      behavior: HitTestBehavior.translucent,
-                                      onTap: () {
-                                        _showExplanation(context,
-                                            badge2Explanation['超努力家']!);
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 3, vertical: 1),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFFAE0103),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                          child: const Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 3, vertical: 1),
-                                            child: Text(
-                                              "超努力家",
-                                              style: TextStyle(
-                                                  fontSize: 10.0,
-                                                  color: Colors.white),
+                                    if (_profileData!['yalker_profile']
+                                            ['super_hard_worker'] ??
+                                        false)
+                                      GestureDetector(
+                                        behavior: HitTestBehavior.translucent,
+                                        onTap: () {
+                                          _showExplanation(context,
+                                              badge2Explanation['超努力家']!);
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 3, vertical: 1),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFFAE0103),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: const Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 3, vertical: 1),
+                                              child: Text(
+                                                "超努力家",
+                                                style: TextStyle(
+                                                    fontSize: 10.0,
+                                                    color: Colors.white),
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  if (_profileData!['yalker_profile']
-                                          ['hard_worker'] ??
-                                      false)
-                                    GestureDetector(
-                                      behavior: HitTestBehavior.translucent,
-                                      onTap: () {
-                                        _showExplanation(
-                                            context, badge2Explanation['努力家']!);
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 3, vertical: 1),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFFAE0103),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                          child: const Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 3, vertical: 1),
-                                            child: Text(
-                                              "努力家",
-                                              style: TextStyle(
-                                                  fontSize: 10.0,
-                                                  color: Colors.white),
+                                    if (_profileData!['yalker_profile']
+                                            ['hard_worker'] ??
+                                        false)
+                                      GestureDetector(
+                                        behavior: HitTestBehavior.translucent,
+                                        onTap: () {
+                                          _showExplanation(context,
+                                              badge2Explanation['努力家']!);
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 3, vertical: 1),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFFAE0103),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: const Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 3, vertical: 1),
+                                              child: Text(
+                                                "努力家",
+                                                style: TextStyle(
+                                                    fontSize: 10.0,
+                                                    color: Colors.white),
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  if (_profileData!['yalker_profile']
-                                          ['regular_customer'] ??
-                                      false)
-                                    GestureDetector(
-                                      behavior: HitTestBehavior.translucent,
-                                      onTap: () {
-                                        _showExplanation(
-                                            context, badge2Explanation['常連']!);
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 3, vertical: 1),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFFAE0103),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                          child: const Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 3, vertical: 1),
-                                            child: Text(
-                                              "常連",
-                                              style: TextStyle(
-                                                  fontSize: 10.0,
-                                                  color: Colors.white),
+                                    if (_profileData!['yalker_profile']
+                                            ['regular_customer'] ??
+                                        false)
+                                      GestureDetector(
+                                        behavior: HitTestBehavior.translucent,
+                                        onTap: () {
+                                          _showExplanation(context,
+                                              badge2Explanation['常連']!);
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 3, vertical: 1),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFFAE0103),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: const Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 3, vertical: 1),
+                                              child: Text(
+                                                "常連",
+                                                style: TextStyle(
+                                                    fontSize: 10.0,
+                                                    color: Colors.white),
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    )
-                                ],
-                              ),
-                              const SizedBox(height: 8.0),
-                            ],
-                          ),
-
+                                      )
+                                  ],
+                                ),
+                                const SizedBox(height: 8.0),
+                              ],
+                            ),
                           )
                           // Spacer(), // 編集ボタンを右端に配置するためのスペーサー
                         ],
@@ -394,10 +395,10 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
                         ),
                       ]),
                       SizedBox(height: 10), // 余白を追加
-                      Text(
-                        '${_profileData!['yalker_profile']['profile']}',
-                        textAlign: TextAlign.start, // 左詰めに設定
-                      ),
+                      LinkifyUtil(
+                          text: _profileData!['yalker_profile']['profile'],
+                          withPreview: false,
+                          maxWords: 300),
                       SizedBox(height: 10),
                       if (relationType == 0)
                         ElevatedButton(
@@ -461,7 +462,6 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
                             } catch (error) {
                               print('Error unfollow request: $error');
                             }
-
                           },
                           child: Text('リクエスト解除'),
                         ),

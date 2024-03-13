@@ -6,6 +6,7 @@ import 'profile_edit_page.dart';
 import 'bar_graph.dart';
 import 'report_model.dart';
 import 'achievement_calendar.dart';
+import '../post/linkify_util.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -131,10 +132,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         ],
                       ),
                       SizedBox(height: 20), // 余白を追加
-                      Text(
-                        '${_profileData!['login_user_profile']['profile']}',
-                        textAlign: TextAlign.start, // 左詰めに設定
-                      ),
+                      LinkifyUtil(
+                          text: _profileData!['login_user_profile']['profile'],
+                          withPreview: false,
+                          maxWords: 300),
                       SizedBox(height: 20), // 余白を追加
                       ListView.builder(
                         shrinkWrap: true,
