@@ -103,7 +103,7 @@ class AchievementCalendar extends StatelessWidget {
 
   Color _getColor(DateTime date, Map<DateTime, dynamic> date2dataMap) {
     if (date2dataMap.containsKey(date)) {
-      return date2dataMap[date] ? Colors.red : Colors.grey;
+      return date2dataMap[date] > 0 ? Colors.red : Colors.grey;
     } else {
       return Colors.grey;
     }

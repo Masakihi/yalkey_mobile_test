@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 import '../api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'profile_edit_page.dart';
-import 'bar_graph.dart';
+// import 'bar_graph.dart';
+import 'bar_graph copy.dart';
 import 'report_model.dart';
 import 'achievement_calendar.dart';
 import '../post/linkify_util.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'bar_chart_sample3.dart';
+import 'bar_chart_sample_blog.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -154,6 +158,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       MonthlyBarChart(
                           userId: 59, reportTitle: "アプリ開発", reportUnit: "分"),
                       SizedBox(height: 20), // 余白を追加
+                      const BarChartSample3(),
+                      BarChartWidget(),
                       AchievementCalendar(
                           userId: 59,
                           reportTitle: "boolテスト",

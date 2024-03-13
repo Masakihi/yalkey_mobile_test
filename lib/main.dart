@@ -15,12 +15,11 @@ void main() async {
   var accessToken = prefs.getString('access_token');
   var refreshToken = prefs.getString('refresh_token');
   var loginUserIconImage = prefs.getString('login_user_iconimage');
-  print("hogehoge");
 
   // // ネットワーク接続状態を取得
   // var connectivityResult = await Connectivity().checkConnectivity();
 
-  // // オフラインの場合はアプリを終了します。ほげほげ
+  // // オフラインの場合はアプリを終了
   // if (connectivityResult == ConnectivityResult.none) {
   //   runApp(MaterialApp(
   //     builder: (context, child) => AlertDialog(
