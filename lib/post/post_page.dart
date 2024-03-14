@@ -8,6 +8,7 @@ import '../api.dart';
 import '../app.dart';
 import '../home_page.dart';
 import 'package:intl/intl.dart';
+import 'image_cropper.dart';
 
 enum ReportType { time, custom_int, custom_double, bool }
 
@@ -129,24 +130,21 @@ class _PostPageState extends State<PostPage> {
         // APIに投稿するデータを作成
         var data = {
           'text': text,
-          'reports': [
-            {
-              'type': _selectedReport?.reportType,
-              'unit': _selectedReport?.reportUnit,
-              'report_name': _selectedReport?.reportName,
-              'hour': hours,
-              'minute': minutes,
-              'todo': todoCompleted,
-              'custom_data': integerForm,
-              'custom_float_data': floatForm,
-              'report_date': DateFormat('yyyy-MM-dd').format(_selectedDate),
-            },
-          ]
+          'type': _selectedReport?.reportType,
+          'unit': _selectedReport?.reportUnit,
+          'report_name': _selectedReport?.reportName,
+          'hour': hours,
+          'minute': minutes,
+          'todo': todoCompleted,
+          'custom_data': integerForm,
+          'custom_float_data': floatForm,
+          'report_date': DateFormat('yyyy-MM-dd').format(_selectedDate),
         };
         logResponse(data);
 
         final response = await httpPost('progress-form/', data,
             jwt: true, images: _selectedImagePaths);
+        logResponse(response);
       }
 
       // 成功メッセージを表示
@@ -240,6 +238,14 @@ class _PostPageState extends State<PostPage> {
                   child: Text('キャンセル'),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
+                // TextButton(
+                //   child: Text('クロップ'),
+                //   onPressed: (() {
+                //     Navigator.of(context).push(MaterialPageRoute(
+                //       builder: (context) => ImageCropPage(title: 'test'),
+                //     ));
+                //   }),
+                // ),
                 TextButton(
                   child: Text('保存'),
                   onPressed: () {
