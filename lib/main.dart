@@ -6,22 +6,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'api.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:io';
+import 'package:intl/date_symbol_data_local.dart';
 
 // [StatefulWidget]を使う場合
 void main() async {
+  initializeDateFormatting('jp');
   WidgetsFlutterBinding.ensureInitialized();
   // accessTokenを取得する
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var accessToken = prefs.getString('access_token');
   var refreshToken = prefs.getString('refresh_token');
   var loginUserIconImage = prefs.getString('login_user_iconimage');
-  print("hogehoge");
 
   // // ネットワーク接続状態を取得
   var connectivityResult = await Connectivity().checkConnectivity();
 
 
-  // // オフラインの場合はアプリを終了します。ほげほげ
+  // // オフラインの場合はアプリを終了
   // if (connectivityResult == ConnectivityResult.none) {
   //   runApp(MaterialApp(
   //     builder: (context, child) => AlertDialog(

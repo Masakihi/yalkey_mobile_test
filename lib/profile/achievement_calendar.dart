@@ -1,100 +1,131 @@
 import 'package:flutter/material.dart';
 import '../constant.dart';
 
-class AchievementCalendar extends StatelessWidget {
+class AchievementCalendar extends StatefulWidget {
   final int userId;
   final String reportTitle;
-  final int year;
-  final int month;
 
   AchievementCalendar({
     required this.userId,
     required this.reportTitle,
-    required this.year,
-    required this.month,
   });
 
-  TableRow _buildWeekdayRow(DateTime startDate) {
+  @override
+  _AchievementCalendarState createState() => _AchievementCalendarState();
+}
+
+class _AchievementCalendarState extends State<AchievementCalendar> {
+  final today = DateTime.now();
+  late int _selectedYear = today.year;
+  late int _selectedMonth = today.month;
+  late Map<DateTime, double> date2DataMap = {};
+  late bool _isExpanded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    print("hogehoge");
+    Map<DateTime, double> _date2DataMap =
+        await YalkerProgressListResponse.fetchDataForGraphByReportTitle(
+      widget.userId,
+      DateTime(_selectedYear, _selectedMonth, 1),
+      DateTime(_selectedYear, _selectedMonth + 1, 0),
+      widget.reportTitle,
+    );
+    setState(() => {date2DataMap = _date2DataMap});
+    print(date2DataMap);
+  }
+
+  TableRow _buildWeekdayRow() {
     final weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-    // 開始日に対応する曜日のインデックスを取得
-    int startWeekdayIndex = startDate.weekday % 7;
-    // インデックスに合わせて曜日リストを並び替える
-    List<String> orderedWeekdays = [
-      for (int i = startWeekdayIndex; i < weekdays.length; i++) weekdays[i],
-      for (int i = 0; i < startWeekdayIndex; i++) weekdays[i],
-    ];
-    List<Widget> cells =
-        orderedWeekdays.map((day) => _buildDayCellText(day)).toList();
+    List<Widget> cells = weekdays.map((day) => _buildDayCellText(day)).toList();
     return TableRow(children: cells);
   }
 
-  List<DateTime> _generateDateList(DateTime startDate, DateTime endDate) {
-    List<DateTime> dates = [];
-    DateTime currentDate = startDate;
+  List<List<DateTime>> _generateDateMatrix(int year, int month) {
+    List<List<DateTime>> dateMatrix = [];
+    final DateTime startDate = DateTime(year, month, 1);
+    final DateTime endDate = DateTime(year, month + 1, 0);
+    // 日曜日からスタート
+    DateTime currentDate =
+        startDate.subtract(Duration(days: startDate.weekday));
     // endDate を超えない範囲でループ
     while (currentDate.isBefore(endDate) ||
         currentDate.isAtSameMomentAs(endDate)) {
-      dates.add(currentDate);
-      currentDate = currentDate.add(Duration(days: 1));
+      List<DateTime> dateList = [];
+      for (int i = 0; i < 7; i++) {
+        dateList.add(currentDate);
+        currentDate = currentDate.add(Duration(days: 1));
+      }
+      dateMatrix.add(dateList);
     }
-    return dates;
+    return dateMatrix;
   }
 
-  Widget _buildCalendar(
-    DateTime startDate,
-    DateTime endDate,
-    Map<DateTime, dynamic> date2dataMap,
-  ) {
-    List<DateTime> dates = _generateDateList(startDate, endDate);
+  Widget _buildCalendar() {
+    List<List<DateTime>> dateMatrix =
+        _generateDateMatrix(_selectedYear, _selectedMonth);
     List<TableRow> rows = [];
-    for (int i = 0; i < 6; i++) {
+    for (List<DateTime> dateList in dateMatrix) {
       List<Widget> cells = [];
-      for (int j = 0; j < 7; j++) {
-        if (i * 7 + j < dates.length) {
-          DateTime date = dates[i * 7 + j];
-          cells.add(
-            TableCell(
-              child: _buildDayCell(date, date2dataMap),
-            ),
-          );
-        } else {
-          // 空のセルを追加
-          cells.add(Container());
-        }
+      for (DateTime date in dateList) {
+        cells.add(
+          TableCell(
+            child: _buildDayCell(date, date2DataMap),
+          ),
+        );
       }
       rows.add(TableRow(children: cells));
     }
-
     return Table(
       children: [
-        _buildWeekdayRow(startDate),
+        _buildWeekdayRow(),
         ...rows,
       ],
     );
   }
 
   Widget _buildDayCellText(String day) {
+    late Color color;
+    switch (day) {
+      case '日':
+        color = Colors.red;
+      case '土':
+        color = Colors.blue;
+      default:
+        color = Colors.white;
+    }
     return Center(
       child: Text(
         day,
-        style: TextStyle(fontWeight: FontWeight.bold),
+        style: TextStyle(fontWeight: FontWeight.bold, color: color),
       ),
     );
   }
 
   Widget _buildDayCell(DateTime date, Map<DateTime, dynamic> date2dataMap) {
     Color cellColor = _getColor(date, date2dataMap);
+    DateTime today = DateTime.now();
     return Container(
-      height: 40,
+      height: 45,
       decoration: BoxDecoration(
         color: cellColor,
-        border: Border.all(color: Colors.black),
+        border: Border.all(
+            color: date.year == today.year &&
+                    date.month == today.month &&
+                    date.day == today.day
+                ? Colors.white
+                : Colors.black),
       ),
       child: Center(
         child: Text(
           date.day.toString(),
           style: TextStyle(
-            color: cellColor == Colors.grey ? Colors.grey[600] : Colors.black,
+            color: date.month == _selectedMonth ? Colors.white : Colors.white24,
           ),
         ),
       ),
@@ -103,34 +134,89 @@ class AchievementCalendar extends StatelessWidget {
 
   Color _getColor(DateTime date, Map<DateTime, dynamic> date2dataMap) {
     if (date2dataMap.containsKey(date)) {
-      return date2dataMap[date] ? Colors.red : Colors.grey;
+      return date2dataMap[date] > 0 ? const Color(0xFFAE0103) : Colors.white10;
     } else {
-      return Colors.grey;
+      return Colors.white10;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    DateTime startDate = DateTime(year, month, 1);
-    DateTime endDate = DateTime(year, month + 1, 0);
-
-    return FutureBuilder<Map<DateTime, dynamic>>(
-      future: YalkerProgressListResponse.fetchDataForGraphByReportTitle(
-        userId,
-        startDate,
-        endDate,
-        reportTitle,
-      ),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else {
-          Map<DateTime, dynamic> date2dataMap = snapshot.data!;
-          return _buildCalendar(startDate, endDate, date2dataMap);
-        }
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Divider(height: 4.0, thickness: 0.3, color: Color(0xFF929292)),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              widget.reportTitle, // グラフのタイトル
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                // color: const Color(0xFFAE0103),
+              ),
+            ),
+            IconButton(
+              icon: _isExpanded
+                  ? Icon(Icons.expand_less)
+                  : Icon(Icons.expand_more),
+              onPressed: () {
+                setState(() {
+                  _isExpanded = !_isExpanded;
+                });
+              },
+            ),
+          ],
+        ),
+        SizedBox(height: 8),
+        if (_isExpanded) ...[
+          Row(
+            children: [
+              SizedBox(width: 8),
+              DropdownButton<int>(
+                value: _selectedYear,
+                onChanged: (int? newValue) {
+                  if (newValue != null) {
+                    setState(() {
+                      _selectedYear = newValue;
+                      fetchData();
+                    });
+                  }
+                },
+                items: List<DropdownMenuItem<int>>.generate(
+                  10,
+                  (index) => DropdownMenuItem<int>(
+                    value: DateTime.now().year + index,
+                    child: Text('${DateTime.now().year + index}年'),
+                  ),
+                ),
+              ),
+              SizedBox(width: 16),
+              DropdownButton<int>(
+                value: _selectedMonth,
+                onChanged: (int? newValue) {
+                  if (newValue != null) {
+                    setState(() {
+                      _selectedMonth = newValue;
+                      fetchData();
+                    });
+                  }
+                },
+                items: List<DropdownMenuItem<int>>.generate(
+                  12,
+                  (index) => DropdownMenuItem<int>(
+                    value: index + 1,
+                    child: Text('${index + 1}月'),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildCalendar()
+        ],
+      ],
     );
   }
 }

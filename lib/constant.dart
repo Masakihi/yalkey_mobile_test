@@ -76,18 +76,20 @@ class Progress {
   }
 
   // 足し合わせるためのデータ抽出
-  dynamic extractData() {
+  double extractData() {
     switch (reportType) {
       case 0:
-        return progressDuration;
+        return progressDuration.inMinutes.toDouble();
       case 1:
-        return;
+        return 0;
       case 2:
-        return progressCustomData;
+        return progressCustomData.toDouble();
       case 3:
-        return progressCustomFloatData;
+        return progressCustomFloatData.toDouble();
       case 4:
-        return progressTodo;
+        return progressTodo ? 1.0 : 0.0;
+      default:
+        return 0;
     }
   }
 }
@@ -112,31 +114,28 @@ class YalkerProgressListResponse {
   static Future<YalkerProgressListResponse> fetchYalkerProgressListResponse(
       int userId, DateTime startDate, DateTime endDate) async {
     dynamic jsonData = await httpGet(
-        'yalker-progress-list/$userId/${startDate.year}/${startDate.month}/${startDate.day}/${endDate.year}/${endDate.month}/${endDate.day}/1');
+        'yalker-progress-list/$userId/${startDate.year}/${startDate.month}/${startDate.day}/${endDate.year}/${endDate.month}/${endDate.day}/1',
+        jwt: true);
     // print(jsonData);
     return YalkerProgressListResponse.fromJson(jsonData);
   }
 
-  static Future<Map<DateTime, dynamic>> fetchDataForGraphByReportTitle(
+  static Future<Map<DateTime, double>> fetchDataForGraphByReportTitle(
       int userId,
       DateTime startDate,
       DateTime endDate,
       String reportTitle) async {
     dynamic jsonData = await httpGet(
-        'yalker-progress-list/$userId/${startDate.year}/${startDate.month}/${startDate.day}/${endDate.year}/${endDate.month}/${endDate.day}/1');
+        'yalker-progress-list/$userId/${startDate.year}/${startDate.month}/${startDate.day}/${endDate.year}/${endDate.month}/${endDate.day}/1',
+        jwt: true);
     final progressList =
         YalkerProgressListResponse.fromJson(jsonData).progressList;
-    Map<DateTime, dynamic> date2DataMap = {};
+    Map<DateTime, double> date2DataMap = {};
     for (Progress progress in progressList) {
       if (progress.reportTitle == reportTitle) {
         final date = DateTime.parse(progress.progressDate);
         if (date2DataMap.containsKey(date)) {
-          // bool型なら||でつなぎ、それ以外なら足し合わせる
-          if (progress.reportType == 0) {
-            date2DataMap[date] = date2DataMap[date]! || progress.extractData();
-          } else {
-            date2DataMap[date] = date2DataMap[date]! + progress.extractData();
-          }
+          date2DataMap[date] = date2DataMap[date]! + progress.extractData();
         } else {
           date2DataMap[date] = progress.extractData();
         }

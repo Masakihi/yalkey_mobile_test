@@ -3,10 +3,22 @@ import 'package:flutter/material.dart';
 import '../api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'profile_edit_page.dart';
-import 'bar_graph.dart';
+// import 'bar_graph.dart';
+import 'bar_graph copy.dart';
 import 'report_model.dart';
 import 'achievement_calendar.dart';
 import '../post/linkify_util.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'bar_chart_sample3.dart';
+import 'bar_chart_sample_blog.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/intl.dart';
+
+import 'calendar_example/basics_example.dart';
+import 'calendar_example/complex_example.dart';
+import 'calendar_example/events_example.dart';
+import 'calendar_example/multi_example.dart';
+import 'calendar_example/range_example.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -151,14 +163,19 @@ class _ProfilePageState extends State<ProfilePage> {
                           );
                         },
                       ),
-                      MonthlyBarChart(
-                          userId: 59, reportTitle: "アプリ開発", reportUnit: "分"),
-                      SizedBox(height: 20), // 余白を追加
-                      AchievementCalendar(
-                          userId: 59,
-                          reportTitle: "boolテスト",
-                          year: 2024,
-                          month: 3),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: _reportListMap['bool_report_list']?.length,
+                        itemBuilder: (context, index) {
+                          final report =
+                              _reportListMap['bool_report_list']?[index];
+                          return AchievementCalendar(
+                            userId: 59,
+                            reportTitle: report!.reportName,
+                          );
+                        },
+                      ),
                     ],
                   )
                 : const Center(
@@ -166,5 +183,62 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
           ),
         )));
+  }
+
+  @override
+  Widget build2(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('TableCalendar Example'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(height: 20.0),
+            ElevatedButton(
+              child: Text('Basics'),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => TableBasicsExample()),
+              ),
+            ),
+            const SizedBox(height: 12.0),
+            ElevatedButton(
+              child: Text('Range Selection'),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => TableRangeExample()),
+              ),
+            ),
+            const SizedBox(height: 12.0),
+            ElevatedButton(
+              child: Text('Events'),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => TableEventsExample()),
+              ),
+            ),
+            const SizedBox(height: 12.0),
+            ElevatedButton(
+              child: Text('Multiple Selection'),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => TableMultiExample()),
+              ),
+            ),
+            const SizedBox(height: 12.0),
+            ElevatedButton(
+              child: Text('Complex'),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => TableComplexExample()),
+              ),
+            ),
+            const SizedBox(height: 20.0),
+          ],
+        ),
+      ),
+    );
   }
 }

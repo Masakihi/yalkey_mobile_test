@@ -1,6 +1,6 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import '../constant.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 // 最大値を計算するためのジェネリック関数
 double findMax(List<dynamic> values) {
@@ -51,8 +51,8 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
     final today = DateTime.now();
     _selectedYear = today.year;
     _selectedMonth = today.month;
-    _startDate = DateTime(today.year, today.month, 1); // 本日の月の最初の日
-    _endDate = DateTime(today.year, today.month + 1, 0); // 本日の月の最後の日
+    _startDate = DateTime(today.year, today.month, 1);
+    _endDate = DateTime(today.year, today.month + 1, 0);
   }
 
   @override
@@ -84,21 +84,6 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
           ],
         ),
         SizedBox(height: 8),
-        // Row(
-        //   children: [
-        //     ElevatedButton(
-        //       onPressed: () => _selectStartDate(context),
-        //       child: Text(convertDateTime2String(_startDate)),
-        //     ),
-        //     SizedBox(width: 4),
-        //     Text('～'),
-        //     SizedBox(width: 4),
-        //     ElevatedButton(
-        //       onPressed: () => _selectEndDate(context),
-        //       child: Text(convertDateTime2String(_endDate)),
-        //     ),
-        //   ],
-        // ),
         if (_isExpanded) ...[
           Row(
             children: [
@@ -176,6 +161,7 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
                 }).toList();
 
                 final maxValue = findMax(values);
+                print(values);
 
                 return Container(
                   height: 200,
