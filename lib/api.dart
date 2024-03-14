@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer';
+import 'package:dio/dio.dart';
 
 void logResponse(dynamic response) {
   log(response.toString(), name: 'Response');
@@ -84,70 +85,62 @@ Future httpDelete(String path, {bool jwt = false}) async {
 }
 
 Future<dynamic> httpPost(String path, Map<String, dynamic>? body,
-    {bool jwt = false, List<String> images = const []}) async {
+    {bool jwt = false,
+    List<String> images = const [],
+    String imageFieldName = 'postimage'}) async {
   await checkInternetConnection(); // インターネット接続を確認
 
-  if (jwt) {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('access_token');
-    if (token == null) {
-      throw Exception('Token does not exist');
-    } else {
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse('https://yalkey.com/api/v1/$path'),
-      );
-      // ヘッダーにトークンを追加
-      request.headers['Authorization'] = 'JWT $token';
-
-      // 画像をリクエストに追加
-      for (var imagePath in images) {
-        request.files
-            .add(await http.MultipartFile.fromPath('postimage', imagePath));
-      }
-
-      // ボディを追加
-      if (body != null) {
-        body.forEach((key, value) {
-          request.fields[key] = value.toString();
-        });
-      }
-
-      var response = await request.send();
-      var responseBody = await response.stream.bytesToString();
-      logResponse(responseBody);
-      return json.decode(responseBody);
-    }
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var token = prefs.getString('access_token');
+  if (token == null) {
+    throw Exception('Token does not exist');
   } else {
+    if (body != null) {
+      final dio = Dio();
+      final formData = FormData.fromMap(body);
+      final response = await dio.post('https://yalkey.com/api/v1/$path',
+          data: formData,
+          options: Options(headers: {"Authorization": 'Jwt $jwt'}));
+      logResponse(response);
+      return response;
+    }
+    return true;
     var request = http.MultipartRequest(
       'POST',
       Uri.parse('https://yalkey.com/api/v1/$path'),
     );
+    // ヘッダーにトークンを追加
+    request.headers['Authorization'] = 'JWT $token';
 
     // 画像をリクエストに追加
     for (var imagePath in images) {
       request.files
-          .add(await http.MultipartFile.fromPath('postimage', imagePath));
+          .add(await http.MultipartFile.fromPath(imageFieldName, imagePath));
     }
-
     // ボディを追加
     if (body != null) {
+      // request.fields.addAll(body);
       body.forEach((key, value) {
-        request.fields[key] = value.toString();
+        if (value is List) {
+          request.fields[key] = "value";
+        } else {
+          // リスト以外の場合、Stringに変換して追加
+          request.fields[key] = value.toString();
+        }
       });
     }
 
     var response = await request.send();
     var responseBody = await response.stream.bytesToString();
     logResponse(responseBody);
-
     return json.decode(responseBody);
   }
 }
 
-
 Future<dynamic> httpPut(String path, Map<String, dynamic>? body,
-    {bool jwt = false, List<String> images = const []}) async {
+    {bool jwt = false,
+    List<String> images = const [],
+    String imageFieldName = 'postimage'}) async {
   await checkInternetConnection(); // インターネット接続を確認
 
   if (jwt) {
@@ -166,7 +159,7 @@ Future<dynamic> httpPut(String path, Map<String, dynamic>? body,
       // 画像をリクエストに追加
       for (var imagePath in images) {
         request.files
-            .add(await http.MultipartFile.fromPath('postimage', imagePath));
+            .add(await http.MultipartFile.fromPath(imageFieldName, imagePath));
       }
 
       // ボディを追加
@@ -179,7 +172,7 @@ Future<dynamic> httpPut(String path, Map<String, dynamic>? body,
       var response = await request.send();
       var responseBody = await response.stream.bytesToString();
       logResponse(responseBody);
-      return json.decode(responseBody);
+      return responseBody;
     }
   } else {
     var request = http.MultipartRequest(
@@ -190,7 +183,7 @@ Future<dynamic> httpPut(String path, Map<String, dynamic>? body,
     // 画像をリクエストに追加
     for (var imagePath in images) {
       request.files
-          .add(await http.MultipartFile.fromPath('postimage', imagePath));
+          .add(await http.MultipartFile.fromPath(imageFieldName, imagePath));
     }
 
     // ボディを追加
@@ -203,7 +196,7 @@ Future<dynamic> httpPut(String path, Map<String, dynamic>? body,
     var response = await request.send();
     var responseBody = await response.stream.bytesToString();
 
-    return json.decode(responseBody);
+    return responseBody;
   }
 }
 
