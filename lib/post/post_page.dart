@@ -175,22 +175,31 @@ class _PostPageState extends State<PostPage> {
     TextEditingController _newReportNameController = TextEditingController();
     TextEditingController _newReportUnitController = TextEditingController();
     ReportType _selectedType = ReportType.time;
+    bool _isNameEmptyError = false;
+    bool _isNameDuplicateError = false;
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return StatefulBuilder(
-          // ダイアログ内で状態を管理
           builder: (context, setState) {
             return AlertDialog(
               title: Text('新規レポート'),
               content: SingleChildScrollView(
-                // コンテンツが多いためスクロール可能に
                 child: ListBody(
                   children: <Widget>[
                     TextField(
                       controller: _newReportNameController,
-                      decoration: InputDecoration(hintText: "レポート名を入力"),
+                      decoration: InputDecoration(
+                        hintText: "レポート名を入力",
+                        errorText: _isNameEmptyError ? 'レポート名を入力してください' : null,
+                      ),
                     ),
+                    if (_isNameDuplicateError)
+                      Text(
+                        '同じ名前のレポートが既に存在します',
+                        style: TextStyle(color: Colors.red),
+                      ),
                     DropdownButton<ReportType>(
                       value: _selectedType,
                       onChanged: (ReportType? newValue) {
@@ -202,7 +211,8 @@ class _PostPageState extends State<PostPage> {
                         return DropdownMenuItem<ReportType>(
                           value: classType,
                           child: Text(
-                              reportType2NameAndId[classType][0]), // Enumの名前を表示
+                            reportType2NameAndId[classType][0],
+                          ),
                         );
                       }).toList(),
                     ),
@@ -223,21 +233,35 @@ class _PostPageState extends State<PostPage> {
                 TextButton(
                   child: Text('保存'),
                   onPressed: () {
-                    Report newReport = Report(
-                        reportName: _newReportNameController.text,
+                    String name = _newReportNameController.text.trim();
+                    if (name.isEmpty) {
+                      setState(() {
+                        _isNameEmptyError = true;
+                        _isNameDuplicateError = false;
+                      });
+                    } else if (_reportList
+                        .any((report) => report.reportName == name)) {
+                      setState(() {
+                        _isNameEmptyError = false;
+                        _isNameDuplicateError = true;
+                      });
+                    } else {
+                      Report newReport = Report(
+                        reportName: name,
                         reportUnit: _newReportUnitController.text,
                         graphType: '棒',
                         userId: 59,
-                        reportType: reportType2NameAndId[_selectedType][1]);
-                    setState(() {
-                      _reportList.insert(0, newReport);
-                      print(_reportList
-                          .map((report) => {report.reportName})
-                          .toList());
-                      _selectedReport = newReport;
-                    });
-                    _rebuildDropdownItems();
-                    Navigator.of(context).pop(); // ダイアログを閉じる
+                        reportType: reportType2NameAndId[_selectedType][1],
+                      );
+                      setState(() {
+                        _reportList.insert(0, newReport);
+                        _selectedReport = newReport;
+                        _isNameEmptyError = false;
+                        _isNameDuplicateError = false;
+                      });
+                      _rebuildDropdownItems();
+                      Navigator.of(context).pop();
+                    }
                   },
                 ),
               ],
