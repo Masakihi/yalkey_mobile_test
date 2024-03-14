@@ -37,6 +37,7 @@ class _PostPageState extends State<PostPage> {
   Report? _selectedReport = null;
   bool _hasData = false;
   bool _loading = false;
+  bool _posting = false;
   List<DropdownMenuItem<Report?>> _dropdownItems = [];
 
   @override
@@ -80,6 +81,18 @@ class _PostPageState extends State<PostPage> {
   }
 
   Future<void> _postFormData() async {
+    setState(() => _posting = true);
+    // ホーム画面に戻る
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => HomePage(),
+    ));
+    // 成功メッセージを表示
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('投稿しています...（反映には時間がかかる場合があります）'),
+      ),
+    );
     try {
       if (!_hasData) {
         String text = _textEditingController.text;
@@ -140,23 +153,22 @@ class _PostPageState extends State<PostPage> {
       }
 
       // 成功メッセージを表示
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('投稿完了しました！'),
         ),
       );
-
-      // ホーム画面に戻る
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => HomePage(),
-      ));
     } catch (error) {
       // エラーメッセージを表示
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('エラー: $error'),
         ),
       );
+    } finally {
+      setState(() => _posting = true);
     }
   }
 
