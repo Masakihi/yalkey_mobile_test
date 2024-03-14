@@ -8,7 +8,6 @@ void logResponse(dynamic response) {
   log(response.toString(), name: 'Response');
 }
 
-
 Future<void> checkInternetConnection() async {
   try {
     final result = await InternetAddress.lookup('google.com');
@@ -52,7 +51,6 @@ Future httpGet(String path, {bool jwt = false}) async {
 }
 
 Future httpDelete(String path, {bool jwt = false}) async {
-
   await checkInternetConnection(); // インターネット接続を確認
 
   if (jwt) {
@@ -84,7 +82,6 @@ Future httpDelete(String path, {bool jwt = false}) async {
   );
   return json.decode(utf8.decode(response.bodyBytes));
 }
-
 
 Future<dynamic> httpPost(String path, Map<String, dynamic>? body,
     {bool jwt = false, List<String> images = const []}) async {
@@ -147,10 +144,9 @@ Future<dynamic> httpPost(String path, Map<String, dynamic>? body,
   }
 }
 
-
-
 // Post（プロフィール画像追加可能）
-Future<dynamic> httpPostWithIcon(String path, Map<String, dynamic>? body, String? image,
+Future<dynamic> httpPostWithIcon(
+    String path, Map<String, dynamic>? body, String? image,
     {bool jwt = false}) async {
   if (jwt) {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -166,7 +162,9 @@ Future<dynamic> httpPostWithIcon(String path, Map<String, dynamic>? body, String
       request.headers['Authorization'] = 'JWT $token';
 
       // 画像をリクエストに追加
-      if (image!=null) request.files.add(await http.MultipartFile.fromPath('iconimage', image));
+      if (image != null)
+        request.files
+            .add(await http.MultipartFile.fromPath('iconimage', image));
       /*
       for (var imagePath in images) {
         request.files
@@ -192,9 +190,9 @@ Future<dynamic> httpPostWithIcon(String path, Map<String, dynamic>? body, String
       Uri.parse('https://yalkey.com/api/v1/$path'),
     );
 
-
     // 画像をリクエストに追加
-    if (image!=null) request.files.add(await http.MultipartFile.fromPath('iconimage', image));
+    if (image != null)
+      request.files.add(await http.MultipartFile.fromPath('iconimage', image));
     /*
       for (var imagePath in images) {
         request.files
@@ -202,14 +200,12 @@ Future<dynamic> httpPostWithIcon(String path, Map<String, dynamic>? body, String
       }
        */
 
-
     // ボディを追加
     if (body != null) {
       body.forEach((key, value) {
         request.fields[key] = value.toString();
       });
     }
-
 
     var response = await request.send();
     var responseBody = await response.stream.bytesToString();

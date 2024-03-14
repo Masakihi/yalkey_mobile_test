@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'profile/report_model.dart';
+import '../profile/report_model.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'api.dart';
-import 'app.dart';
+import '../api.dart';
+import '../app.dart';
+import '../home_page.dart';
+
+enum ReportType { time, custom_int, custom_double, bool }
+
+Map<ReportType, dynamic> reportType2NameAndId = {
+  ReportType.time: ['時間型', 0],
+  ReportType.custom_int: ['整数型', 2],
+  ReportType.custom_double: ['小数型', 3],
+  ReportType.bool: ['達成型', 4],
+};
 
 class PostPage extends StatefulWidget {
   const PostPage({Key? key}) : super(key: key);
@@ -27,6 +37,7 @@ class _PostPageState extends State<PostPage> {
   Report? _selectedReport = null;
   bool _hasData = false;
   bool _loading = false;
+  List<DropdownMenuItem<Report?>> _dropdownItems = [];
 
   @override
   void initState() {
@@ -44,19 +55,9 @@ class _PostPageState extends State<PostPage> {
     setState(() {
       _loading = true; // データのロード中フラグをtrueに設定
     });
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final cachedReportList =
-        prefs.getStringList('user_report_list')?.toSet().toList();
-    if (cachedReportList != null && cachedReportList.isNotEmpty) {
-      setState(() {
-        _reportList = cachedReportList
-            .map((jsonString) => Report.fromJson(jsonDecode(jsonString)))
-            .toSet()
-            .toList();
-      });
-    }
     ReportListResponse reportListResponse =
         await ReportListResponse.fetchReportListResponse(59);
+    logResponse(reportListResponse.reportList[0].graphType);
     if (mounted) {
       setState(() {
         reportListResponse.reportList.forEach((newReport) => {
@@ -64,11 +65,10 @@ class _PostPageState extends State<PostPage> {
                   existingReport.reportName == newReport.reportName))
                 {_reportList.add(newReport)}
             });
+        _rebuildDropdownItems();
         _loading = false; // データのロード中フラグをfalseに設定
       });
     }
-    prefs.setStringList('user_report_list',
-        _reportList.map((repost) => jsonEncode(repost.toJson())).toList());
   }
 
   @override
@@ -133,6 +133,7 @@ class _PostPageState extends State<PostPage> {
             },
           ]
         };
+        logResponse(data);
 
         final response = await httpPost('progress-form/', data,
             jwt: true, images: _selectedImagePaths);
@@ -147,7 +148,7 @@ class _PostPageState extends State<PostPage> {
 
       // ホーム画面に戻る
       Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => AppPage(),
+        builder: (context) => HomePage(),
       ));
     } catch (error) {
       // エラーメッセージを表示
@@ -168,6 +169,105 @@ class _PostPageState extends State<PostPage> {
         _selectedImagePaths = pickedFiles.map((file) => file.path).toList();
       });
     }
+  }
+
+  void _showAddReportDialog() {
+    TextEditingController _newReportNameController = TextEditingController();
+    TextEditingController _newReportUnitController = TextEditingController();
+    ReportType _selectedType = ReportType.time;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          // ダイアログ内で状態を管理
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('新規レポート'),
+              content: SingleChildScrollView(
+                // コンテンツが多いためスクロール可能に
+                child: ListBody(
+                  children: <Widget>[
+                    TextField(
+                      controller: _newReportNameController,
+                      decoration: InputDecoration(hintText: "レポート名を入力"),
+                    ),
+                    DropdownButton<ReportType>(
+                      value: _selectedType,
+                      onChanged: (ReportType? newValue) {
+                        setState(() {
+                          _selectedType = newValue!;
+                        });
+                      },
+                      items: ReportType.values.map((ReportType classType) {
+                        return DropdownMenuItem<ReportType>(
+                          value: classType,
+                          child: Text(
+                              reportType2NameAndId[classType][0]), // Enumの名前を表示
+                        );
+                      }).toList(),
+                    ),
+                    if (_selectedType == ReportType.custom_double ||
+                        _selectedType == ReportType.custom_int)
+                      TextField(
+                        controller: _newReportUnitController,
+                        decoration: InputDecoration(hintText: "単位を入力"),
+                      ),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('キャンセル'),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                TextButton(
+                  child: Text('保存'),
+                  onPressed: () {
+                    Report newReport = Report(
+                        reportName: _newReportNameController.text,
+                        reportUnit: _newReportUnitController.text,
+                        graphType: '棒',
+                        userId: 59,
+                        reportType: reportType2NameAndId[_selectedType][1]);
+                    setState(() {
+                      _reportList.insert(0, newReport);
+                      print(_reportList
+                          .map((report) => {report.reportName})
+                          .toList());
+                      _selectedReport = newReport;
+                    });
+                    _rebuildDropdownItems();
+                    Navigator.of(context).pop(); // ダイアログを閉じる
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _rebuildDropdownItems() {
+    setState(() {
+      _dropdownItems = [
+        DropdownMenuItem<Report?>(
+          value: Report(
+            reportName: '',
+            reportType: -1,
+            reportUnit: '',
+            graphType: '',
+            userId: -1,
+          ),
+          child: Text('＋新規レポートで投稿'),
+        )
+      ]..addAll(_reportList.map<DropdownMenuItem<Report?>>((Report report) {
+          return DropdownMenuItem<Report?>(
+            value: report,
+            child: Text(report.reportName),
+          );
+        }).toList());
+    });
   }
 
   @override
@@ -225,20 +325,18 @@ class _PostPageState extends State<PostPage> {
                 ],
               ),
               if (_hasData) ...[
-                DropdownButtonFormField<Report>(
+                DropdownButtonFormField<Report?>(
                     value: _selectedReport,
                     onChanged: (Report? newValue) {
-                      setState(() {
-                        _selectedReport = newValue!;
-                      });
+                      if (newValue!.reportType == -1) {
+                        _showAddReportDialog();
+                      } else {
+                        setState(() {
+                          _selectedReport = newValue;
+                        });
+                      }
                     },
-                    items: _reportList
-                        .map<DropdownMenuItem<Report>>((Report report) {
-                      return DropdownMenuItem<Report>(
-                        value: report,
-                        child: Text(report.reportName),
-                      );
-                    }).toList(),
+                    items: _dropdownItems,
                     decoration: const InputDecoration(
                       labelText: 'レポートの種類を選択してください',
                       border: OutlineInputBorder(),
