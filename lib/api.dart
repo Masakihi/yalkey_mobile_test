@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer';
-import 'package:dio/dio.dart';
 
 void logResponse(dynamic response) {
   log(response.toString(), name: 'Response');
@@ -84,58 +83,67 @@ Future httpDelete(String path, {bool jwt = false}) async {
   return json.decode(utf8.decode(response.bodyBytes));
 }
 
+// Post（画像投稿可能）
 Future<dynamic> httpPost(String path, Map<String, dynamic>? body,
-    {bool jwt = false,
-    List<String> images = const [],
-    String imageFieldName = 'postimage'}) async {
-  await checkInternetConnection(); // インターネット接続を確認
+    {bool jwt = false, List<String> images = const []}) async {
+  if (jwt) {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString('access_token');
+    if (token == null) {
+      throw Exception('Token does not exist');
+    } else {
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('https://yalkey.com/api/v1/$path'),
+      );
+      // ヘッダーにトークンを追加
+      request.headers['Authorization'] = 'JWT $token';
 
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  var token = prefs.getString('access_token');
-  if (token == null) {
-    throw Exception('Token does not exist');
-  } else {
-    if (body != null) {
-      final dio = Dio();
-      final formData = FormData.fromMap(body);
-      final response = await dio.post('https://yalkey.com/api/v1/$path',
-          data: formData,
-          options: Options(headers: {"Authorization": 'Jwt $jwt'}));
-      logResponse(response);
-      return response;
+      // 画像をリクエストに追加
+      for (var imagePath in images) {
+        request.files
+            .add(await http.MultipartFile.fromPath('postimage', imagePath));
+      }
+
+      // ボディを追加
+      if (body != null) {
+        body.forEach((key, value) {
+          request.fields[key] = value.toString();
+        });
+      }
+
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
+      logResponse(responseBody);
+      return json.decode(responseBody);
     }
-    return true;
+  } else {
     var request = http.MultipartRequest(
       'POST',
       Uri.parse('https://yalkey.com/api/v1/$path'),
     );
-    // ヘッダーにトークンを追加
-    request.headers['Authorization'] = 'JWT $token';
 
     // 画像をリクエストに追加
     for (var imagePath in images) {
       request.files
-          .add(await http.MultipartFile.fromPath(imageFieldName, imagePath));
+          .add(await http.MultipartFile.fromPath('postimage', imagePath));
     }
+
     // ボディを追加
     if (body != null) {
-      // request.fields.addAll(body);
       body.forEach((key, value) {
-        if (value is List) {
-          request.fields[key] = "value";
-        } else {
-          // リスト以外の場合、Stringに変換して追加
-          request.fields[key] = value.toString();
-        }
+        request.fields[key] = value.toString();
       });
     }
 
     var response = await request.send();
     var responseBody = await response.stream.bytesToString();
-    logResponse(responseBody);
+    print(responseBody);
+
     return json.decode(responseBody);
   }
 }
+
 
 Future<dynamic> httpPut(String path, Map<String, dynamic>? body,
     {bool jwt = false,

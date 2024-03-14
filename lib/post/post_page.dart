@@ -143,6 +143,9 @@ class _PostPageState extends State<PostPage> {
             },
           ]
         };
+
+
+        print(data);
         logResponse(data);
 
         final response = await httpPost('progress-form/', data,
