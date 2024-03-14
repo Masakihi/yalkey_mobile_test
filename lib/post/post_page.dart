@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../api.dart';
 import '../app.dart';
 import '../home_page.dart';
+import 'package:intl/intl.dart';
 
 enum ReportType { time, custom_int, custom_double, bool }
 
@@ -102,10 +103,6 @@ class _PostPageState extends State<PostPage> {
         final response = await httpPost('post-form/', data,
             jwt: true, images: _selectedImagePaths);
       } else {
-        // 日付を文字列に変換
-        String formattedDate =
-            '${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}';
-
         // データをAPIに投稿する処理をここに記述
         // テキストデータ
         String text = _textEditingController.text;
@@ -142,7 +139,7 @@ class _PostPageState extends State<PostPage> {
               "todo": todoCompleted,
               'custom_data': integerForm,
               'custom_float_data': floatForm,
-              'report_date': formattedDate
+              'report_date': DateFormat('yyyy-MM-dd').format(_selectedDate),
             },
           ]
         };
@@ -306,6 +303,21 @@ class _PostPageState extends State<PostPage> {
     });
   }
 
+  Future<void> _showDatePicker() async {
+    final selectedDate = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (selectedDate != null) {
+      setState(() {
+        _selectedDate = selectedDate;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -361,6 +373,11 @@ class _PostPageState extends State<PostPage> {
                 ],
               ),
               if (_hasData) ...[
+                TextButton(
+                  onPressed: _showDatePicker,
+                  child: Text(
+                      '日付を選択：${DateFormat('yyyy-MM-dd').format(_selectedDate)}'),
+                ),
                 DropdownButtonFormField<Report?>(
                     value: _selectedReport,
                     onChanged: (Report? newValue) {
