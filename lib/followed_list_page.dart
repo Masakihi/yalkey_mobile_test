@@ -110,28 +110,43 @@ class _FollowedListPageState extends State<FollowedListPage> {
                         : SizedBox.shrink(); // ローディングインジケーターを表示
                   }
                   final followed = _followedList[index];
-                  return InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => YalkerProfilePage(
-                                  userNumber: followed.followerUserNumber),
-                            ));
-                      },
-                      child: Padding(
+                  return
+
+
+                      Padding(
                         padding: const EdgeInsets.symmetric(
                             vertical: 8.0, horizontal: 16.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            GestureDetector(
-                              onTap: () {
-                                print("tap");
-                              },
-                              child: Row(
+                              Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                YalkerProfilePage(
+                                                    userNumber: followed.followerUserNumber
+                                                        ??
+                                                        1),
+                                          ));
+                                    },
+                                    child: followed.followerIconimage == ""
+                                        ? const CircleAvatar(
+                                      backgroundColor: Colors.white,
+                                      backgroundImage: NetworkImage(
+                                        'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
+                                      ),
+                                    )
+                                        : CircleAvatar(
+                                      backgroundImage: NetworkImage(
+                                        'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${followed.followerIconimage}',
+                                      ),
+                                    ),
+                                  ),
                                   if (followed.followerIconimage == "")
                                     const CircleAvatar(
                                       backgroundColor: Colors.white,
@@ -203,7 +218,7 @@ class _FollowedListPageState extends State<FollowedListPage> {
                                                   ),
                                                 ),
                                               ),
-                                            if (followed.followerSuperEarlyBird)
+                                            if (followed.followerEarlyBird)
                                               Padding(
                                                 padding:
                                                     const EdgeInsets.symmetric(
@@ -331,10 +346,10 @@ class _FollowedListPageState extends State<FollowedListPage> {
                                   ),
                                 ],
                               ),
-                            ),
+
                           ],
                         ),
-                      ));
+                      );
                 },
               ),
             ),

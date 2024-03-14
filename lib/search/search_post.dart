@@ -122,6 +122,7 @@ class _SearchPostListPageState extends State<SearchPostListPage> {
             .toList();
       });
     }
+    //print(searchKeyword);
     PostListResponse searchPostListResponse =
         await PostListResponse.fetchSearchPostResponse(
             _pagePost, searchKeyword);
@@ -320,25 +321,35 @@ class _SearchPostListPageState extends State<SearchPostListPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  GestureDetector(
-                                    onTap: () {},
-                                    child: Row(
+                                  Row(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: <Widget>[
-                                        if (user.iconimage == "")
-                                          const CircleAvatar(
+                                          GestureDetector(
+                                            onTap: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        YalkerProfilePage(
+                                                            userNumber: user.userNumber
+                                                                 ??
+                                                                1),
+                                                  ));
+                                          },
+                                          child: user.iconimage == ""
+                                              ? const CircleAvatar(
                                             backgroundColor: Colors.white,
                                             backgroundImage: NetworkImage(
                                               'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
                                             ),
-                                          ),
-                                        if (user.iconimage != "")
-                                          CircleAvatar(
+                                          )
+                                              : CircleAvatar(
                                             backgroundImage: NetworkImage(
                                               'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${user.iconimage}',
                                             ),
                                           ),
+                                        ),
                                         SizedBox(width: 16.0),
                                         Expanded(
                                           child: Column(
@@ -400,7 +411,7 @@ class _SearchPostListPageState extends State<SearchPostListPage> {
                                                         ),
                                                       ),
                                                     ),
-                                                  if (user.superEarlyBird ??
+                                                  if (user.earlyBird ??
                                                       false)
                                                     Padding(
                                                       padding: const EdgeInsets
@@ -537,7 +548,7 @@ class _SearchPostListPageState extends State<SearchPostListPage> {
                                         ),
                                       ],
                                     ),
-                                  ),
+
                                 ],
                               ),
                             ));
@@ -588,42 +599,43 @@ class _SearchPostListPageState extends State<SearchPostListPage> {
                               : SizedBox.shrink(); // ローディングインジケーターを表示
                         }
                         final userId = _userIdList[index];
-                        return InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => YalkerProfilePage(
-                                        userNumber: userId.userNumber ?? 1),
-                                  ));
-                            },
-                            child: Padding(
+                        return
+
+                            Padding(
                               padding: const EdgeInsets.symmetric(
                                   vertical: 8.0, horizontal: 16.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  GestureDetector(
-                                    onTap: () {
-                                      print("tap");
-                                    },
-                                    child: Row(
+                                  Row(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: <Widget>[
-                                        if (userId.iconimage == "")
-                                          const CircleAvatar(
+                                        GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      YalkerProfilePage(
+                                                          userNumber: userId.userNumber
+                                                              ??
+                                                              1),
+                                                ));
+                                          },
+                                          child: userId.iconimage == ""
+                                              ? const CircleAvatar(
                                             backgroundColor: Colors.white,
                                             backgroundImage: NetworkImage(
                                               'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
                                             ),
-                                          ),
-                                        if (userId.iconimage != "")
-                                          CircleAvatar(
+                                          )
+                                              : CircleAvatar(
                                             backgroundImage: NetworkImage(
                                               'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${userId.iconimage}',
                                             ),
                                           ),
+                                        ),
                                         SizedBox(width: 16.0),
                                         Expanded(
                                           child: Column(
@@ -823,10 +835,10 @@ class _SearchPostListPageState extends State<SearchPostListPage> {
                                         ),
                                       ],
                                     ),
-                                  ),
+
                                 ],
                               ),
-                            ));
+                            );
                       },
                     ),
                   ),

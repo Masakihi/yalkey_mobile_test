@@ -8,11 +8,11 @@ import '../profile/yalker_profile_page.dart';
 import 'post_image.dart';
 
 const Map<String, String> badge2Explanation = {
-  "超早起き": "過去1週間のうち7日間早起きしたヤルカー",
-  "早起き": "過去1週間のうち3日間早起きしたヤルカー",
-  "超努力家": "なんかめちゃくちゃ頑張ってるヤルカー",
-  "努力家": "まあまあ頑張ってるヤルカー",
-  "常連": "よく投稿する人",
+  "超早起き": "超早起き：過去1週間のうち7日間早起き投稿したyalker",
+  "早起き": "早起き：過去1週間のうち3日間以上早起き投稿したyalker",
+  "超努力家": "めちゃくちゃ頑張って投稿してるyalker",
+  "努力家": "けっこう頑張ってるyalker",
+  "常連": "継続して投稿してるyalker",
 };
 
 class PostWidget extends StatefulWidget {

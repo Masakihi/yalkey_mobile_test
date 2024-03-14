@@ -11,13 +11,15 @@ import 'achievement_calendar.dart';
 import 'report_model.dart';
 import '../post/linkify_util.dart';
 
-const Map<String, String> badge2Explanation = {
-  "超早起き": "過去1週間のうち7日間早起きしたヤルカー",
-  "早起き": "過去1週間のうち3日間早起きしたヤルカー",
-  "超努力家": "なんかめちゃくちゃ頑張ってるヤルカー",
-  "努力家": "まあまあ頑張ってるヤルカー",
-  "常連": "よく投稿する人",
+Map<String, String> badge2Explanation = {
+  "超早起き": "超早起き：過去1週間のうち7日早起き投稿したyalker",
+  "早起き": "早起き：過去1週間のうち3日早起き投稿したyalker",
+  "超努力家": "超努力家：めちゃくちゃ頑張って投稿してるyalker",
+  "努力家": "努力家：けっこう頑張って投稿してるyalker",
+  "常連": "常連：継続して投稿してるyalker",
 };
+
+
 
 class YalkerProfilePage extends StatefulWidget {
   final int userNumber;
@@ -34,20 +36,14 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
     'bool_report_list': []
   };
   late bool _loadingReportList = false;
-  int relationType = 1;
+  int relationType = 5;
+
 
   @override
   void initState() {
     super.initState();
     _fetchProfileData();
     _fetchReportList();
-    if (_profileData != null) {
-      if (_profileData!['relation_type'] != null) {
-        relationType = _profileData!['relation_type'];
-      }
-    } else {
-      relationType = 1;
-    }
   }
 
   Future<void> _fetchProfileData() async {
@@ -57,6 +53,13 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
       setState(() {
         print(response);
         _profileData = response;
+        if (_profileData != null) {
+          if (_profileData!['relation_type'] != null) {
+            relationType = _profileData!['relation_type'];
+          }
+        } else {
+          relationType = 1;
+        }
       });
     } catch (error) {
       print('Error fetching profile data: $error');
@@ -225,7 +228,7 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
                                         ),
                                       ),
                                     if (_profileData!['yalker_profile']
-                                            ['lock'] ??
+                                            ['early_bird'] ??
                                         false)
                                       GestureDetector(
                                         behavior: HitTestBehavior.translucent,

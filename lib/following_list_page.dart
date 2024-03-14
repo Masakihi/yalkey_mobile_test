@@ -111,41 +111,41 @@ class _FollowingListPageState extends State<FollowingListPage> {
                         : SizedBox.shrink(); // ローディングインジケーターを表示
                   }
                   final following = _followingList[index];
-                  return InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => YalkerProfilePage(
-                                  userNumber: following.followedUserNumber),
-                            ));
-                      },
-                      child: Padding(
+                  return
+                      Padding(
                         padding: const EdgeInsets.symmetric(
                             vertical: 8.0, horizontal: 16.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            GestureDetector(
-                              onTap: () {
-                                print("tap");
-                              },
-                              child: Row(
+                            Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  if (following.followedIconimage == "")
-                                    const CircleAvatar(
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                YalkerProfilePage(
+                                                    userNumber: following.followedUserNumber
+                                                        ??
+                                                        1),
+                                          ));
+                                    },
+                                    child: following.followedIconimage == ""
+                                        ? const CircleAvatar(
                                       backgroundColor: Colors.white,
                                       backgroundImage: NetworkImage(
                                         'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
                                       ),
-                                    ),
-                                  if (following.followedIconimage != "")
-                                    CircleAvatar(
+                                    )
+                                        : CircleAvatar(
                                       backgroundImage: NetworkImage(
                                         'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${following.followedIconimage}',
                                       ),
                                     ),
+                                  ),
                                   SizedBox(width: 16.0),
                                   Expanded(
                                     child: Column(
@@ -206,7 +206,7 @@ class _FollowingListPageState extends State<FollowingListPage> {
                                                 ),
                                               ),
                                             if (following
-                                                .followedSuperEarlyBird)
+                                                .followedEarlyBird)
                                               Padding(
                                                 padding:
                                                     const EdgeInsets.symmetric(
@@ -334,10 +334,10 @@ class _FollowingListPageState extends State<FollowingListPage> {
                                   ),
                                 ],
                               ),
-                            ),
+
                           ],
                         ),
-                      ));
+                      );
                 },
               ),
             ),

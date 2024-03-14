@@ -11,11 +11,11 @@ import 'bar_graph.dart';
 import 'report_model.dart';
 
 const Map<String, String> badge2Explanation = {
-  "超早起き": "過去1週間のうち7日間早起きしたヤルカー",
-  "早起き": "過去1週間のうち3日間早起きしたヤルカー",
-  "超努力家": "なんかめちゃくちゃ頑張ってるヤルカー",
-  "努力家": "まあまあ頑張ってるヤルカー",
-  "常連": "よく投稿する人",
+  "超早起き": "超早起き：過去1週間のうち7日早起き投稿したyalker",
+  "早起き": "早起き：過去1週間のうち3日早起き投稿したyalker",
+  "超努力家": "超努力家：めちゃくちゃ頑張って投稿してるyalker",
+  "努力家": "努力家：けっこう頑張って投稿してるyalker",
+  "常連": "常連：継続して投稿してるyalker",
 };
 
 class YalkerRepostPage extends StatefulWidget {
