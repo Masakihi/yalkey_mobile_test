@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer';
-import 'package:dio/dio.dart';
 
 void logResponse(dynamic response) {
   log(response.toString(), name: 'Response');
@@ -143,6 +142,7 @@ Future<dynamic> httpPost(String path, Map<String, dynamic>? body,
     return json.decode(responseBody);
   }
 }
+
 
 Future<dynamic> httpPut(String path, Map<String, dynamic>? body,
     {bool jwt = false,

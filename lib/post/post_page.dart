@@ -140,6 +140,9 @@ class _PostPageState extends State<PostPage> {
           'custom_float_data': floatForm,
           'report_date': DateFormat('yyyy-MM-dd').format(_selectedDate),
         };
+
+
+        print(data);
         logResponse(data);
 
         final response = await httpPost('progress-form/', data,
