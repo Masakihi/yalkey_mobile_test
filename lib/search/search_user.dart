@@ -238,7 +238,7 @@ class _SearchUserListPageState extends State<SearchUserListPage> {
                                             ),
                                           ),
                                         ),
-                                      if (user.superEarlyBird ?? false)
+                                      if (user.earlyBird ?? false)
                                         Padding(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 3, vertical: 1),

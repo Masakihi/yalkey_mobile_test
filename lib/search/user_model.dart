@@ -111,10 +111,11 @@ class SearchUserListResponse {
 
   static Future<SearchUserListResponse> fetchSearchUserListResponse(
       int page, String keyword) async {
+    String encodedKeyword = Uri.encodeQueryComponent(keyword);
     dynamic jsonData = await httpGet(
-        'search-name-list/${page}/?keyword=${keyword}',
+        'search-name-list/${page}/?keyword=${encodedKeyword}',
         jwt: true);
-    // print(jsonData);
+    //print(jsonData);
     return SearchUserListResponse.fromJson(jsonData);
   }
 }
@@ -136,8 +137,9 @@ class SearchUserIdListResponse {
 
   static Future<SearchUserIdListResponse> fetchSearchUserIdListResponse(
       int page, String keyword) async {
+    String encodedKeyword = Uri.encodeQueryComponent(keyword);
     dynamic jsonData =
-        await httpGet('search-id-list/${page}/?keyword=${keyword}', jwt: true);
+        await httpGet('search-id-list/${page}/?keyword=${encodedKeyword}', jwt: true);
     return SearchUserIdListResponse.fromJson(jsonData);
   }
 }

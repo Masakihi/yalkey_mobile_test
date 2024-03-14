@@ -400,8 +400,10 @@ class PostListResponse {
 
   static Future<PostListResponse> fetchSearchPostResponse(
       int page, String keyword) async {
+    // URLエンコードされたクエリを生成
+    String encodedKeyword = Uri.encodeQueryComponent(keyword);
     dynamic jsonData =
-        await httpGet('search-list/${page}/?keyword=${keyword}', jwt: true);
+        await httpGet('search-list/${page}/?keyword=${encodedKeyword}', jwt: true);
     return PostListResponse.fromResponsePostList(jsonData);
   }
 

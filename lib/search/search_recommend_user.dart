@@ -154,16 +154,9 @@ class _SearchRecommendUserListPageState
                       : SizedBox.shrink(); // ローディングインジケーターを表示
                 }
                 final user = _userList[index];
-                return InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => YalkerProfilePage(
-                                userNumber: user.userNumber ?? 1),
-                          ));
-                    },
-                    child: Padding(
+                return
+
+                  Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 8.0, horizontal: 16.0),
                       child: Column(
@@ -172,19 +165,31 @@ class _SearchRecommendUserListPageState
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              if (user.iconimage == "")
-                                const CircleAvatar(
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            YalkerProfilePage(
+                                                userNumber: user.userNumber
+                                                    ??
+                                                    1),
+                                      ));
+                                },
+                                child: user.iconimage == ""
+                                    ? const CircleAvatar(
                                   backgroundColor: Colors.white,
                                   backgroundImage: NetworkImage(
                                     'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
                                   ),
-                                ),
-                              if (user.iconimage != "")
-                                CircleAvatar(
+                                )
+                                    : CircleAvatar(
                                   backgroundImage: NetworkImage(
                                     'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${user.iconimage}',
                                   ),
                                 ),
+                              ),
                               SizedBox(width: 16.0),
                               Expanded(
                                 child: Column(
@@ -235,7 +240,7 @@ class _SearchRecommendUserListPageState
                                               ),
                                             ),
                                           ),
-                                        if (user.superEarlyBird ?? false)
+                                        if (user.earlyBird ?? false)
                                           Padding(
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 3, vertical: 1),
@@ -338,7 +343,7 @@ class _SearchRecommendUserListPageState
                           ),
                         ],
                       ),
-                    ));
+                    );
               },
             ),
           ),

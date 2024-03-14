@@ -124,9 +124,9 @@ class _PostPageState extends State<PostPage> {
               'type': _selectedReport?.reportType,
               'unit': _selectedReport?.reportUnit,
               'report_name': _selectedReport?.reportName,
-              "hour": hours,
-              "minute": minutes,
-              "todo": todoCompleted,
+              'hour': hours,
+              'minute': minutes,
+              'todo': todoCompleted,
               'custom_data': integerForm,
               'custom_float_data': floatForm,
               'report_date': formattedDate
