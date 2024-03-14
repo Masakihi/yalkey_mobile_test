@@ -95,16 +95,16 @@ Future<dynamic> httpPost(String path, Map<String, dynamic>? body,
   if (token == null) {
     throw Exception('Token does not exist');
   } else {
-    if (body != null) {
-      final dio = Dio();
-      final formData = FormData.fromMap(body);
-      final response = await dio.post('https://yalkey.com/api/v1/$path',
-          data: formData,
-          options: Options(headers: {"Authorization": 'Jwt $jwt'}));
-      logResponse(response);
-      return response;
-    }
-    return true;
+    // if (body != null) {
+    //   final dio = Dio();
+    //   final formData = FormData.fromMap(body);
+    //   final response = await dio.post('https://yalkey.com/api/v1/$path',
+    //       data: formData,
+    //       options: Options(headers: {"Authorization": 'Jwt $jwt'}));
+    //   logResponse(response);
+    //   return response;
+    // }
+    // return true;
     var request = http.MultipartRequest(
       'POST',
       Uri.parse('https://yalkey.com/api/v1/$path'),
