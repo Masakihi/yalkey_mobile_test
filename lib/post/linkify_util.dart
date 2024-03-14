@@ -174,9 +174,9 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
   }
 
   List<String> _extractUrls(String text) {
-    final RegExp regex =
-        RegExp(r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+');
-
+    final RegExp regex = RegExp(
+        r'\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[A-Z0-9+&@#\/%=~_|]',
+        caseSensitive: false);
     final matches = regex.allMatches(text);
     final List<String> urls = [];
 

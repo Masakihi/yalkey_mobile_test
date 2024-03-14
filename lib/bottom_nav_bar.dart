@@ -3,7 +3,7 @@ import 'api.dart';
 import 'notification/notification_list.dart';
 import 'home_page.dart';
 import 'notification/notification.dart';
-import 'post_page.dart';
+import 'post/post_page.dart';
 import 'profile/profile_page.dart';
 import 'mission/mission_list.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
@@ -12,7 +12,6 @@ import 'package:badges/badges.dart' as badges;
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({Key? key}) : super(key: key);
-
 
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
