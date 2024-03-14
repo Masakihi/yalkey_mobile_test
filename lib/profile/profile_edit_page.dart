@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
+import 'profile_page.dart';
 
 class ProfileEditPage extends StatefulWidget {
   final Map<String, dynamic> profileData;
@@ -21,6 +22,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   late TextEditingController _userIdController;
   late TextEditingController _profileController;
   ImageProvider<Object>? _imageFile;
+  bool editImage = false;
 
   @override
   void initState() {
@@ -44,13 +46,11 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   }
 
   void _saveProfileChanges() async {
-    // ここでプロフィールの変更を保存する処理を実装します
-    // 保存が成功したら前の画面に戻ります
-
     Navigator.pop(context); // 前の画面に戻る
   }
 
   Future<void> _selectImage() async {
+    editImage = true;
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 

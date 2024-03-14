@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:yalkey_0206_test/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yalkey_0206_test/post_page.dart';
+import 'package:yalkey_0206_test/post/post_page.dart';
 import 'bottom_nav_bar.dart';
 import 'setting/setting_list.dart';
 import 'mission/mission_list.dart';
@@ -21,7 +21,6 @@ class AppPage extends StatefulWidget {
 }
 
 class _AppPageState extends State<AppPage> {
-
   String? loginUserName;
   String? loginUserIconImage;
   String? loginUserId;
@@ -111,23 +110,21 @@ class _AppPageState extends State<AppPage> {
             //     onPressed: () => _scaffoldKey.currentState!.openDrawer(),
             //     icon: const Icon(Icons.person)),
             GestureDetector(
-                onTap: () => _scaffoldKey.currentState!.openDrawer(),
-                child: Padding(
-                padding: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
-                child:
+          onTap: () => _scaffoldKey.currentState!.openDrawer(),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
+            child: ClipOval(
+              child: Image.network(
+                loginUserIconImage ??
+                    'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
+                width: 20,
+                height: 20,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
 
-                ClipOval(
-                  child: Image.network(
-                    loginUserIconImage ??
-                        'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
-                    width: 20,
-                    height: 20,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                ),
-
-                /*
+          /*
                 CircleAvatar(
                   backgroundImage: NetworkImage(
                     loginUserIconImage ??
@@ -137,7 +134,7 @@ class _AppPageState extends State<AppPage> {
                 )
 
                  */
-            ),
+        ),
         title: const Text("yalkey mobile"),
         actions: [
           IconButton(
@@ -146,8 +143,7 @@ class _AppPageState extends State<AppPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                  const SearchRecommendUserListPage(),
+                  builder: (context) => const SearchRecommendUserListPage(),
                 ),
               );
             },

@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'package:flutter_file_dialog/flutter_file_dialog.dart';
+import 'package:http/http.dart' as http;
+import 'dart:math';
 
 class ImageDisplay extends StatefulWidget {
   final List<String> imageURLs;
@@ -160,7 +165,6 @@ class _ImageDisplayState extends State<ImageDisplay> {
             },
           ),
         );
-
       default:
         return SizedBox(
           height: 100,
@@ -189,6 +193,63 @@ class _ImageDisplayState extends State<ImageDisplay> {
     }
   }
 
+  Future<void> _saveImage(BuildContext context, int index) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    late String message;
+    final _url =
+        "https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/postimage/${widget.imageURLs[index]}";
+    var random = Random();
+    try {
+      // Download image
+      final http.Response response = await http.get(Uri.parse(_url));
+
+      // Get temporary directory
+      final dir = await getTemporaryDirectory();
+
+      // Create an image name
+      var filename = '${dir.path}/SaveImage${random.nextInt(100)}.png';
+
+      // Save to filesystem
+      final file = File(filename);
+      await file.writeAsBytes(response.bodyBytes);
+
+      // Ask the user to save it
+      final params = SaveFileDialogParams(sourceFilePath: file.path);
+      final finalPath = await FlutterFileDialog.saveFile(params: params);
+
+      if (finalPath != null) {
+        message = 'Image saved to disk';
+      }
+    } catch (e) {
+      message = e.toString();
+      scaffoldMessenger.showSnackBar(SnackBar(
+        content: Text(
+          message,
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Color(0xFFe91e63),
+      ));
+    }
+
+    if (message != null) {
+      scaffoldMessenger.showSnackBar(SnackBar(
+        content: Text(
+          message,
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Color(0xFFe91e63),
+      ));
+    }
+  }
+
   void _showImageDialog(BuildContext context, int index) {
     showDialog(
       context: context,
@@ -200,21 +261,53 @@ class _ImageDisplayState extends State<ImageDisplay> {
                 Navigator.pop(context);
               }
             },
-            child: Center(
-              child: Container(
-                height: 300.0,
-                width: 300.0,
-                child: PageView.builder(
-                  itemCount: widget.imageURLs.length,
-                  controller: PageController(initialPage: index),
-                  itemBuilder: (BuildContext context, int pageIndex) {
-                    return Image.network(
-                      "https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/postimage/${widget.imageURLs[pageIndex]}",
-                      fit: BoxFit.contain,
-                    );
-                  },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: Center(
+                    child: Container(
+                      height: 300.0,
+                      width: 300.0,
+                      child: PageView.builder(
+                        itemCount: widget.imageURLs.length,
+                        controller: PageController(initialPage: index),
+                        itemBuilder: (BuildContext context, int pageIndex) {
+                          return Center(
+                            child: InteractiveViewer(
+                              minScale: 1,
+                              maxScale: 7,
+                              child: Image.network(
+                                "https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/postimage/${widget.imageURLs[pageIndex]}",
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.download),
+                      onPressed: () {
+                        _saveImage(context, index);
+                        // _downloadImage(
+                        //     "https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/postimage/${widget.imageURLs[index]}");
+                      },
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         );
