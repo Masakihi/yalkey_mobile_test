@@ -90,28 +90,6 @@ class _GoalListPageState extends State<GoalListPage> {
         },
         child: Column(
           children: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => GoalCreatePage(),
-                      //builder: (context) => TaskDeletePage(value: int.parse('352'))
-                    ));
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFAE0103),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: const Text(
-                '目標を追加',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-            ),
             Expanded(
               child: ListView.builder(
                 controller: _scrollController, // スクロールコントローラーを設定
@@ -148,7 +126,10 @@ class _GoalListPageState extends State<GoalListPage> {
                                         value: int.parse('${goal.goalNumber}')),
                                     //builder: (context) => TaskDetailPage(value: int.parse('352')),
                                   ),
-                                );
+                                ).then((value) {
+                                  // 再描画
+                                  _clearCache();
+                                });
                               },
 
                               child: Expanded(
@@ -179,6 +160,21 @@ class _GoalListPageState extends State<GoalListPage> {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: ()  {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => GoalCreatePage(),
+                //builder: (context) => TaskDeletePage(value: int.parse('352'))
+              )).then((value) {
+            // 再描画
+            _clearCache();
+          });
+        },
+        icon: new Icon(Icons.add),
+        label: Text("目標"),
       ),
     );
   }

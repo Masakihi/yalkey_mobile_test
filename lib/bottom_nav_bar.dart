@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'api.dart';
 import 'notification/notification_list.dart';
 import 'home_page.dart';
 import 'notification/notification.dart';
@@ -6,6 +7,8 @@ import 'post_page.dart';
 import 'profile/profile_page.dart';
 import 'mission/mission_list.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:badges/badges.dart' as badges;
+
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({Key? key}) : super(key: key);
@@ -22,6 +25,32 @@ class _BottomNavBarState extends State<BottomNavBar> {
     const MissionListPage(),
     const ProfilePage(),
   ];
+
+  Future<dynamic>? _nofiticationCount;
+
+
+  Future<void> _fetchNotificationData() async {
+    try {
+      final Future<dynamic> response =
+      httpGet('new-notification-count/', jwt: true);
+      print(response);
+      setState(() {
+        _nofiticationCount = response;
+      });
+    } catch (error) {
+      print('Error fetching notification data: $error');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // 受け取ったデータを状態を管理する変数に格納
+    _fetchNotificationData();
+    print(_nofiticationCount);
+  }
+
+
 
   @override
   Widget build(BuildContext context) {

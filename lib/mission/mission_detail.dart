@@ -42,27 +42,291 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
     }
   }
 
+  Widget loadingWidget(bool loading) {
+    if (loading) {
+      return Container(
+        alignment: Alignment.center,
+        padding: const EdgeInsets.all(16.0),
+        child: const CircularProgressIndicator(
+          strokeWidth: 3.0,
+        ),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget loadingWidget(bool loading) {
-      if (loading) {
-        return Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(16.0),
-          child: const CircularProgressIndicator(
-            strokeWidth: 3.0,
-          ),
-        );
-      } else {
-        return const SizedBox.shrink();
-      }
-    }
 
     return Scaffold(
         appBar: AppBar(
           title: const Text('ミッション詳細'),
         ),
-        body: Container(
+        body: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              if (loading)
+                Container(
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.all(16.0),
+                  child: const CircularProgressIndicator(
+                    strokeWidth: 3.0,
+                  ),
+                ),
+              if (!loading) ...[
+                ListTile(
+                  // leading: Icon(Icons.account_circle),
+                  title: Text(
+                    'ミッションタイトル',
+                    style: const TextStyle(fontSize: 12.0, color: Colors.grey),
+                  ),
+                  subtitle: Text(
+                    '${missionData?.missionText}',
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                ),
+                if (missionData?.reward!="" && missionData?.reward!=null) ListTile(
+                  // leading: Icon(Icons.account_circle),
+                  title: Text(
+                    'ご褒美',
+                    style: const TextStyle(fontSize: 12.0, color: Colors.grey),
+                  ),
+                  subtitle: Text(
+                    '${missionData?.reward}',
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                ),
+                if (missionData?.penalty!="" && missionData?.penalty!=null) ListTile(
+                  // leading: Icon(Icons.account_circle),
+                  title: Text(
+                    'ペナルティ',
+                    style: const TextStyle(fontSize: 12.0, color: Colors.grey),
+                  ),
+                  subtitle: Text(
+                    '${missionData?.penalty}',
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                ),
+                ListTile(
+                  // leading: Icon(Icons.account_circle),
+                  title: Text(
+                    '開始日時',
+                    style: const TextStyle(fontSize: 12.0, color: Colors.grey),
+                  ),
+                  subtitle: Text(
+                    '${missionData?.starTime.toString().substring(0, 10)} ${missionData?.starTime.toString().substring(11, 16)}',
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                ),
+                if (missionData?.opportunity!="" && missionData?.opportunity!=null) ListTile(
+                  // leading: Icon(Icons.account_circle),
+                  title: Text(
+                    'きっかけ',
+                    style: const TextStyle(fontSize: 12.0, color: Colors.grey),
+                  ),
+                  subtitle: Text(
+                    '${missionData?.opportunity}',
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                ),
+                if (missionData?.note!="" && missionData?.note!=null) ListTile(
+                  // leading: Icon(Icons.account_circle),
+                  title: Text(
+                    'メモ',
+                    style: const TextStyle(fontSize: 12.0, color: Colors.grey),
+                  ),
+                  subtitle: Text(
+                    '${missionData?.note}',
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                ),
+                ListTile(
+                  // leading: Icon(Icons.account_circle),
+                  title: Text(
+                    'ミッション作成日時',
+                    style: const TextStyle(fontSize: 12.0, color: Colors.grey),
+                  ),
+                  subtitle: Text(
+                    '${missionData?.dateCreated.toString().substring(0, 10)} ${missionData?.dateCreated.toString().substring(11, 16)}',
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                ),
+                if (missionData?.repeatType==0) ...[
+                  ListTile(
+                    // leading: Icon(Icons.account_circle),
+                    title: Text(
+                      '繰り返し',
+                      style: const TextStyle(fontSize: 12.0, color: Colors.grey),
+                    ),
+                    subtitle: Text(
+                      'なし',
+                      style: const TextStyle(fontSize: 18.0),
+                    ),
+                  ),
+                ],
+                if (missionData?.repeatType==1) ...[
+                  ListTile(
+                    // leading: Icon(Icons.account_circle),
+                    title: Text(
+                      '繰り返しパターン',
+                      style: const TextStyle(fontSize: 12.0, color: Colors.grey),
+                    ),
+                    subtitle: Text(
+                      '${missionData?.repeatInterval}日',
+                      style: const TextStyle(fontSize: 18.0),
+                    ),
+                  ),
+                ],
+                if (missionData?.repeatType==2) ...[
+                  ListTile(
+                    // leading: Icon(Icons.account_circle),
+                    title: Text(
+                      '繰り返しパターン',
+                      style: const TextStyle(fontSize: 12.0, color: Colors.grey),
+                    ),
+                    subtitle: Text(
+                      '${missionData?.repeatInterval}週',
+                      style: const TextStyle(fontSize: 18.0),
+                    ),
+                  ),
+                  ListTile(
+                    // leading: Icon(Icons.account_circle),
+                    title: Text(
+                      '繰り返し曜日',
+                      style: const TextStyle(fontSize: 12.0, color: Colors.grey),
+                    ),
+                    subtitle: Text(
+                      '${missionData?.repeatDayWeek}',
+                      style: const TextStyle(fontSize: 18.0),
+                    ),
+                  ),
+                ],
+                if (missionData?.repeatType==3) ...[
+                  ListTile(
+                    // leading: Icon(Icons.account_circle),
+                    title: Text(
+                      '繰り返しパターン',
+                      style: const TextStyle(fontSize: 12.0, color: Colors.grey),
+                    ),
+                    subtitle: Text(
+                      '${missionData?.repeatInterval}月',
+                      style: const TextStyle(fontSize: 18.0),
+                    ),
+                  ),
+                ],
+                if (missionData?.repeatType==4) ...[
+                  ListTile(
+                    // leading: Icon(Icons.account_circle),
+                    title: Text(
+                      '繰り返しパターン',
+                      style: const TextStyle(fontSize: 12.0, color: Colors.grey),
+                    ),
+                    subtitle: Text(
+                      '${missionData?.repeatInterval}年',
+                      style: const TextStyle(fontSize: 18.0),
+                    ),
+                  ),
+                ],
+
+              ],
+              if (missionData?.repeatStopType==0) ...[
+                ListTile(
+                  // leading: Icon(Icons.account_circle),
+                  title: Text(
+                    '繰り返し終了条件',
+                    style: const TextStyle(fontSize: 12.0, color: Colors.grey),
+                  ),
+                  subtitle: Text(
+                    '指定なし',
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                ),
+              ],
+              if (missionData?.repeatStopType==1) ...[
+                ListTile(
+                  // leading: Icon(Icons.account_circle),
+                  title: Text(
+                    '繰り返し終了条件',
+                    style: const TextStyle(fontSize: 12.0, color: Colors.grey),
+                  ),
+                  subtitle: Text(
+                    '繰り返し終了日：${missionData?.repeatStopDate}',
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                ),
+              ],
+              if (missionData?.repeatStopType==2) ...[
+                ListTile(
+                  // leading: Icon(Icons.account_circle),
+                  title: Text(
+                    '繰り返し終了条件',
+                    style: const TextStyle(fontSize: 12.0, color: Colors.grey),
+                  ),
+                  subtitle: Text(
+                    '繰り返し回数：${missionData?.repeatNumber}回',
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                ),
+              ],
+              SizedBox(height: 50.0),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MissionUpdatePage(
+                          oldMission: missionData!,
+                          missionNumber: missionNumber,
+                        ),
+                        //builder: (context) => TaskEditPage(value: int.parse('352'))
+                      ));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFAE0103),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text(
+                  '編集',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              SizedBox(height: 30.0),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MissionDeletePage(
+                            value: int.parse('${missionData?.missionNumber}')),
+                        //builder: (context) => TaskDeletePage(value: int.parse('352'))
+                      ));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFAE0103),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text(
+                  '削除',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+
+        /*
+
+        Container(
             width: double.infinity, //横幅いっぱいを意味する
             // color: Colors.red, //広がっているか色をつけて確認
             child: SingleChildScrollView(
@@ -103,22 +367,18 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
                     if (missionData?.repeatType==0) ...[
                       Text('・繰り返しパターン：繰り返しなし'),
                     ],
-
                     if (missionData?.repeatType==1) ...[
                       Text('・繰り返しパターン：${missionData?.repeatInterval}日'),
                       Text('・繰り返し曜日：${missionData?.repeatDayWeek}'),
                     ],
-
                     if (missionData?.repeatType==2) ...[
                       Text('・繰り返しパターン：${missionData?.repeatInterval}週'),
                       Text('・繰り返し曜日：${missionData?.repeatDayWeek}'),
                     ],
-
                     if (missionData?.repeatType==3) ...[
                       Text('・繰り返しパターン：${missionData?.repeatInterval}月'),
                       Text('・繰り返し曜日：${missionData?.repeatDayWeek}'),
                     ],
-
                     if (missionData?.repeatType==4) ...[
                       Text('・繰り返しパターン：${missionData?.repeatInterval}年'),
                       Text('・繰り返し曜日：${missionData?.repeatDayWeek}'),
@@ -127,12 +387,10 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
                     if (missionData?.repeatStopType==0) ...[
                       Text('・繰り返し終了条件：指定なし'),
                     ],
-
                     if (missionData?.repeatStopType==1) ...[
                       Text('・繰り返し終了条件：終了日を指定'),
                       Text('・繰り返し終了日：${missionData?.repeatStopDate}'),
                     ],
-
                     if (missionData?.repeatStopType==2) ...[
                       Text('・繰り返し終了条件：回数を指定'),
                       Text('・繰り返し回数：${missionData?.repeatNumber}回'),
@@ -210,6 +468,13 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
 
     )
         )
+
+         */
+
+
+
+
+
 
     );
   }
