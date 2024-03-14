@@ -165,11 +165,7 @@ class _SearchUserIdListPageState extends State<SearchUserIdListPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      GestureDetector(
-                        onTap: () {
-                          print("tap");
-                        },
-                        child: Row(
+                      Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             if (user.iconimage == "")
@@ -234,7 +230,7 @@ class _SearchUserIdListPageState extends State<SearchUserIdListPage> {
                                             ),
                                           ),
                                         ),
-                                      if (user.superEarlyBird ?? false)
+                                      if (user.earlyBird ?? false)
                                         Padding(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 3, vertical: 1),
@@ -335,7 +331,6 @@ class _SearchUserIdListPageState extends State<SearchUserIdListPage> {
                             ),
                           ],
                         ),
-                      ),
                     ],
                   ),
                 );

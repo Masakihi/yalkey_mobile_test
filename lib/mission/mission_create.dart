@@ -652,33 +652,46 @@ class _RepeatSettingState extends State<RepeatSetting> {
                 ),
               ],
             ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                // WeekdaySelector(),
-                  Wrap(
-                  spacing: 4.0, // ボタン間の間隔
-                  children: List.generate(7, (index) {
-                    return ChoiceChip(
-                      label: Text(['月', '火', '水', '木', '金', '土', '日'][index]),
-                      selected: _selections[index],
-                      onSelected: (selected) {
-                        setState(() {
-                          _selections[index] = selected;
-                        });
-                      },
-                      backgroundColor: _selections[index] ? const Color(0xFFAE0103) : null,
-                      selectedColor: const Color(0xFFAE0103),
-                      labelStyle: TextStyle(color: _selections[index] ? Colors.white : const Color(0xFFAE0103)),
-                      selectedShadowColor: Colors.transparent, // 選択時の影を非表示にする
-                      showCheckmark: false, // チェックマークを非表示にする
-                    );
-                  }),
-                ),
-              ],
+            SizedBox(height: 10),
+            Text(
+              '（例）1日→毎日、2週→1週目、3週目、5週目...',
+              style: TextStyle(fontSize: 12),
             ),
+            if(_repeatOption=="週") SizedBox(height: 10),
+
+            if(_repeatOption=="週") SingleChildScrollView(
+              scrollDirection: Axis.horizontal, // 横スクロール可能にする
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // WeekdaySelector(),
+                    Wrap(
+                    spacing: 3.0, // ボタン間の間隔
+                    children: List.generate(7, (index) {
+                      return ChoiceChip(
+                        label: Text(['月', '火', '水', '木', '金', '土', '日'][index]),
+                        selected: _selections[index],
+                        onSelected: (selected) {
+                          setState(() {
+                            _selections[index] = selected;
+                          });
+                        },
+                        backgroundColor: _selections[index] ? const Color(0xFFAE0103) : null,
+                        selectedColor: const Color(0xFFAE0103),
+                        labelStyle: TextStyle(color: _selections[index] ? Colors.white : const Color(0xFFAE0103)),
+                        selectedShadowColor: Colors.transparent, // 選択時の影を非表示にする
+                        showCheckmark: false, // チェックマークを非表示にする
+                      );
+                    }),
+                  ),
+                ],
+              ),
+            ),
+
+
+
             SizedBox(height: 20),
+            const Divider(height: 32.0, thickness: 0.1, color: Colors.grey),
             ListTile(
               title: Text('終了条件'),
             ),
