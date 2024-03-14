@@ -41,12 +41,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
     // }
   }
 
-  void _resetNotificationCount() {
-    setState(() {
-      _notificationCount = null;
-    });
-  }
-
   @override
   void initState() {
     super.initState();
