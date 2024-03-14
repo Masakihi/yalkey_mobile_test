@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../api.dart';
 import '../app.dart';
 
 class GoalCreatePage extends StatefulWidget {
@@ -86,6 +87,8 @@ class _GoalCreateState extends State<GoalCreatePage> {
 
       print(data);
 
+      final response = await httpPost('goal-form/', data, jwt: true);
+
       // final response = await httpPost('progress-form/', data, jwt: true);
 
       // 成功メッセージを表示
@@ -96,9 +99,12 @@ class _GoalCreateState extends State<GoalCreatePage> {
       );
 
       // ホーム画面に戻る
+      /*
       Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => AppPage(),
       ));
+
+       */
     } catch (error) {
       // エラーメッセージを表示
       ScaffoldMessenger.of(context).showSnackBar(
@@ -112,7 +118,7 @@ class _GoalCreateState extends State<GoalCreatePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('目標の更新')),
+        appBar: AppBar(title: const Text('目標の追加')),
         body: SingleChildScrollView(
             child: Form(
           key: _formKey,
@@ -130,11 +136,14 @@ class _GoalCreateState extends State<GoalCreatePage> {
                           if (value?.isEmpty ?? true) {
                             return '必須です';
                           }
+                          if (50 < value!.length) {
+                            return 'タイトルは50文字以下で入力してください';
+                          }
                           return null;
                         },
                         decoration: const InputDecoration(
                           labelText: "目標タイトル（必須）",
-                          hintText: "（例）東大合格",
+                          hintText: "（例）シックスパックの筋肉を手にいれる",
                           /*
                               border: OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.red, width: 2)
@@ -145,17 +154,16 @@ class _GoalCreateState extends State<GoalCreatePage> {
                   Padding(
                       padding: const EdgeInsets.all(5.0), //マージン
                       child: TextFormField(
-                        obscureText: _isObscure,
                         controller: purposeController,
                         validator: (value) {
-                          if (value?.isEmpty ?? true) {
-                            return '必須です';
+                          if (200 < value!.length) {
+                            return '200文字以下で入力してください';
                           }
                           return null;
                         },
                         decoration: InputDecoration(
                           labelText: "目的",
-                          hintText: "（例）",
+                          hintText: "（例）モテるため",
                           /*
                               border: OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.red, width: 2)
@@ -166,17 +174,16 @@ class _GoalCreateState extends State<GoalCreatePage> {
                   Padding(
                       padding: const EdgeInsets.all(5.0), //マージン
                       child: TextFormField(
-                        obscureText: _isObscure,
                         controller: benefitController,
                         validator: (value) {
-                          if (value?.isEmpty ?? true) {
-                            return '必須です';
+                          if (200 < value!.length) {
+                            return '200文字以下で入力してください';
                           }
                           return null;
                         },
                         decoration: InputDecoration(
                           labelText: "目標達成時に得られるもの",
-                          hintText: "（例）",
+                          hintText: "（例）強靭な肉体、自信、周囲からの賞賛・羨望の眼差し",
                           /*
                               border: OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.red, width: 2)
@@ -187,17 +194,16 @@ class _GoalCreateState extends State<GoalCreatePage> {
                   Padding(
                       padding: const EdgeInsets.all(5.0), //マージン
                       child: TextFormField(
-                        obscureText: _isObscure,
                         controller: lossController,
                         validator: (value) {
-                          if (value?.isEmpty ?? true) {
-                            return '必須です';
+                          if (200 < value!.length) {
+                            return '200文字以下で入力してください';
                           }
                           return null;
                         },
                         decoration: InputDecoration(
                           labelText: "目標達成できなかった場合の損失",
-                          hintText: "（例）",
+                          hintText: "（例）挫折感を味わう、恋人ができずに一生を終えるかもしれない",
                           /*
                               border: OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.red, width: 2)
@@ -212,14 +218,14 @@ class _GoalCreateState extends State<GoalCreatePage> {
                         maxLines: 3,
                         controller: noteController,
                         validator: (value) {
-                          if (value?.isEmpty ?? true) {
-                            return '必須です';
+                          if (500 < value!.length) {
+                            return '500文字以下で入力してください';
                           }
                           return null;
                         },
                         decoration: InputDecoration(
                           labelText: "メモ",
-                          hintText: "（例）",
+                          hintText: "（例）プロテインも忘れない",
                           /*
                               border: OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.red, width: 2)
@@ -229,7 +235,7 @@ class _GoalCreateState extends State<GoalCreatePage> {
                       )),
                   Padding(
                     padding: const EdgeInsets.all(5.0), //マージン
-                    child: Text("期限"),
+                    child: Text("達成期限"),
                   ),
                   Row(
                     children: [
@@ -237,7 +243,7 @@ class _GoalCreateState extends State<GoalCreatePage> {
                         child: TextButton(
                           onPressed: () => _selectDate(context),
                           child: Text(
-                              'Select Date: ${_selectedDate.toString().substring(0, 10)}'),
+                              '日付: ${_selectedDate.toString().substring(0, 10)}'),
                         ),
                       ),
                       SizedBox(width: 16.0),
@@ -245,7 +251,7 @@ class _GoalCreateState extends State<GoalCreatePage> {
                         child: TextButton(
                           onPressed: () => _selectTime(context),
                           child: Text(
-                              'Select Time: ${_selectedTime.format(context)}'),
+                              '時刻: ${_selectedTime.format(context)}'),
                         ),
                       ),
                     ],
@@ -264,7 +270,7 @@ class _GoalCreateState extends State<GoalCreatePage> {
                             _postGoalData();
                             // login(context, emailController.text, passwordController.text);
                             int count = 0;
-                            Navigator.popUntil(context, (_) => count++ >= 4);
+                            Navigator.popUntil(context, (_) => count++ >= 1);
                           }
                         },
                         child: const Text(

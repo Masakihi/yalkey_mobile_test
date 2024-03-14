@@ -116,6 +116,22 @@ class _MissionUpdateState extends State<MissionUpdatePage> {
 
   }
 
+  String weekFormat(List<bool> weekList){
+    String week = "";
+    for (int i = 0; i < weekList.length; i++) {
+      if(weekList[i]){
+        if (i==0) week += "月 ";
+        if (i==1) week += "火 ";
+        if (i==2) week += "水 ";
+        if (i==3) week += "木 ";
+        if (i==4) week += "金 ";
+        if (i==5) week += "土 ";
+        if (i==6) week += "日 ";
+      }
+    }
+    return week;
+  }
+
   void _showRepeatForm() {
     showModalBottomSheet(
       context: context,
@@ -267,7 +283,7 @@ class _MissionUpdateState extends State<MissionUpdatePage> {
       print(data);
 
       //final response = await httpPost('mission-form/', data, jwt: true);
-      final response = await httpPost('mission/update/${missionNumber}/', data, jwt: true);
+      final response = await httpPut('mission/update/${missionNumber}/', data, jwt: true);
 
       // 成功メッセージを表示
       ScaffoldMessenger.of(context).showSnackBar(
@@ -276,10 +292,6 @@ class _MissionUpdateState extends State<MissionUpdatePage> {
         ),
       );
 
-      // ホーム画面に戻る
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => AppPage(),
-      ));
     } catch (error) {
       // エラーメッセージを表示
       ScaffoldMessenger.of(context).showSnackBar(
@@ -383,8 +395,6 @@ class _MissionUpdateState extends State<MissionUpdatePage> {
                 Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(children: [
-
-
                         if (loading)
                         Container(
                           alignment: Alignment.center,
@@ -402,11 +412,14 @@ class _MissionUpdateState extends State<MissionUpdatePage> {
                               if (value?.isEmpty ?? true) {
                                 return '必須です';
                               }
+                              if (20 < value!.length) {
+                                return 'タイトルは20文字以下で入力してください';
+                              }
                               return null;
                             },
                             decoration: const InputDecoration(
                               labelText: "ミッションタイトル",
-                              hintText: "（例）筋トレ",
+                              hintText: "（例）毎週平日にジムに行く",
                               /*
                               border: OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.red, width: 2)
@@ -414,67 +427,92 @@ class _MissionUpdateState extends State<MissionUpdatePage> {
                                */
                             ),
                           )),
-                      Padding(
-                          padding: const EdgeInsets.all(5.0), //マージン
-                          child: TextFormField(
-                            // obscureText: _isObscure,
-                            controller: rewardController,
-                            decoration: InputDecoration(
-                              labelText: "ご褒美",
-                              hintText: "（例）",
-                              /*
+                        Padding(
+                            padding: const EdgeInsets.all(5.0), //マージン
+                            child: TextFormField(
+                              // obscureText: _isObscure,
+                              controller: rewardController,
+                              validator: (value) {
+                                if (100 < value!.length) {
+                                  return '100文字以下で入力してください';
+                                }
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                labelText: "ご褒美",
+                                hintText: "（例）ジムに行った帰りに大好きな寿司を買う",
+                                /*
                               border: OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.red, width: 2)
                               ),
                               */
-                            ),
-                          )),
-                      Padding(
-                          padding: const EdgeInsets.all(5.0), //マージン
-                          child: TextFormField(
-                            obscureText: _isObscure,
-                            controller: penaltyController,
-                            decoration: InputDecoration(
-                              labelText: "ペナルティ",
-                              hintText: "（例）",
-                              /*
+                              ),
+                            )),
+                        Padding(
+                            padding: const EdgeInsets.all(5.0), //マージン
+                            child: TextFormField(
+                              obscureText: _isObscure,
+                              controller: penaltyController,
+                              validator: (value) {
+                                if (100 < value!.length) {
+                                  return '100文字以下で入力してください';
+                                }
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                labelText: "ペナルティ",
+                                hintText: "（例）ジムに行かなかったら1週間ゲーム禁止",
+                                /*
                               border: OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.red, width: 2)
                               ),
                               */
-                            ),
-                          )),
-                      Padding(
-                          padding: const EdgeInsets.all(5.0), //マージン
-                          child: TextFormField(
-                            obscureText: _isObscure,
-                            controller: opportunityController,
-                            decoration: InputDecoration(
-                              labelText: "きっかけ",
-                              hintText: "（例）",
-                              /*
+                              ),
+                            )),
+                        Padding(
+                            padding: const EdgeInsets.all(5.0), //マージン
+                            child: TextFormField(
+                              obscureText: _isObscure,
+                              controller: opportunityController,
+                              validator: (value) {
+                                if (500 < value!.length) {
+                                  return '500文字以下で入力してください';
+                                }
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                labelText: "きっかけ",
+                                hintText: "（例）仕事終わったらジムに直行する",
+                                /*
                               border: OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.red, width: 2)
                               ),
                               */
-                            ),
-                          )),
-                      Padding(
-                          padding: const EdgeInsets.all(5.0), //マージン
-                          child: TextFormField(
-                            keyboardType: TextInputType.multiline,
-                            maxLines: 3,
-                            controller: noteController,
-                            decoration: InputDecoration(
-                              labelText: "メモ",
-                              hintText: "（例）",
-                              /*
+                              ),
+                            )),
+                        Padding(
+                            padding: const EdgeInsets.all(5.0), //マージン
+                            child: TextFormField(
+                              keyboardType: TextInputType.multiline,
+                              maxLines: 3,
+                              controller: noteController,
+                              validator: (value) {
+                                if (500 < value!.length) {
+                                  return '500文字以下で入力してください';
+                                }
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                labelText: "メモ",
+                                hintText: "（例）プロテイン飲むのを忘れない",
+                                /*
                               border: OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.red, width: 2)
                               ),
                               */
-                            ),
-                          )),
+                              ),
+                            )),
+                        SizedBox(height: 20.0),
                       Padding(
                         padding: const EdgeInsets.all(5.0), //マージン
                         child: Text("取り組む日時"),
@@ -523,7 +561,7 @@ class _MissionUpdateState extends State<MissionUpdatePage> {
                     ],
                   ),
                    */
-                      SizedBox(height: 16.0),
+                      SizedBox(height: 8.0),
                       Padding(
                         padding: const EdgeInsets.all(10.0), //マージン
                         child: ElevatedButton(
@@ -544,14 +582,32 @@ class _MissionUpdateState extends State<MissionUpdatePage> {
                       _repeatSettingData != null
                           ? Column(
                         children: [
-                          Text('繰り返し: ${_repeatSettingData!.isRepeat}'),
-                          Text('繰り返し間隔: ${_repeatSettingData!.repeatInterval}'),
-                          Text('繰り返し条件: ${_repeatSettingData!.repeatOption}'),
-                          Text('繰り返し終了条件: ${_repeatSettingData!.endCondition}'),
+                          if (!_repeatSettingData!.isRepeat) ...[
+                            Text('・繰り返しなし'),
+                          ],
+                          if (_repeatSettingData!.isRepeat) ...[
+                            Text('・繰り返しあり'),
+                          ],
+                          if (_repeatSettingData!.isRepeat && _repeatSettingData!.repeatOption=="日") ...[
+                            Text('・繰り返しパターン：${_repeatSettingData!.repeatInterval}日'),
+                          ],
+                          if (_repeatSettingData!.isRepeat && _repeatSettingData!.repeatOption=="週") ...[
+                            Text('・繰り返しパターン：${_repeatSettingData!.repeatInterval}週'),
+                            Text('・曜日：${weekFormat(_repeatSettingData!.selectionList)}'),
+                          ],
+                          if (_repeatSettingData!.isRepeat && _repeatSettingData!.repeatOption=="月") ...[
+                            Text('・繰り返しパターン：${_repeatSettingData!.repeatInterval}月'),
+                          ],
+                          if (_repeatSettingData!.isRepeat && _repeatSettingData!.repeatOption=="年") ...[
+                            Text('・繰り返しパターン：${_repeatSettingData!.repeatInterval}年'),
+                          ],
+                          if (_repeatSettingData!.endCondition == EndCondition.none)
+                            Text('・繰り返し終了条件：なし'),
                           if (_repeatSettingData!.endCondition == EndCondition.endDate)
-                            Text('繰り返し最終日: ${_repeatSettingData!.endDate}'),
+                            Text('・繰り返し最終日: ${_repeatSettingData!.endDate.toString().substring(0,10)}'),
                           if (_repeatSettingData!.endCondition == EndCondition.repeatCount)
-                            Text('繰り返し回数: ${_repeatSettingData!.repeatCount}'),
+                            Text('・繰り返し回数: ${_repeatSettingData!.repeatCount}'),
+
                         ],
                       )
                           : SizedBox(),
@@ -575,8 +631,8 @@ class _MissionUpdateState extends State<MissionUpdatePage> {
                                 }
 
                                 // login(context, emailController.text, passwordController.text);
-                                // int count = 0;
-                                // Navigator.popUntil(context, (_) => count++ >= 1);
+                                int count = 0;
+                                Navigator.popUntil(context, (_) => count++ >= 2);
                               }
                             },
                             child: const Text(
