@@ -395,7 +395,13 @@ class _MissionListPageState extends State<MissionListPage> {
                                                             '${mission.missionNumber}')),
                                                 //builder: (context) => TaskDetailPage(value: int.parse('352')),
                                               ),
-                                            );
+                                            ).then((value) {
+                                              // 再描画
+                                              _clearCache();
+                                              _clearMissionYesterdayCache();
+                                              _clearMissionTodayCache();
+                                              _clearMissionTomorrowCache();
+                                            });
                                           },
                                           child: Text(
                                             mission.missionText,
@@ -495,7 +501,13 @@ class _MissionListPageState extends State<MissionListPage> {
                                                   '${missionTomorrow.missionNumber}')),
                                       //builder: (context) => TaskDetailPage(value: int.parse('352')),
                                     ),
-                                  );
+                                  ).then((value) {
+                                    // 再描画
+                                    _clearCache();
+                                    _clearMissionYesterdayCache();
+                                    _clearMissionTodayCache();
+                                    _clearMissionTomorrowCache();
+                                  });
                                 },
                                 child: Text(
                                   '${missionTomorrow.missionText}',  //missionToday.title,
@@ -584,7 +596,13 @@ class _MissionListPageState extends State<MissionListPage> {
                                                   '${missionToday.missionNumber}')),
                                       //builder: (context) => TaskDetailPage(value: int.parse('352')),
                                     ),
-                                  );
+                                  ).then((value) {
+                                    // 再描画
+                                    _clearCache();
+                                    _clearMissionYesterdayCache();
+                                    _clearMissionTodayCache();
+                                    _clearMissionTomorrowCache();
+                                  });
                                 },
                                 child:
                                 Text(
@@ -674,7 +692,13 @@ class _MissionListPageState extends State<MissionListPage> {
                                                   '${missionYesterday.missionNumber}')),
                                       //builder: (context) => TaskDetailPage(value: int.parse('352')),
                                     ),
-                                  );
+                                  ).then((value) {
+                                    // 再描画
+                                    _clearCache();
+                                    _clearMissionYesterdayCache();
+                                    _clearMissionTodayCache();
+                                    _clearMissionTomorrowCache();
+                                  });
                                 },
                                 child: Text(
                                   '${missionYesterday.missionText}',  //missionToday.title,
@@ -701,7 +725,13 @@ class _MissionListPageState extends State<MissionListPage> {
                 MaterialPageRoute(
                   builder: (context) => MissionCreatePage(),
                   //builder: (context) => TaskDeletePage(value: int.parse('352'))
-                ));
+                )).then((value) {
+              // 再描画
+              _clearCache();
+              _clearMissionYesterdayCache();
+              _clearMissionTodayCache();
+              _clearMissionTomorrowCache();
+            });
           },
           icon: new Icon(Icons.add),
           label: Text("ミッション"),

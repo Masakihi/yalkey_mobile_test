@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
+import '../api.dart';
 import '../app.dart';
+import 'goal_model.dart';
 
 class GoalUpdatePage extends StatefulWidget {
-  const GoalUpdatePage({super.key});
+  final Goal oldGoal;
+  final int goalNumber;
+  const GoalUpdatePage({super.key, required this.oldGoal, required this.goalNumber});
 
   @override
   _GoalUpdateState createState() => _GoalUpdateState();
 }
 
 class _GoalUpdateState extends State<GoalUpdatePage> {
+  late int goalNumber;
+  Goal? oldGoalData;
   final _formKey = GlobalKey<FormState>(); //①：定義
   bool _isObscure = true;
 
@@ -26,13 +32,16 @@ class _GoalUpdateState extends State<GoalUpdatePage> {
   @override
   void initState() {
     super.initState();
-    goalTextController = TextEditingController();
-    purposeController = TextEditingController();
-    benefitController = TextEditingController();
-    lossController = TextEditingController();
-    noteController = TextEditingController();
-    _selectedDate = DateTime.now();
-    _selectedTime = TimeOfDay.now();
+    oldGoalData = widget.oldGoal;
+    goalNumber = widget.goalNumber;
+    goalTextController = TextEditingController(text: oldGoalData?.goalText);
+    purposeController = TextEditingController(text: oldGoalData?.purpose);
+    benefitController = TextEditingController(text: oldGoalData?.benefit);
+    lossController = TextEditingController(text: oldGoalData?.loss);
+    noteController = TextEditingController(text: oldGoalData?.note);
+    DateTime dt = DateTime.parse(oldGoalData!.deadline.substring(0,10)+" "+oldGoalData!.deadline.substring(11,16));
+    _selectedDate = DateTime(dt.year, dt.month, dt.day);
+    _selectedTime = TimeOfDay(hour: dt.hour, minute: dt.minute);
     // _fetchReportList();
   }
 
@@ -87,6 +96,7 @@ class _GoalUpdateState extends State<GoalUpdatePage> {
       print(data);
 
       // final response = await httpPost('progress-form/', data, jwt: true);
+      final response = await httpPut('goal/update/${goalNumber}/', data, jwt: true);
 
       // 成功メッセージを表示
       ScaffoldMessenger.of(context).showSnackBar(
@@ -95,10 +105,11 @@ class _GoalUpdateState extends State<GoalUpdatePage> {
         ),
       );
 
-      // ホーム画面に戻る
+      /*
       Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => AppPage(),
       ));
+       */
     } catch (error) {
       // エラーメッセージを表示
       ScaffoldMessenger.of(context).showSnackBar(
@@ -130,11 +141,14 @@ class _GoalUpdateState extends State<GoalUpdatePage> {
                           if (value?.isEmpty ?? true) {
                             return '必須です';
                           }
+                          if (50 < value!.length) {
+                            return 'タイトルは50文字以下で入力してください';
+                          }
                           return null;
                         },
                         decoration: const InputDecoration(
                           labelText: "目標タイトル（必須）",
-                          hintText: "（例）東大合格",
+                          hintText: "（例）シックスパックの筋肉を手にいれる",
                           /*
                               border: OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.red, width: 2)
@@ -145,17 +159,16 @@ class _GoalUpdateState extends State<GoalUpdatePage> {
                   Padding(
                       padding: const EdgeInsets.all(5.0), //マージン
                       child: TextFormField(
-                        obscureText: _isObscure,
                         controller: purposeController,
                         validator: (value) {
-                          if (value?.isEmpty ?? true) {
-                            return '必須です';
+                          if (200 < value!.length) {
+                            return '200文字以下で入力してください';
                           }
                           return null;
                         },
                         decoration: InputDecoration(
                           labelText: "目的",
-                          hintText: "（例）",
+                          hintText: "（例）モテるため",
                           /*
                               border: OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.red, width: 2)
@@ -166,17 +179,16 @@ class _GoalUpdateState extends State<GoalUpdatePage> {
                   Padding(
                       padding: const EdgeInsets.all(5.0), //マージン
                       child: TextFormField(
-                        obscureText: _isObscure,
                         controller: benefitController,
                         validator: (value) {
-                          if (value?.isEmpty ?? true) {
-                            return '必須です';
+                          if (200 < value!.length) {
+                            return '200文字以下で入力してください';
                           }
                           return null;
                         },
                         decoration: InputDecoration(
                           labelText: "目標達成時に得られるもの",
-                          hintText: "（例）",
+                          hintText: "（例）強靭な肉体、自信、周囲からの賞賛・羨望の眼差し",
                           /*
                               border: OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.red, width: 2)
@@ -187,17 +199,16 @@ class _GoalUpdateState extends State<GoalUpdatePage> {
                   Padding(
                       padding: const EdgeInsets.all(5.0), //マージン
                       child: TextFormField(
-                        obscureText: _isObscure,
                         controller: lossController,
                         validator: (value) {
-                          if (value?.isEmpty ?? true) {
-                            return '必須です';
+                          if (200 < value!.length) {
+                            return '200文字以下で入力してください';
                           }
                           return null;
                         },
                         decoration: InputDecoration(
                           labelText: "目標達成できなかった場合の損失",
-                          hintText: "（例）",
+                          hintText: "（例）挫折感を味わう、恋人ができずに一生を終えるかもしれない",
                           /*
                               border: OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.red, width: 2)
@@ -212,14 +223,14 @@ class _GoalUpdateState extends State<GoalUpdatePage> {
                         maxLines: 3,
                         controller: noteController,
                         validator: (value) {
-                          if (value?.isEmpty ?? true) {
-                            return '必須です';
+                          if (500 < value!.length) {
+                            return '500文字以下で入力してください';
                           }
                           return null;
                         },
                         decoration: InputDecoration(
                           labelText: "メモ",
-                          hintText: "（例）",
+                          hintText: "（例）プロテインも忘れない",
                           /*
                               border: OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.red, width: 2)
@@ -229,7 +240,7 @@ class _GoalUpdateState extends State<GoalUpdatePage> {
                       )),
                   Padding(
                     padding: const EdgeInsets.all(5.0), //マージン
-                    child: Text("期限"),
+                    child: Text("達成期限"),
                   ),
                   Row(
                     children: [
@@ -237,7 +248,7 @@ class _GoalUpdateState extends State<GoalUpdatePage> {
                         child: TextButton(
                           onPressed: () => _selectDate(context),
                           child: Text(
-                              'Select Date: ${_selectedDate.toString().substring(0, 10)}'),
+                              '日付: ${_selectedDate.toString().substring(0, 10)}'),
                         ),
                       ),
                       SizedBox(width: 16.0),
@@ -245,7 +256,7 @@ class _GoalUpdateState extends State<GoalUpdatePage> {
                         child: TextButton(
                           onPressed: () => _selectTime(context),
                           child: Text(
-                              'Select Time: ${_selectedTime.format(context)}'),
+                              '時刻: ${_selectedTime.format(context)}'),
                         ),
                       ),
                     ],
@@ -264,7 +275,7 @@ class _GoalUpdateState extends State<GoalUpdatePage> {
                             _postGoalData();
                             // login(context, emailController.text, passwordController.text);
                             int count = 0;
-                            Navigator.popUntil(context, (_) => count++ >= 4);
+                            Navigator.popUntil(context, (_) => count++ >= 2);
                           }
                         },
                         child: const Text(

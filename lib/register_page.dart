@@ -71,14 +71,13 @@ class _RegisterPageState extends State<RegisterPage> {
 
 
 
-  Future<void> register(BuildContext context, data, image) async {
+  Future<void> register(BuildContext context, data) async {
     try {
       //final response = await httpPost('token/', {'email': 'molcar@yalkey.com', 'password': 'hogehoge'});
 
-      print("image.path");
-      print(image.path);
+      //print(image.path);
 
-      final response = await httpPostWithIcon('user-create/', data, image.path);
+      final response = await httpPost('user-create/', data);
       // print(response);
 
       Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -318,6 +317,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           Text('投稿を非公開にする'),
                         ],
                       ),
+                      /*
                       TextButton(
                         onPressed: _getImages,
                         child: const Text('アイコン画像を選択'),
@@ -331,6 +331,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           fit: BoxFit.cover,
                         ),
                       ),
+                       */
                       SizedBox(height: 40.0),
                       Row(
                         children: <Widget>[
@@ -376,7 +377,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   print(userNameController.text);
                                   print(userProfileController.text);
                                   print(_isPrivate);
-                                  print(_iconImage);
+                                  // print(_iconImage);
 
                                   var data = {
                                     //'email': emailController.text,
@@ -388,7 +389,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                     'private': _isPrivate,
                                   };
 
-                                  register(context, data, _iconImage);
+                                  register(context, data);
                                 }
                               }
                             } : () {
