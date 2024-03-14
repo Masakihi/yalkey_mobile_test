@@ -157,6 +157,7 @@ class _PostPageState extends State<PostPage> {
         ),
       );
     } catch (error) {
+      print(error);
       // エラーメッセージを表示
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(

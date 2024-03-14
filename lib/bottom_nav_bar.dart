@@ -9,7 +9,6 @@ import 'mission/mission_list.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:badges/badges.dart' as badges;
 
-
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({Key? key}) : super(key: key);
 
@@ -27,11 +26,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   Future<dynamic>? _nofiticationCount;
 
-
   Future<void> _fetchNotificationData() async {
     try {
       final Future<dynamic> response =
-      httpGet('new-notification-count/', jwt: true);
+          httpGet('new-notification-count/', jwt: true);
       print(response);
       setState(() {
         _nofiticationCount = response;
@@ -49,8 +47,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
     print(_nofiticationCount);
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return PersistentTabView(
@@ -65,7 +61,25 @@ class _BottomNavBarState extends State<BottomNavBar> {
           inactiveColorPrimary: Colors.white, // 非選択時のアイコンの色
         ),
         PersistentBottomNavBarItem(
-          icon: Icon(Icons.notifications),
+          icon: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Icon(Icons.notifications),
+                  // 通知バッジを表示する
+                  Positioned(
+                    top: -5,
+                    right: -5,
+                    child: badges.Badge(
+                      badgeContent: Text('1', style: TextStyle(fontSize: 8)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
           title: null,
           activeColorPrimary: const Color(0xFFAE0103),
           inactiveColorPrimary: Colors.white,

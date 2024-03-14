@@ -21,20 +21,42 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   late TextEditingController _nameController;
   late TextEditingController _userIdController;
   late TextEditingController _profileController;
+  late bool _private;
   ImageProvider<Object>? _imageFile;
-  bool editImage = false;
+  String? _editImagePath = null;
+  String? loginUserName;
+  String? loginUserIconImage;
+  String? loginUserId;
+  int? loginUserNumber;
 
   @override
   void initState() {
     super.initState();
+    print(widget.profileData);
     _nameController = TextEditingController(
         text: widget.profileData['login_user_profile']['name']);
     _userIdController = TextEditingController(
         text: widget.profileData['login_user_profile']['user_id']);
     _profileController = TextEditingController(
         text: widget.profileData['login_user_profile']['profile']);
+    _private = widget.profileData['login_user']['private'];
     _imageFile =
         NetworkImage(widget.profileData['login_user_profile']['iconimage']);
+    _getLoginUserData();
+  }
+
+  Future<void> _getLoginUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var _loginUserName = prefs.getString('login_user_name');
+    var _loginUserIconImage = prefs.getString('login_user_iconimage');
+    var _loginUserId = prefs.getString('login_user_id');
+    var _loginUserNumber = prefs.getInt('login_user_number');
+    setState(() => {
+          loginUserName = _loginUserName,
+          loginUserIconImage = _loginUserIconImage,
+          loginUserId = _loginUserId,
+          loginUserNumber = _loginUserNumber,
+        });
   }
 
   @override
@@ -46,17 +68,41 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   }
 
   void _saveProfileChanges() async {
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('プロフィールを更新します'),
+      ),
+    );
+    final data = {
+      "name": _nameController.text,
+      "user_id": _userIdController.text,
+      "profile": _profileController.text,
+      "private": _private
+    };
+    logResponse(data);
+    final response = httpPut('profile/update/${loginUserId}', data,
+        jwt: true,
+        images: _editImagePath != null ? [_editImagePath!] : [],
+        imageFieldName: 'iconimage');
+    logResponse(response);
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('修正が完了しました'),
+      ),
+    );
     Navigator.pop(context); // 前の画面に戻る
   }
 
   Future<void> _selectImage() async {
-    editImage = true;
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       setState(() {
         _imageFile = FileImage(File(pickedFile.path));
+        _editImagePath = pickedFile.path;
       });
     }
   }
@@ -100,11 +146,15 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     onPressed: () {
                       Navigator.pop(context); // キャンセルボタンが押されたら前の画面に戻る
                     },
-                    child: Text('キャンセル', style: TextStyle(color: Colors.black)),
+                    child: const Text(
+                      'キャンセル',
+                    ),
                   ),
                   TextButton(
                     onPressed: _saveProfileChanges,
-                    child: Text('保存', style: TextStyle(color: Colors.black)),
+                    child: const Text(
+                      '保存',
+                    ),
                   ),
                 ],
               ),
@@ -123,6 +173,15 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 controller: _profileController,
                 decoration: InputDecoration(labelText: 'プロフィール'),
                 maxLines: null,
+              ),
+              CheckboxListTile(
+                title: Text('非公開にする'),
+                value: _private,
+                onChanged: (value) {
+                  setState(() {
+                    _private = value!;
+                  });
+                },
               ),
             ],
           ),
