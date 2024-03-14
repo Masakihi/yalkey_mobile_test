@@ -138,7 +138,6 @@ Future<dynamic> httpPost(String path, Map<String, dynamic>? body,
 
     var response = await request.send();
     var responseBody = await response.stream.bytesToString();
-    print(responseBody);
 
     return json.decode(responseBody);
   }
