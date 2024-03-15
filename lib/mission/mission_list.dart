@@ -408,7 +408,7 @@ class _MissionListPageState extends State<MissionListPage> {
                                           child: Text(
                                             mission.missionText,
                                             style:
-                                                const TextStyle(fontSize: 18.0),
+                                                const TextStyle(fontSize: 15.0),
                                           ),
                                         ),
                                         const SizedBox(height: 4.0),
@@ -520,7 +520,7 @@ class _MissionListPageState extends State<MissionListPage> {
                                 },
                                 child: Text(
                                   '${missionTomorrow.missionText}', //missionToday.title,
-                                  style: const TextStyle(fontSize: 16.0),
+                                  style: const TextStyle(fontSize: 15.0),
                                 ),
                               ),
                             ],
@@ -619,7 +619,7 @@ class _MissionListPageState extends State<MissionListPage> {
                                 },
                                 child: Text(
                                   '${missionToday.missionText}', //missionToday.title,
-                                  style: const TextStyle(fontSize: 16.0),
+                                  style: const TextStyle(fontSize: 15.0),
                                 ),
                               ),
                             ],
@@ -719,7 +719,7 @@ class _MissionListPageState extends State<MissionListPage> {
                                 },
                                 child: Text(
                                   '${missionYesterday.missionText}', //missionToday.title,
-                                  style: const TextStyle(fontSize: 16.0),
+                                  style: const TextStyle(fontSize: 15.0),
                                 ),
                               ),
                             ],

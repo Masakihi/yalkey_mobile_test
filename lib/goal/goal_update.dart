@@ -47,6 +47,7 @@ class _GoalUpdateState extends State<GoalUpdatePage> {
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
+      locale: const Locale("ja"),
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(1999),

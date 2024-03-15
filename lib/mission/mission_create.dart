@@ -89,6 +89,7 @@ class _MissionCreateState extends State<MissionCreatePage> {
 
   Future<void> _selectStartDate(BuildContext context) async {
     final DateTime? pickedStartDate = await showDatePicker(
+      locale: const Locale("ja"),
       context: context,
       initialDate: _selectedStartDate,
       firstDate: DateTime.now(),
@@ -113,6 +114,7 @@ class _MissionCreateState extends State<MissionCreatePage> {
 
   Future<void> _selectEndDate(BuildContext context) async {
     final DateTime? pickedEndDate = await showDatePicker(
+      locale: const Locale("ja"),
       context: context,
       initialDate: _selectedEndDate,
       firstDate: DateTime.now(),
@@ -719,6 +721,7 @@ class _RepeatSettingState extends State<RepeatSetting> {
                 icon: Icon(Icons.calendar_today),
                 onPressed: () async {
                   final DateTime? pickedDate = await showDatePicker(
+                    locale: const Locale("ja"),
                     context: context,
                     initialDate: _endDate ?? DateTime.now(),
                     firstDate: DateTime.now(),
