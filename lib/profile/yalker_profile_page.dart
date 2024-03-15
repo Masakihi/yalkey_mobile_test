@@ -53,7 +53,7 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
       final Map<String, dynamic> response =
           await httpGet('yalker-profile/${widget.userNumber}', jwt: true);
       setState(() {
-        print(response);
+        //print(response);
         _profileData = response;
         if (_profileData != null) {
           if (_profileData!['relation_type'] != null) {
@@ -85,7 +85,7 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
       await httpGet('login-user-profile/', jwt: true);
       setState(() {
         _loginUserProfileData = response;
-        print(_loginUserProfileData);
+        //print(_loginUserProfileData);
       });
 
       // データをキャッシュ
@@ -171,7 +171,7 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
         body: SingleChildScrollView(
             child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.all(15.0),
             child: _profileData != null
                 ? Column(
                     mainAxisAlignment: MainAxisAlignment.start,

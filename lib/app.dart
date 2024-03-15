@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:yalkey_0206_test/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yalkey_0206_test/post/post_page.dart';
+import 'package:yalkey_0206_test/profile/yalker_profile_page.dart';
 import 'bottom_nav_bar.dart';
 import 'setting/setting_list.dart';
 import 'mission/mission_list.dart';
@@ -33,7 +34,7 @@ class _AppPageState extends State<AppPage> {
   }
 
   void _navigateToYalkerDetailPage() {
-    print("hoge");
+    //print("hoge");
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -167,7 +168,14 @@ class _AppPageState extends State<AppPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       GestureDetector(
-                        onTap: () => _navigateToYalkerDetailPage(),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => YalkerProfilePage(userNumber: loginUserNumber!),
+                            ),
+                          );
+                        },
                         child: ClipOval(
                           child: Image.network(
                             loginUserIconImage ??

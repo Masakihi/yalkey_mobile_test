@@ -45,9 +45,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
   @override
   void initState() {
     super.initState();
+
     // 受け取ったデータを状態を管理する変数に格納
     _fetchNotificationData();
-    print(_notificationCount);
+    //print(_notificationCount);
     // 60秒ごとにデータを更新するためのTimerをセットアップ
     Timer.periodic(Duration(seconds: 60), (timer) {
       _fetchNotificationData();
