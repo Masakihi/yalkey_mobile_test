@@ -153,9 +153,11 @@ Future<dynamic> httpPut(String path, Map<String, dynamic>? body,
   if (jwt) {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('access_token');
+    print("putput");
     if (token == null) {
       throw Exception('Token does not exist');
     } else {
+      print("putputputput");
       var request = http.MultipartRequest(
         'PUT',
         Uri.parse('https://yalkey.com/api/v1/$path'),
@@ -179,6 +181,7 @@ Future<dynamic> httpPut(String path, Map<String, dynamic>? body,
       var response = await request.send();
       var responseBody = await response.stream.bytesToString();
       logResponse(responseBody);
+
       return responseBody;
     }
   } else {

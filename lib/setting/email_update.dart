@@ -29,6 +29,14 @@ class _EmailUpdatePageState extends State<EmailUpdatePage> {
   Future<void> emailChange(BuildContext context, email) async {
     try {
       final response = await httpPost('email-change/', {'email': email});
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const EmailUpdateDonePage(),
+        ),
+      );
+
     } catch (error) {
       print('Email change error: $error');
     }
@@ -84,12 +92,6 @@ class _EmailUpdatePageState extends State<EmailUpdatePage> {
                             );
                             print(emailController.text);
                             emailChange(context, emailController.text);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const EmailUpdateDonePage(),
-                              ),
-                            );
                           }
                         },
                         child: const Text(

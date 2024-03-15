@@ -37,6 +37,15 @@ class _PasswordUpdatePageState extends State<PasswordUpdatePage> {
         'new_password1': newPassword,
         'new_password2': newPassword2nd
       });
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (
+              context) => const PasswordUpdateDonePage(),
+        ),
+      );
+
     } catch (error) {
       print('Error password update: $error');
     }
@@ -193,13 +202,6 @@ class _PasswordUpdatePageState extends State<PasswordUpdatePage> {
                                   oldPasswordController.text,
                                   newPasswordController.text,
                                   newPasswordController2nd.text);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (
-                                      context) => const PasswordUpdateDonePage(),
-                                ),
-                              );
                             }
                           }
                         },
