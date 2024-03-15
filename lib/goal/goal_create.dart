@@ -39,6 +39,7 @@ class _GoalCreateState extends State<GoalCreatePage> {
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
+      locale: const Locale("ja"),
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime.now(),

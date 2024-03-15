@@ -340,6 +340,7 @@ class _PostPageState extends State<PostPage> {
 
   Future<void> _showDatePicker() async {
     final selectedDate = await showDatePicker(
+      locale: const Locale("ja"),
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2000),
@@ -381,7 +382,7 @@ class _PostPageState extends State<PostPage> {
               const SizedBox(height: 16.0),
               TextButton(
                 onPressed: _getImages,
-                child: const Text('画像を選択'),
+                child: const Text('画像を選択（10枚まで）'),
               ),
               if (_selectedImagePaths.isNotEmpty)
                 SizedBox(

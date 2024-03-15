@@ -156,7 +156,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         child: const Text(
-                          'Login',
+                          'ログイン',
                           style: TextStyle(
                             color: Colors.white,
                           ),

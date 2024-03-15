@@ -35,8 +35,10 @@ dev_dependencies:
   flutter_lints: ^2.0.0
 flutter:
   uses-material-design: true
-flutter_icons:       
+flutter_icons:
   android: true
   ios: true
-  image_path: "assets/images/yelkey_icon_trans.png"
+  image_path: "assets/images/yalkey_icon_ios.png"
   adaptive_icon_background: "#ae0103"
+  adaptive_icon_foreground: "assets/images/yalkey_icon_android.png"
+  remove_alpha_ios: true
