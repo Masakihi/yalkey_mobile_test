@@ -408,7 +408,7 @@ class _MissionListPageState extends State<MissionListPage> {
                                           child: Text(
                                             mission.missionText,
                                             style:
-                                                const TextStyle(fontSize: 15.0),
+                                                const TextStyle(fontSize: 18.0),
                                           ),
                                         ),
                                         const SizedBox(height: 4.0),

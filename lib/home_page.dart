@@ -277,7 +277,10 @@ class _HomePageState extends State<HomePage> {
                 MaterialPageRoute(
                   builder: (context) => const PostPage(),
                 ),
-              );
+              ).then((value) {
+                _clearCache();
+                _clearAllPostCache();
+              });
             },
             icon: new Icon(Icons.add),
             label: Text("投稿"),

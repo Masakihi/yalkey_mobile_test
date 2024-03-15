@@ -8,6 +8,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   http: ^0.13.0
   shared_preferences: ^2.2.2
   cupertino_icons: ^1.0.2
@@ -22,12 +24,14 @@ dependencies:
   connectivity_plus: ^5.0.2
   badges: ^3.1.2
   fl_chart: ^0.66.2
-  table_calendar: ^3.1.0
+  table_calendar: ^3.0.9
   flutter_downloader: ^1.11.6
   flutter_file_dialog: ^3.0.2
   dio: ^5.4.1
   flutter_launcher_icons: ^0.13.1
   image_cropper: ^1.5.1
+
+
 
 dev_dependencies:
   flutter_test:

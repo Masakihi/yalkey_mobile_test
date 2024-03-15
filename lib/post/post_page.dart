@@ -93,7 +93,7 @@ class _PostPageState extends State<PostPage> {
       return; // 早期リターン
     }
     setState(() => _posting = true);
-    Navigator.of(context).pushReplacement(MaterialPageRoute(
+    Navigator.of(context).pop(MaterialPageRoute(
       builder: (context) => const HomePage(),
     ));
 
@@ -108,7 +108,7 @@ class _PostPageState extends State<PostPage> {
       if (!_hasData) {
         String text = _textEditingController.text;
         var data = {
-          'text': "text",
+          'text': text,
         };
         logResponse(data);
         final response = await httpPost('post-form/', data,
@@ -136,6 +136,8 @@ class _PostPageState extends State<PostPage> {
 
         // ToDo達成フラグ
         bool todoCompleted = _todoCompleted;
+
+
 
         // APIに投稿するデータを作成
         var data = {
@@ -358,7 +360,7 @@ class _PostPageState extends State<PostPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Post'),
+        title: const Text('投稿'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -369,13 +371,16 @@ class _PostPageState extends State<PostPage> {
               TextFormField(
                 controller: _textEditingController,
                 validator: (value) {
+                  if (value?.isEmpty ?? true) {
+                    return '必須です';
+                  }
                   if (5000 < value!.length) {
                     return '本文は5000文字以下で入力してください';
                   }
                   return null;
                 },
                 decoration: const InputDecoration(
-                  labelText: '本文（省略可、5000文字まで）',
+                  labelText: '本文（必須、5000文字まで）',
                 ),
                 maxLines: null,
               ),
