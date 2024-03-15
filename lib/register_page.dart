@@ -391,7 +391,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                     // print(_iconImage);
 
                                     var data = {
-                                      //'email': emailController.text,
+                                      'email': emailController.text,
                                       'password': passwordController.text,
                                       // 'password': '',
                                       'name': userNameController.text,

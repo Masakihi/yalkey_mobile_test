@@ -38,12 +38,18 @@ class _ReplyFormState extends State<ReplyForm> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextField(
+          TextFormField(
             controller: _textController,
-            maxLines: 3,
-            decoration: InputDecoration(
-              hintText: '返信内容を入力してください',
+            validator: (value) {
+              if (5000 < value!.length) {
+                return '本文は5000文字以下で入力してください';
+              }
+              return null;
+            },
+            decoration: const InputDecoration(
+              labelText: '本文（省略可、5000文字まで）',
             ),
+            maxLines: null,
           ),
           SizedBox(height: 16.0),
           TextButton(

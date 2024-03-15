@@ -135,7 +135,7 @@ class _AppPageState extends State<AppPage> {
 
                  */
         ),
-        title: const Text("yalkey mobile"),
+        title: const Text("yalkey"),
         actions: [
           IconButton(
             icon: Icon(Icons.search),
@@ -188,24 +188,6 @@ class _AppPageState extends State<AppPage> {
                   ),
                 ),
                 const Divider(height: 32.0, thickness: 0.1, color: Colors.grey),
-                ListTile(
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Icon(Icons.person),
-                      SizedBox(width: 15),
-                      Text('マイページ'),
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ProfilePage(),
-                      ),
-                    );
-                  },
-                ),
                 ListTile(
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.start,

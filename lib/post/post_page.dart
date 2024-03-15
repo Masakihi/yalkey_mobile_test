@@ -84,10 +84,10 @@ class _PostPageState extends State<PostPage> {
 
   Future<void> _postFormData() async {
     setState(() => _posting = true);
-    // ホーム画面に戻る
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => HomePage(),
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+      builder: (context) => const HomePage(),
     ));
+
     // 成功メッセージを表示
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -340,15 +340,23 @@ class _PostPageState extends State<PostPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              TextFormField(
+                controller: _textEditingController,
+                validator: (value) {
+                  if (5000 < value!.length) {
+                    return '本文は5000文字以下で入力してください';
+                  }
+                  return null;
+                },
+                decoration: const InputDecoration(
+                  labelText: '本文（省略可、5000文字まで）',
+                ),
+                maxLines: null,
+              ),
+              const SizedBox(height: 16.0),
               TextButton(
                 onPressed: _getImages,
                 child: const Text('画像を選択'),
-              ),
-              const SizedBox(height: 16.0),
-              TextFormField(
-                controller: _textEditingController,
-                decoration: const InputDecoration(labelText: '本文（省略可）'),
-                maxLines: null,
               ),
               if (_selectedImagePaths.isNotEmpty)
                 SizedBox(
@@ -491,7 +499,17 @@ class _PostPageState extends State<PostPage> {
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: _postFormData,
-                child: const Text('投稿'),
+                child: const Text(
+                    '投稿',
+                  style: const TextStyle(fontSize: 18.0, color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                  const Color(0xFFAE0103),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
               ),
             ],
           ),

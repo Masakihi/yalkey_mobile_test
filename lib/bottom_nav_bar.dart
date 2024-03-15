@@ -75,7 +75,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                 children: [
                   Icon(Icons.notifications),
                   // 通知バッジを表示する
-                  if (_notificationCount != null)
+                  if (_notificationCount != null && _notificationCount!=0)
                     Positioned(
                       top: -5,
                       right: -5,

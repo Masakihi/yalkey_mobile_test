@@ -31,6 +31,7 @@ class YalkerProfilePage extends StatefulWidget {
 
 class _YalkerProfilePageState extends State<YalkerProfilePage> {
   Map<String, dynamic>? _profileData;
+  Map<String, dynamic>? _loginUserProfileData;
   late Map<String, List<Report>> _reportListMap = {
     'num_report_list': [],
     'bool_report_list': []
@@ -43,6 +44,7 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
   void initState() {
     super.initState();
     _fetchProfileData();
+    _fetchLoginUserProfileData();
     _fetchReportList();
   }
 
@@ -61,6 +63,33 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
           relationType = 1;
         }
       });
+    } catch (error) {
+      print('Error fetching profile data: $error');
+    }
+  }
+
+  Future<void> _fetchLoginUserProfileData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // キャッシュからデータを取得
+    String? cachedProfileData = prefs.getString('profileData');
+    if (cachedProfileData != null) {
+      setState(() {
+        _loginUserProfileData = json.decode(cachedProfileData);
+      });
+      return;
+    }
+
+    try {
+      final Map<String, dynamic> response =
+      await httpGet('login-user-profile/', jwt: true);
+      setState(() {
+        _loginUserProfileData = response;
+        print(_loginUserProfileData);
+      });
+
+      // データをキャッシュ
+      await prefs.setString('profileData', json.encode(response));
     } catch (error) {
       print('Error fetching profile data: $error');
     }
@@ -89,7 +118,7 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ProfileEditPage(profileData: _profileData!),
+        builder: (context) => ProfileEditPage(profileData: _loginUserProfileData!),
       ),
     );
   }
@@ -234,7 +263,7 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
                                         behavior: HitTestBehavior.translucent,
                                         onTap: () {
                                           _showExplanation(context,
-                                              badge2Explanation['early_bird']!);
+                                              badge2Explanation['早起き']!);
                                         },
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(
