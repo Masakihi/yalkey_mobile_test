@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../api.dart';
 import '../app.dart';
 import '../login_page.dart';
+import 'deactivate_account_done.dart';
 
 class DeactivateAccountPage extends StatefulWidget {
   const DeactivateAccountPage({super.key});
@@ -55,7 +56,12 @@ class _DeactivateAccountPageState extends State<DeactivateAccountPage> {
                             const SnackBar(content: Text('退会処理中...')),
                           );
                           deactivateUser(context);
-                          logout(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const DeactivateAccountDonePage(),
+                            ),
+                          );
                         },
                         child: const Text(
                           '本当に退会する',

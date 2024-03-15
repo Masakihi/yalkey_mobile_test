@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'login_page.dart';
 
 class RegisterNextPage extends StatefulWidget {
@@ -11,6 +12,13 @@ class RegisterNextPage extends StatefulWidget {
 }
 
 class _RegisterNextPageState extends State<RegisterNextPage> {
+
+  Future<void> logout(context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (context) => LoginPage()), (_) => false);
+  }
 
 
   @override
@@ -23,12 +31,7 @@ class _RegisterNextPageState extends State<RegisterNextPage> {
           SizedBox(height: 40.0),
           ElevatedButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LoginPage(),
-                ),
-              );
+              logout(context);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFAE0103),

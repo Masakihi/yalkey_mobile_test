@@ -147,19 +147,6 @@ class _FollowedListPageState extends State<FollowedListPage> {
                                       ),
                                     ),
                                   ),
-                                  if (followed.followerIconimage == "")
-                                    const CircleAvatar(
-                                      backgroundColor: Colors.white,
-                                      backgroundImage: NetworkImage(
-                                        'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
-                                      ),
-                                    ),
-                                  if (followed.followerIconimage != "")
-                                    CircleAvatar(
-                                      backgroundImage: NetworkImage(
-                                        'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${followed.followerIconimage}',
-                                      ),
-                                    ),
                                   SizedBox(width: 16.0),
                                   Expanded(
                                     child: Column(

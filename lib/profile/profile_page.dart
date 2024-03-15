@@ -177,7 +177,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               Row(
                                 children: [
                                   if (_profileData!['login_user_profile']
-                                  ['lock'] ??
+                                  ['private'] ??
                                       false)
                                     const Icon(
                                       Icons.lock,
