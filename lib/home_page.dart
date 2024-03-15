@@ -20,6 +20,7 @@ class _HomePageState extends State<HomePage> {
   late List<Post> _postAllList = []; // user_repost_list を格納するリスト
   late ScrollController _scrollAllController; // ListView のスクロールを制御するコントローラー
   bool _loadingAll = false; // データをロード中かどうかを示すフラグ
+  bool firstLoadAll = true;
   int _pageAll = 1; // 現在のページ番号
 
   @override
@@ -29,8 +30,8 @@ class _HomePageState extends State<HomePage> {
     _clearAllPostCache();
     _scrollController = ScrollController()..addListener(_scrollListener);
     _scrollAllController = ScrollController()..addListener(_scrollAllListener);
-    _fetchPostList(); // 最初のデータを読み込む
-    _fetchAllPostList();
+    //_fetchPostList(); // 最初のデータを読み込む
+    //_fetchAllPostList();
   }
 
   // ListView のスクロールイベントを監視するリスナー
@@ -53,12 +54,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _fetchPostList() async {
-    if (_loading) {
+    /*
+    if (firstLoad) {
       return;
     }
+
+     */
     setState(() {
       _loading = true; // データのロード中フラグをtrueに設定
-      firstLoad = false;
     });
     PostListResponse postListResponse =
         await PostListResponse.fetchPostListResponse(_page);
@@ -71,9 +74,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _fetchAllPostList() async {
-    if (_loadingAll) {
+    /*
+    if (firstLoad) {
       return;
     }
+     */
     setState(() {
       _loadingAll = true; // データのロード中フラグをtrueに設定
     });
@@ -93,7 +98,14 @@ class _HomePageState extends State<HomePage> {
         _loading = true; // データのロード中フラグをtrueに設定
         _page++; // ページ番号をインクリメントして新しいデータを取得
       });
-      await _fetchPostList();
+      if(firstLoad) {
+        setState(() {
+          firstLoad = false;
+        });
+      };
+      if(!firstLoad) {
+        await _fetchPostList();
+      };
     }
   }
 
@@ -103,7 +115,14 @@ class _HomePageState extends State<HomePage> {
         _loadingAll = true; // データのロード中フラグをtrueに設定
         _pageAll++; // ページ番号をインクリメントして新しいデータを取得
       });
-      await _fetchAllPostList();
+      if(firstLoadAll) {
+        setState(() {
+          firstLoadAll = false;
+        });
+      };
+      if(!firstLoadAll) {
+        await _fetchAllPostList();
+      };
     }
   }
 
@@ -112,6 +131,7 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         _postList.clear();
         _page = 1; // ページ番号をリセット
+        firstLoad = true;
       });
       //print("list refresh");
       await _fetchPostList(); // データを再読み込み
@@ -125,6 +145,7 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         _postAllList.clear();
         _pageAll = 1; // ページ番号をリセット
+        firstLoad = true;
       });
       //print("list refresh");
       await _fetchAllPostList(); // データを再読み込み

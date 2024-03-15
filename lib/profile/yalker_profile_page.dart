@@ -53,7 +53,7 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
       final Map<String, dynamic> response =
           await httpGet('yalker-profile/${widget.userNumber}', jwt: true);
       setState(() {
-        print(response);
+        //print(response);
         _profileData = response;
         if (_profileData != null) {
           if (_profileData!['relation_type'] != null) {
@@ -85,7 +85,7 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
       await httpGet('login-user-profile/', jwt: true);
       setState(() {
         _loginUserProfileData = response;
-        print(_loginUserProfileData);
+        //print(_loginUserProfileData);
       });
 
       // データをキャッシュ
@@ -171,7 +171,7 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
         body: SingleChildScrollView(
             child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.all(15.0),
             child: _profileData != null
                 ? Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -433,83 +433,88 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
                           withPreview: false,
                           maxWords: 300),
                       SizedBox(height: 10),
-                      if (relationType == 0)
-                        ElevatedButton(
-                          onPressed: _editProfile, // 編集ボタンが押された時の処理
-                          child: Text('編集'),
-                        ),
-                      if (relationType == 1)
-                        ElevatedButton(
-                          onPressed: () {
-                            try {
-                              httpPost(
-                                  'follow/${_profileData!['yalker_profile']['user_number']}/',
-                                  null,
-                                  jwt: true);
-                              _onPressedButton();
-                            } catch (error) {
-                              print('Error follow: $error');
-                            }
-                          },
-                          child: Text('フォローする'),
-                        ),
-                      if (relationType == 2)
-                        ElevatedButton(
-                          onPressed: () {
-                            try {
-                              httpPost(
-                                  'unfollow/${_profileData!['yalker_profile']['user_number']}/',
-                                  null,
-                                  jwt: true);
-                              _onPressedButton();
-                            } catch (error) {
-                              print('Error unfollow: $error');
-                            }
-                          },
-                          child: Text('フォロー解除'),
-                        ),
-                      if (relationType == 3)
-                        ElevatedButton(
-                          onPressed: () {
-                            try {
-                              httpPost(
-                                  'followrequest/${_profileData!['yalker_profile']['user_number']}/',
-                                  null,
-                                  jwt: true);
-                              _onPressedButton();
-                            } catch (error) {
-                              print('Error follow request: $error');
-                            }
-                          },
-                          child: Text('リクエスト'),
-                        ),
-                      if (relationType == 4)
-                        ElevatedButton(
-                          onPressed: () {
-                            try {
-                              httpPost(
-                                  'unfollowrequest/${_profileData!['yalker_profile']['user_number']}/',
-                                  null,
-                                  jwt: true);
-                              _onPressedButton();
-                            } catch (error) {
-                              print('Error unfollow request: $error');
-                            }
-                          },
-                          child: Text('リクエスト解除'),
-                        ),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => YalkerRepostPage(
-                                    userNumber: widget.userNumber),
-                              ));
-                        },
-                        child: Text('投稿一覧を見る'),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          if (relationType == 0)
+                            ElevatedButton(
+                              onPressed: _editProfile, // 編集ボタンが押された時の処理
+                              child: Text('編集'),
+                            ),
+                          if (relationType == 1)
+                            ElevatedButton(
+                              onPressed: () {
+                                try {
+                                  httpPost(
+                                      'follow/${_profileData!['yalker_profile']['user_number']}/',
+                                      null,
+                                      jwt: true);
+                                  _onPressedButton();
+                                } catch (error) {
+                                  print('Error follow: $error');
+                                }
+                              },
+                              child: Text('フォローする'),
+                            ),
+                          if (relationType == 2)
+                            ElevatedButton(
+                              onPressed: () {
+                                try {
+                                  httpPost(
+                                      'unfollow/${_profileData!['yalker_profile']['user_number']}/',
+                                      null,
+                                      jwt: true);
+                                  _onPressedButton();
+                                } catch (error) {
+                                  print('Error unfollow: $error');
+                                }
+                              },
+                              child: Text('フォロー解除'),
+                            ),
+                          if (relationType == 3)
+                            ElevatedButton(
+                              onPressed: () {
+                                try {
+                                  httpPost(
+                                      'followrequest/${_profileData!['yalker_profile']['user_number']}/',
+                                      null,
+                                      jwt: true);
+                                  _onPressedButton();
+                                } catch (error) {
+                                  print('Error follow request: $error');
+                                }
+                              },
+                              child: Text('リクエスト'),
+                            ),
+                          if (relationType == 4)
+                            ElevatedButton(
+                              onPressed: () {
+                                try {
+                                  httpPost(
+                                      'unfollowrequest/${_profileData!['yalker_profile']['user_number']}/',
+                                      null,
+                                      jwt: true);
+                                  _onPressedButton();
+                                } catch (error) {
+                                  print('Error unfollow request: $error');
+                                }
+                              },
+                              child: Text('リクエスト解除'),
+                            ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => YalkerRepostPage(
+                                        userNumber: widget.userNumber),
+                                  ));
+                            },
+                            child: Text('投稿一覧'),
+                          ),
+                        ]
                       ),
-                      SizedBox(height: 10),
+                      SizedBox(height: 20),
                       ListView.builder(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),

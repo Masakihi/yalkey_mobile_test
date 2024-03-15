@@ -68,7 +68,7 @@ Future httpDelete(String path, {bool jwt = false}) async {
       );
       logResponse(response);
       if (response.bodyBytes.isNotEmpty) {
-        print(response.bodyBytes);
+        //print(response.bodyBytes);
         logResponse(json.decode(utf8.decode(response.bodyBytes)));
         return json.decode(utf8.decode(response.bodyBytes));
       } else {
@@ -273,7 +273,7 @@ Future<dynamic> httpPostWithIcon(
     var response = await request.send();
     var responseBody = await response.stream.bytesToString();
 
-    print(responseBody);
+    //print(responseBody);
 
     return json.decode(responseBody);
   }

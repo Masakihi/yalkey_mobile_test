@@ -158,7 +158,7 @@ class _MissionUpdateState extends State<MissionUpdatePage> {
     final DateTime? pickedStartDate = await showDatePicker(
       context: context,
       initialDate: _selectedStartDate,
-      firstDate: DateTime.now(),
+      firstDate: DateTime(1999),
       lastDate: DateTime(2101),
     );
     if (pickedStartDate != null && pickedStartDate != _selectedStartDate)
@@ -182,7 +182,7 @@ class _MissionUpdateState extends State<MissionUpdatePage> {
     final DateTime? pickedEndDate = await showDatePicker(
       context: context,
       initialDate: _selectedEndDate,
-      firstDate: DateTime.now(),
+      firstDate: DateTime(1999),
       lastDate: DateTime(2101),
     );
     if (pickedEndDate != null && pickedEndDate != _selectedEndDate)
@@ -839,8 +839,8 @@ class _RepeatSettingState extends State<RepeatSetting> {
                   final DateTime? pickedDate = await showDatePicker(
                     context: context,
                     initialDate: _endDate ?? DateTime.now(),
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime.now().add(Duration(days: 365)),
+                    firstDate: DateTime(1999),
+                    lastDate: DateTime(2101),
                   );
                   if (pickedDate != null && pickedDate != _endDate) {
                     setState(() {

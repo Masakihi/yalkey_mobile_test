@@ -49,7 +49,7 @@ class _GoalUpdateState extends State<GoalUpdatePage> {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
-      firstDate: DateTime.now(),
+      firstDate: DateTime(1999),
       lastDate: DateTime(2101),
     );
     if (pickedDate != null && pickedDate != _selectedDate)

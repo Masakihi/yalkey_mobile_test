@@ -214,7 +214,8 @@ class _AchievementCalendarState extends State<AchievementCalendar> {
             ],
           ),
           const SizedBox(height: 16),
-          _buildCalendar()
+          _buildCalendar(),
+          const SizedBox(height: 30),
         ],
       ],
     );

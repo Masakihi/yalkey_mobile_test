@@ -51,6 +51,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
+    if (_profileData!=null) _profileData!.clear();
     _fetchProfileData();
     _fetchReportList();
   }
@@ -60,12 +61,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
     // キャッシュからデータを取得
     String? cachedProfileData = prefs.getString('profileData');
-    if (cachedProfileData != null) {
-      setState(() {
-        _profileData = json.decode(cachedProfileData);
-      });
-      return;
-    }
 
     try {
       final Map<String, dynamic> response =
@@ -86,8 +81,10 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       _loadingReportList = true;
     });
+    final Map<String, dynamic> response = await httpGet('login-user-profile/', jwt: true);
+    _profileData = response;
     ReportListResponse reportListResponse =
-        await ReportListResponse.fetchReportListResponse(59);
+        await ReportListResponse.fetchReportListResponse(_profileData!['login_user_profile']['user_number']);
     if (mounted) {
       setState(() {
         reportListResponse.reportList.forEach((report) => {
@@ -143,7 +140,7 @@ class _ProfilePageState extends State<ProfilePage> {
         body: SingleChildScrollView(
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.all(15.0),
                 child: _profileData != null
                     ? Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -405,23 +402,28 @@ class _ProfilePageState extends State<ProfilePage> {
                         withPreview: false,
                         maxWords: 300),
                     SizedBox(height: 10),
-                    ElevatedButton(
-                        onPressed: _editProfile, // 編集ボタンが押された時の処理
-                        child: Text('編集'),
-                      ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => YalkerRepostPage(
-                                  userNumber: _profileData!['login_user_profile']
-                                  ['user_number']),
-                            ));
-                      },
-                      child: Text('投稿一覧を見る'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                            onPressed: _editProfile, // 編集ボタンが押された時の処理
+                            child: Text('編集'),
+                          ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => YalkerRepostPage(
+                                      userNumber: _profileData!['login_user_profile']
+                                      ['user_number']),
+                                ));
+                          },
+                          child: Text('投稿一覧'),
+                        ),
+                      ]
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 20),
                     ListView.builder(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
@@ -430,8 +432,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         final report =
                         _reportListMap['num_report_list']?[index];
                         return MonthlyBarChart(
-                          userId: _profileData!['login_user_profile']
-                          ['user_number'],
+                          userId: _profileData!['login_user_profile']['user_number'],
                           reportTitle: report!.reportName,
                           reportUnit: report.reportUnit,
                         );
@@ -445,8 +446,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         final report =
                         _reportListMap['bool_report_list']?[index];
                         return AchievementCalendar(
-                          userId: _profileData!['login_user_profile']
-                          ['user_number'],
+                          userId: _profileData!['login_user_profile']['user_number'],
                           reportTitle: report!.reportName,
                         );
                       },

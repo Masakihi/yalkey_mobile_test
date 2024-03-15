@@ -722,7 +722,7 @@ class _RepeatSettingState extends State<RepeatSetting> {
                     context: context,
                     initialDate: _endDate ?? DateTime.now(),
                     firstDate: DateTime.now(),
-                    lastDate: DateTime.now().add(Duration(days: 365)),
+                    lastDate: DateTime(2101),
                   );
                   if (pickedDate != null && pickedDate != _endDate) {
                     setState(() {

@@ -247,7 +247,7 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
           ),
           if (date2DataMap != null) // date2DataMapがnullでない場合、グラフを表示する
             Padding(
-              padding: const EdgeInsets.only(top: 10),
+              padding: const EdgeInsets.all(10),
               child: SizedBox(
                 height: 200,
                 child: BarChart(

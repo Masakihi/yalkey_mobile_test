@@ -267,7 +267,7 @@ class _MissionListPageState extends State<MissionListPage> {
         _missionList.clear();
         _page = 1; // ページ番号をリセット
       });
-      print("list refresh");
+      //print("list refresh");
       await _fetchMissionList(); // データを再読み込み
     } catch (error) {
       // print('Error clearing cache: $error');
@@ -281,8 +281,9 @@ class _MissionListPageState extends State<MissionListPage> {
       setState(() {
         _missionTomorrowList.clear();
         _pageMissionTomorrow = 1; // ページ番号をリセット
+        checkboxTomorrow = {};
       });
-      print("list refresh");
+      //print("tomo list refresh");
       await _fetchMissionTomorrowList(); // データを再読み込み
     } catch (error) {
       // print('Error clearing cache: $error');
@@ -296,8 +297,9 @@ class _MissionListPageState extends State<MissionListPage> {
       setState(() {
         _missionTodayList.clear();
         _pageMissionToday = 1; // ページ番号をリセット
+        checkboxToday = {};
       });
-      print("list refresh");
+      //print("today list refresh");
       await _fetchMissionTodayList(); // データを再読み込み
     } catch (error) {
       // print('Error clearing cache: $error');
@@ -311,8 +313,9 @@ class _MissionListPageState extends State<MissionListPage> {
       setState(() {
         _missionYesterdayList.clear();
         _pageMissionYesterday = 1; // ページ番号をリセット
+        checkboxYesterday = {};
       });
-      print("list refresh");
+      //print("yes list refresh");
       await _fetchMissionYesterdayList(); // データを再読み込み
     } catch (error) {
       // print('Error clearing cache: $error');
