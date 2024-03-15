@@ -45,7 +45,7 @@ class _PostPageState extends State<PostPage> {
   @override
   void initState() {
     super.initState();
-    _textEditingController = TextEditingController();
+    _textEditingController = TextEditingController(text: "");
     _hoursController = TextEditingController();
     _minutesController = TextEditingController();
     _integerController = TextEditingController();
@@ -83,6 +83,15 @@ class _PostPageState extends State<PostPage> {
   }
 
   Future<void> _postFormData() async {
+    if (_selectedImagePaths.length > 10) {
+      // エラーメッセージを表示して処理を終了
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('画像は最大10件までです。'),
+        ),
+      );
+      return; // 早期リターン
+    }
     setState(() => _posting = true);
     Navigator.of(context).pushReplacement(MaterialPageRoute(
       builder: (context) => const HomePage(),
@@ -99,8 +108,9 @@ class _PostPageState extends State<PostPage> {
       if (!_hasData) {
         String text = _textEditingController.text;
         var data = {
-          'text': text,
+          'text': "text",
         };
+        logResponse(data);
         final response = await httpPost('post-form/', data,
             jwt: true, images: _selectedImagePaths);
       } else {
@@ -141,7 +151,6 @@ class _PostPageState extends State<PostPage> {
           'report_date': DateFormat('yyyy-MM-dd').format(_selectedDate),
         };
 
-
         print(data);
         logResponse(data);
 
@@ -176,9 +185,25 @@ class _PostPageState extends State<PostPage> {
     final pickedFiles = await imagePicker.pickMultiImage();
 
     if (pickedFiles != null) {
-      setState(() {
-        _selectedImagePaths = pickedFiles.map((file) => file.path).toList();
-      });
+      // 新たに選択された画像と既存の画像を合わせたリストを作成
+      List<String> newImagePaths =
+          pickedFiles.map((file) => file.path).toList();
+      List<String> combinedImagePaths = List.from(_selectedImagePaths)
+        ..addAll(newImagePaths);
+
+      if (combinedImagePaths.length <= 10) {
+        // 合計が10件以下の場合は、新たに選択された画像を追加
+        setState(() {
+          _selectedImagePaths = combinedImagePaths;
+        });
+      } else {
+        // 合計が10件を超える場合はエラーメッセージを表示
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('画像は最大10件までです。'),
+          ),
+        );
+      }
     }
   }
 
@@ -365,13 +390,29 @@ class _PostPageState extends State<PostPage> {
                     scrollDirection: Axis.horizontal,
                     itemCount: _selectedImagePaths.length,
                     itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Image.file(
-                          File(_selectedImagePaths[index]),
-                          height: 200,
-                          fit: BoxFit.cover,
-                        ),
+                      return Stack(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Image.file(
+                              File(_selectedImagePaths[index]),
+                              height: 200,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Positioned(
+                            right: 0,
+                            child: IconButton(
+                              icon: Icon(Icons.close, color: Colors.red),
+                              onPressed: () {
+                                // この画像をリストから削除する
+                                setState(() {
+                                  _selectedImagePaths.removeAt(index);
+                                });
+                              },
+                            ),
+                          ),
+                        ],
                       );
                     },
                   ),
@@ -500,12 +541,11 @@ class _PostPageState extends State<PostPage> {
               ElevatedButton(
                 onPressed: _postFormData,
                 child: const Text(
-                    '投稿',
+                  '投稿',
                   style: const TextStyle(fontSize: 18.0, color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                  const Color(0xFFAE0103),
+                  backgroundColor: const Color(0xFFAE0103),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
