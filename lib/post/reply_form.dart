@@ -41,6 +41,9 @@ class _ReplyFormState extends State<ReplyForm> {
           TextFormField(
             controller: _textController,
             validator: (value) {
+              if (value?.isEmpty ?? true) {
+                return '必須です';
+              }
               if (5000 < value!.length) {
                 return '本文は5000文字以下で入力してください';
               }

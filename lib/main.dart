@@ -8,6 +8,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:io';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 // [StatefulWidget]を使う場合
 void main() async {
@@ -76,6 +77,14 @@ class MyApp extends StatelessWidget {
       home: token == null
           ? LoginPage()
           : AppPage(), // tokenがあればHomePage、なければLoginPageを表示
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale('ja',''),
+        Locale('en',''),
+      ],
     );
   }
 }
