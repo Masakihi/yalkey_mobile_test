@@ -342,7 +342,7 @@ class _MissionUpdateState extends State<MissionUpdatePage> {
       print(data);
 
       // final response = await httpPost('mission-form/', data, jwt: true);
-      final response = await httpPost('mission/update/${missionNumber}/', data, jwt: true);
+      final response = await httpPut('mission/update/${missionNumber}/', data, jwt: true);
 
       // 成功メッセージを表示
       ScaffoldMessenger.of(context).showSnackBar(

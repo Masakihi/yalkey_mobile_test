@@ -26,6 +26,12 @@ class _DeactivateAccountPageState extends State<DeactivateAccountPage> {
   Future<void> deactivateUser(context) async {
     try {
       final response = await httpPost('deactivate/', {'email': 'email'});
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const DeactivateAccountDonePage(),
+        ),
+      );
     } catch (error) {
       print('Error deactivate: $error');
     }
@@ -56,12 +62,7 @@ class _DeactivateAccountPageState extends State<DeactivateAccountPage> {
                             const SnackBar(content: Text('退会処理中...')),
                           );
                           deactivateUser(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const DeactivateAccountDonePage(),
-                            ),
-                          );
+
                         },
                         child: const Text(
                           '本当に退会する',
