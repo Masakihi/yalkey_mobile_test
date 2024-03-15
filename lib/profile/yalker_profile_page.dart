@@ -208,7 +208,7 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
                                 Row(
                                   children: [
                                     if (_profileData!['yalker_profile']
-                                            ['lock'] ??
+                                            ['private'] ??
                                         false)
                                       const Icon(
                                         Icons.lock,

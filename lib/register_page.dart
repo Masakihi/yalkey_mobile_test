@@ -382,12 +382,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(content: Text('登録確認中...')),
                                     );
-                                    print(emailController.text);
-                                    print(passwordController.text);
-                                    print(userIDController.text);
-                                    print(userNameController.text);
-                                    print(userProfileController.text);
-                                    print(_isPrivate);
+                                    //print(emailController.text);
+                                    //print(passwordController.text);
+                                    //print(userIDController.text);
+                                    //print(userNameController.text);
+                                    //print(userProfileController.text);
+                                    //print(_isPrivate);
                                     // print(_iconImage);
 
                                     var data = {

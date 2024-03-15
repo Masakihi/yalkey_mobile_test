@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yalkey_0206_test/setting/password_update_done.dart';
 import '../api.dart';
 import '../app.dart';
 import '../login_page.dart';
@@ -15,6 +16,7 @@ class PasswordUpdatePage extends StatefulWidget {
 class _PasswordUpdatePageState extends State<PasswordUpdatePage> {
   final _formKey = GlobalKey<FormState>();
   bool _isObscure = true;
+  bool passwordsMatch = true;
 
   TextEditingController oldPasswordController = TextEditingController();
   TextEditingController newPasswordController = TextEditingController();
@@ -37,6 +39,18 @@ class _PasswordUpdatePageState extends State<PasswordUpdatePage> {
       });
     } catch (error) {
       print('Error password update: $error');
+    }
+  }
+
+  void checkPasswordsMatch() {
+    if (newPasswordController.text != newPasswordController2nd.text) {
+      setState(() {
+        passwordsMatch = false;
+      });
+    } else {
+      setState(() {
+        passwordsMatch = true;
+      });
     }
   }
 
@@ -95,7 +109,18 @@ class _PasswordUpdatePageState extends State<PasswordUpdatePage> {
                         controller: newPasswordController,
                         validator: (value) {
                           if (value?.isEmpty ?? true) {
-                            return '必須です';
+                            return 'パスワードは必須です';
+                          }
+                          if (value!.length <= 7) {
+                            return 'パスワードは8文字以上の半角英数字で設定してください';
+                          }
+                          if (1000 < value.length) {
+                            return 'パスワードは1000文字以下で設定してください';
+                          }
+                          bool passwordValid =
+                          RegExp(r"^[a-zA-Z0-9]{8,}").hasMatch(value);
+                          if (!passwordValid) {
+                            return 'パスワードは8文字以上の半角英数字で設定してください';
                           }
                           return null;
                         },
@@ -133,6 +158,7 @@ class _PasswordUpdatePageState extends State<PasswordUpdatePage> {
                         decoration: InputDecoration(
                           labelText: "新しいパスワード（確認用、再入力してください）",
                           hintText: "もう一度入力してください",
+                          errorText: passwordsMatch ? null : 'パスワードが一致しません',
                           suffixIcon: IconButton(
                             icon: Icon(_isObscure
                                 ? Icons.visibility_off
@@ -155,17 +181,26 @@ class _PasswordUpdatePageState extends State<PasswordUpdatePage> {
                       child: ElevatedButton(
                         //onPressed: () => login(context),
                         onPressed: () {
-                          //③：formの内容をバリデート(検証)して送信するためのボタンを設置する
-                          if (_formKey.currentState!.validate()) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('パスワード更新中...')),
-                            );
-                            passwordUpdate(
+                          checkPasswordsMatch();
+                          if (passwordsMatch) {
+                            //③：formの内容をバリデート(検証)して送信するためのボタンを設置する
+                            if (_formKey.currentState!.validate()) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('パスワード更新中...')),
+                              );
+                              passwordUpdate(
+                                  context,
+                                  oldPasswordController.text,
+                                  newPasswordController.text,
+                                  newPasswordController2nd.text);
+                              Navigator.push(
                                 context,
-                                oldPasswordController.text,
-                                newPasswordController.text,
-                                newPasswordController2nd.text);
-                            logout(context);
+                                MaterialPageRoute(
+                                  builder: (
+                                      context) => const PasswordUpdateDonePage(),
+                                ),
+                              );
+                            }
                           }
                         },
                         child: const Text(

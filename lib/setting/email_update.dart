@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yalkey_0206_test/setting/email_update_done.dart';
 import '../api.dart';
 import '../app.dart';
 import '../login_page.dart';
@@ -83,7 +84,12 @@ class _EmailUpdatePageState extends State<EmailUpdatePage> {
                             );
                             print(emailController.text);
                             emailChange(context, emailController.text);
-                            logout(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const EmailUpdateDonePage(),
+                              ),
+                            );
                           }
                         },
                         child: const Text(
