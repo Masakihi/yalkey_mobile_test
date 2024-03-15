@@ -8,6 +8,7 @@ import '../api.dart';
 import '../app.dart';
 import '../home_page.dart';
 import 'package:intl/intl.dart';
+import 'image_cropper.dart';
 
 enum ReportType { time, custom_int, custom_double, bool }
 
@@ -83,10 +84,10 @@ class _PostPageState extends State<PostPage> {
 
   Future<void> _postFormData() async {
     setState(() => _posting = true);
-    // ホーム画面に戻る
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => HomePage(),
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+      builder: (context) => const HomePage(),
     ));
+
     // 成功メッセージを表示
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -129,19 +130,15 @@ class _PostPageState extends State<PostPage> {
         // APIに投稿するデータを作成
         var data = {
           'text': text,
-          'reports': [
-            {
-              'type': _selectedReport?.reportType,
-              'unit': _selectedReport?.reportUnit,
-              'report_name': _selectedReport?.reportName,
-              'hour': hours,
-              'minute': minutes,
-              'todo': todoCompleted,
-              'custom_data': integerForm,
-              'custom_float_data': floatForm,
-              'report_date': DateFormat('yyyy-MM-dd').format(_selectedDate),
-            },
-          ]
+          'type': _selectedReport?.reportType,
+          'unit': _selectedReport?.reportUnit,
+          'report_name': _selectedReport?.reportName,
+          'hour': hours,
+          'minute': minutes,
+          'todo': todoCompleted,
+          'custom_data': integerForm,
+          'custom_float_data': floatForm,
+          'report_date': DateFormat('yyyy-MM-dd').format(_selectedDate),
         };
 
 
@@ -150,6 +147,7 @@ class _PostPageState extends State<PostPage> {
 
         final response = await httpPost('progress-form/', data,
             jwt: true, images: _selectedImagePaths);
+        logResponse(response);
       }
 
       // 成功メッセージを表示
@@ -243,6 +241,14 @@ class _PostPageState extends State<PostPage> {
                   child: Text('キャンセル'),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
+                // TextButton(
+                //   child: Text('クロップ'),
+                //   onPressed: (() {
+                //     Navigator.of(context).push(MaterialPageRoute(
+                //       builder: (context) => ImageCropPage(title: 'test'),
+                //     ));
+                //   }),
+                // ),
                 TextButton(
                   child: Text('保存'),
                   onPressed: () {
@@ -334,15 +340,23 @@ class _PostPageState extends State<PostPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              TextFormField(
+                controller: _textEditingController,
+                validator: (value) {
+                  if (5000 < value!.length) {
+                    return '本文は5000文字以下で入力してください';
+                  }
+                  return null;
+                },
+                decoration: const InputDecoration(
+                  labelText: '本文（省略可、5000文字まで）',
+                ),
+                maxLines: null,
+              ),
+              const SizedBox(height: 16.0),
               TextButton(
                 onPressed: _getImages,
                 child: const Text('画像を選択'),
-              ),
-              const SizedBox(height: 16.0),
-              TextFormField(
-                controller: _textEditingController,
-                decoration: const InputDecoration(labelText: '本文（省略可）'),
-                maxLines: null,
               ),
               if (_selectedImagePaths.isNotEmpty)
                 SizedBox(
@@ -485,7 +499,17 @@ class _PostPageState extends State<PostPage> {
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: _postFormData,
-                child: const Text('投稿'),
+                child: const Text(
+                    '投稿',
+                  style: const TextStyle(fontSize: 18.0, color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                  const Color(0xFFAE0103),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
               ),
             ],
           ),

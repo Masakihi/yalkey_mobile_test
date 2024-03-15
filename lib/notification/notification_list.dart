@@ -183,8 +183,10 @@ class _NotificationListPageState extends State<NotificationListPage> {
     }
 
     String newNotificationCheck(bool newNotification) {
-      if (newNotification) return "【New】";
-      else return "";
+      if (newNotification)
+        return "【New】";
+      else
+        return "";
     }
 
     return DefaultTabController(
@@ -286,7 +288,9 @@ class _NotificationListPageState extends State<NotificationListPage> {
                                             CrossAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
-                                            newNotificationCheck(notification.newNotification!) + '${notification.fromName} さん(@${notification.fromUserId})が' +
+                                            newNotificationCheck(notification
+                                                    .newNotification!) +
+                                                '${notification.fromName} さん(@${notification.fromUserId})が' +
                                                 ifNotificationText(notification
                                                     .notificationType) +
                                                 'しました！',
@@ -389,33 +393,37 @@ class _NotificationListPageState extends State<NotificationListPage> {
                                     ),
                                   ),
                                   ElevatedButton(
-                                    onPressed: () {
-                                      permit(context, follow_request.fromUserNumber);
-                                      setState(() {
-                                        // ボタンが押されたらisButtonPressedの値を切り替える
-                                        permitButtonPush[index] = !permitButtonPush[index];
-                                      });
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: permitButtonPush[index]? Colors.white: const Color(0xFFAE0103),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
+                                      onPressed: () {
+                                        permit(context,
+                                            follow_request.fromUserNumber);
+                                        setState(() {
+                                          // ボタンが押されたらisButtonPressedの値を切り替える
+                                          permitButtonPush[index] =
+                                              !permitButtonPush[index];
+                                        });
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: permitButtonPush[index]
+                                            ? Colors.white
+                                            : const Color(0xFFAE0103),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
                                       ),
-                                    ),
-                                    child: permitButtonPush[index]?
-
-                                    const Text('承認済み',
-                                      style: TextStyle(
-                                        color: const Color(0xFFAE0103),
-                                      ),
-                                    )
-                                        :
-                                    const Text('承認する',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    )
-                                  ),
+                                      child: permitButtonPush[index]
+                                          ? const Text(
+                                              '承認済み',
+                                              style: TextStyle(
+                                                color: const Color(0xFFAE0103),
+                                              ),
+                                            )
+                                          : const Text(
+                                              '承認する',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                            )),
                                 ],
                               ),
                             ],

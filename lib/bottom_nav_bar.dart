@@ -8,6 +8,7 @@ import 'profile/profile_page.dart';
 import 'mission/mission_list.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:badges/badges.dart' as badges;
+import 'dart:async';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({Key? key}) : super(key: key);
@@ -24,19 +25,20 @@ class _BottomNavBarState extends State<BottomNavBar> {
     const ProfilePage(),
   ];
 
-  Future<dynamic>? _nofiticationCount;
+  int? _notificationCount;
 
   Future<void> _fetchNotificationData() async {
-    try {
-      final Future<dynamic> response =
-          httpGet('new-notification-count/', jwt: true);
-      print(response);
-      setState(() {
-        _nofiticationCount = response;
-      });
-    } catch (error) {
-      print('Error fetching notification data: $error');
-    }
+    // try {
+    final dynamic response =
+        await httpGet('new-notification-count/', jwt: true);
+    print("通知の読み込み");
+    print(response);
+    setState(() {
+      _notificationCount = response['new_notification_count'];
+    });
+    // } catch (error) {
+    //   print('Error fetching notification data: $error');
+    // }
   }
 
   @override
@@ -44,7 +46,11 @@ class _BottomNavBarState extends State<BottomNavBar> {
     super.initState();
     // 受け取ったデータを状態を管理する変数に格納
     _fetchNotificationData();
-    print(_nofiticationCount);
+    print(_notificationCount);
+    // 60秒ごとにデータを更新するためのTimerをセットアップ
+    Timer.periodic(Duration(seconds: 60), (timer) {
+      _fetchNotificationData();
+    });
   }
 
   @override
@@ -61,7 +67,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
           inactiveColorPrimary: Colors.white, // 非選択時のアイコンの色
         ),
         PersistentBottomNavBarItem(
-          icon: const Row(
+          icon: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Stack(
@@ -69,13 +75,25 @@ class _BottomNavBarState extends State<BottomNavBar> {
                 children: [
                   Icon(Icons.notifications),
                   // 通知バッジを表示する
-                  Positioned(
-                    top: -5,
-                    right: -5,
-                    child: badges.Badge(
-                      badgeContent: Text('1', style: TextStyle(fontSize: 8)),
+                  if (_notificationCount != null && _notificationCount!=0)
+                    Positioned(
+                      top: -5,
+                      right: -5,
+                      child: badges.Badge(
+                        badgeContent: Text('${_notificationCount!}',
+                            style: TextStyle(fontSize: 10)),
+                        badgeAnimation: const badges.BadgeAnimation.rotation(
+                          animationDuration: Duration(seconds: 1),
+                          colorChangeAnimationDuration: Duration(seconds: 1),
+                          loopAnimation: false,
+                          curve: Curves.fastOutSlowIn,
+                          colorChangeAnimationCurve: Curves.easeInCubic,
+                        ),
+                        badgeStyle: const badges.BadgeStyle(
+                            badgeColor: Color(0xFFAE0103),
+                            padding: EdgeInsets.all(3)),
+                      ),
                     ),
-                  ),
                 ],
               ),
             ],

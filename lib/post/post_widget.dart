@@ -10,9 +10,9 @@ import 'post_image.dart';
 const Map<String, String> badge2Explanation = {
   "超早起き": "超早起き：過去1週間のうち7日間早起き投稿したyalker",
   "早起き": "早起き：過去1週間のうち3日間以上早起き投稿したyalker",
-  "超努力家": "めちゃくちゃ頑張って投稿してるyalker",
-  "努力家": "けっこう頑張ってるyalker",
-  "常連": "継続して投稿してるyalker",
+  "超努力家": "超努力家：めちゃくちゃ頑張って投稿してるyalker",
+  "努力家": "努力家：けっこう頑張ってるyalker",
+  "常連": "常連：継続して投稿してるyalker",
 };
 
 class PostWidget extends StatefulWidget {
