@@ -81,7 +81,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       "private": _private
     };
     logResponse(data);
-    final response = httpPut('profile/update/${loginUserId}', data,
+    final response = httpPut(
+        'profile/update/${widget.profileData['login_user_profile']['profile_number']}',
+        data,
         jwt: true,
         images: _editImagePath != null ? [_editImagePath!] : [],
         imageFieldName: 'iconimage');

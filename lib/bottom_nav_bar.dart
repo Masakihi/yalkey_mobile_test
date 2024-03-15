@@ -11,7 +11,8 @@ import 'package:badges/badges.dart' as badges;
 import 'dart:async';
 
 class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({Key? key}) : super(key: key);
+  final int initialScreenIndex;
+  const BottomNavBar({Key? key, this.initialScreenIndex = 0}) : super(key: key);
 
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
@@ -57,7 +58,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
   Widget build(BuildContext context) {
     return PersistentTabView(
       context,
-      controller: PersistentTabController(initialIndex: 0),
+      controller:
+          PersistentTabController(initialIndex: widget.initialScreenIndex),
       screens: _screens,
       items: [
         PersistentBottomNavBarItem(
@@ -75,7 +77,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                 children: [
                   Icon(Icons.notifications),
                   // 通知バッジを表示する
-                  if (_notificationCount != null && _notificationCount!=0)
+                  if (_notificationCount != null && _notificationCount != 0)
                     Positioned(
                       top: -10,
                       right: -10,
