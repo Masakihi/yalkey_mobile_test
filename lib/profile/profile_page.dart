@@ -405,23 +405,28 @@ class _ProfilePageState extends State<ProfilePage> {
                         withPreview: false,
                         maxWords: 300),
                     SizedBox(height: 10),
-                    ElevatedButton(
-                        onPressed: _editProfile, // 編集ボタンが押された時の処理
-                        child: Text('編集'),
-                      ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => YalkerRepostPage(
-                                  userNumber: _profileData!['login_user_profile']
-                                  ['user_number']),
-                            ));
-                      },
-                      child: Text('投稿一覧を見る'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                            onPressed: _editProfile, // 編集ボタンが押された時の処理
+                            child: Text('編集'),
+                          ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => YalkerRepostPage(
+                                      userNumber: _profileData!['login_user_profile']
+                                      ['user_number']),
+                                ));
+                          },
+                          child: Text('投稿一覧'),
+                        ),
+                      ]
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 20),
                     ListView.builder(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),

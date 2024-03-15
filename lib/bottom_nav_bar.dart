@@ -31,8 +31,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
     // try {
     final dynamic response =
         await httpGet('new-notification-count/', jwt: true);
-    print("通知の読み込み");
-    print(response);
+    //print("通知の読み込み");
+    //print(response);
     setState(() {
       _notificationCount = response['new_notification_count'];
     });
@@ -77,8 +77,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
                   // 通知バッジを表示する
                   if (_notificationCount != null && _notificationCount!=0)
                     Positioned(
-                      top: -5,
-                      right: -5,
+                      top: -10,
+                      right: -10,
                       child: badges.Badge(
                         badgeContent: Text('${_notificationCount!}',
                             style: TextStyle(fontSize: 10)),
@@ -91,7 +91,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                         ),
                         badgeStyle: const badges.BadgeStyle(
                             badgeColor: Color(0xFFAE0103),
-                            padding: EdgeInsets.all(3)),
+                            padding: EdgeInsets.all(7)),
                       ),
                     ),
                 ],

@@ -183,7 +183,10 @@ class _AppPageState extends State<AppPage> {
                         style: TextStyle(fontSize: 18),
                       ),
                       SizedBox(height: 5),
-                      Text('@${loginUserId ?? ''}'),
+                      Text(
+                          '@${loginUserId ?? ''}',
+                        style: const TextStyle(color: Colors.grey),
+                      ),
                     ],
                   ),
                 ),
