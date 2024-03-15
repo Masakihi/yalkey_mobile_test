@@ -33,10 +33,11 @@ class _AppPageState extends State<AppPage> {
   }
 
   void _navigateToYalkerDetailPage() {
+    print("hoge");
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const ProfilePage(),
+          builder: (context) => const BottomNavBar(initialScreenIndex: 3),
         ));
   }
 

@@ -53,6 +53,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _fetchPostList() async {
+    if (_loading) {
+      return;
+    }
     setState(() {
       _loading = true; // データのロード中フラグをtrueに設定
       firstLoad = false;
@@ -68,6 +71,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _fetchAllPostList() async {
+    if (_loadingAll) {
+      return;
+    }
     setState(() {
       _loadingAll = true; // データのロード中フラグをtrueに設定
     });
