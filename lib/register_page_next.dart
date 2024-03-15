@@ -19,7 +19,7 @@ class _RegisterNextPageState extends State<RegisterNextPage> {
         appBar: AppBar(title: const Text('無料ユーザー登録')),
         body: SingleChildScrollView(
         child: Column(children: [
-          Text('確認メールを送信しました。メール内のリンクをクリックした後、アプリを再度開いてログインしてください。'),
+          Text('確認メールを送信しました。メール内のリンクをクリックした後、アプリを再度開いてログインしてください。メールが見当たらない場合は迷惑メールフォルダをご確認ください'),
           SizedBox(height: 40.0),
           ElevatedButton(
             onPressed: () {

@@ -23,15 +23,14 @@ class _LoginPageState extends State<LoginPage> {
   bool _isObscure = true;
 
   TextEditingController emailController =
-      TextEditingController(text: 'molcar@yalkey.com');
+      TextEditingController();
   TextEditingController passwordController =
-      TextEditingController(text: 'hogehoge');
+      TextEditingController();
   //TextEditingController emailController = TextEditingController();
   //TextEditingController passwordController = TextEditingController();
 
   Future<void> login(BuildContext context, email, password) async {
     try {
-      //final response = await httpPost('token/', {'email': 'molcar@yalkey.com', 'password': 'hogehoge'});
       final response =
           await httpPost('token/', {'email': email, 'password': password});
       SharedPreferences prefs = await SharedPreferences.getInstance();
