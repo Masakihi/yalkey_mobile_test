@@ -508,7 +508,8 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
                                   MaterialPageRoute(
                                     builder: (context) => YalkerRepostPage(
                                         userNumber: widget.userNumber),
-                                  ));
+                                  )
+                              );
                             },
                             child: Text('投稿一覧'),
                           ),

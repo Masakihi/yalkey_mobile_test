@@ -42,6 +42,7 @@ class _SettingListPageState extends State<SettingListPage> {
                 );
               },
             ),
+            /*
             ListTile(
               //leading: Icon(Icons.photo_album),
               title: Text('表示'),
@@ -54,6 +55,8 @@ class _SettingListPageState extends State<SettingListPage> {
                 );
               },
             ),
+
+             */
           ],
         ),
       ),

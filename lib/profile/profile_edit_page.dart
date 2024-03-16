@@ -87,7 +87,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     };
     logResponse(data);
     final response = httpPut(
-        'profile/update/${widget.profileData['login_user_profile']['profile_number']}',
+        'profile/update/',
         data,
         jwt: true,
         images: _editImagePath != null ? [_editImagePath!] : [],
@@ -174,6 +174,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 if (_nameError)
                   Text('表示名は1～15文字で設定してください',
                       style: TextStyle(color: Colors.red)),
+                Text('ユーザーIDは変更できません'),
+                /*
                 TextFormField(
                   controller: _userIdController,
                   decoration: InputDecoration(
@@ -187,13 +189,14 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                       _userIdError = _userIdController.text.isEmpty ||
                           _userIdController.text.length <= 5 ||
                           _userIdController.text.length > 30 ||
-                          !RegExp(r'^[a-zA-Z0-9]+$').hasMatch(value);
+                          !RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(value);
                     });
                   },
                 ),
                 if (_userIdError)
                   Text('ユーザーIDは6～30文字の半角英数字で設定してください',
                       style: TextStyle(color: Colors.red)),
+                 */
                 TextFormField(
                   controller: _profileController,
                   decoration: InputDecoration(
