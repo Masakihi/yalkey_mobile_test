@@ -18,6 +18,7 @@ class ProfileEditPage extends StatefulWidget {
 }
 
 class _ProfileEditPageState extends State<ProfileEditPage> {
+  final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _userIdController;
   late TextEditingController _profileController;
@@ -28,6 +29,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   String? loginUserIconImage;
   String? loginUserId;
   int? loginUserNumber;
+  bool _nameError = false;
+  bool _userIdError = false;
+  bool _profileError = false;
 
   @override
   void initState() {
@@ -94,7 +98,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         content: Text('修正が完了しました'),
       ),
     );
-    Navigator.pop(context); // 前の画面に戻る
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ProfilePage()),
+    );
   }
 
   Future<void> _selectImage() async {
@@ -131,6 +138,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
   @override
   Widget build(BuildContext context) {
+    bool _hasError = _nameError || _userIdError || _profileError;
     return Scaffold(
       appBar: AppBar(
         title: Text('プロフィール編集'),
@@ -138,54 +146,88 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context); // キャンセルボタンが押されたら前の画面に戻る
-                    },
-                    child: const Text(
-                      'キャンセル',
-                    ),
+          child: Form(
+            key: _formKey,
+            autovalidateMode: AutovalidateMode.always, // リアルタイムでバリデーションを実行
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // キャンセルボタンと保存ボタンのロウ...
+                TextFormField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    labelText: '名前',
+                    prefixIcon: _nameError
+                        ? Icon(Icons.error_outline, color: Colors.red)
+                        : null,
                   ),
-                  TextButton(
-                    onPressed: _saveProfileChanges,
-                    child: const Text(
-                      '保存',
-                    ),
+                  onChanged: (value) {
+                    setState(() {
+                      _nameError = _nameController.text.isEmpty ||
+                          _nameController.text.length > 15;
+                    });
+                  },
+                ),
+                if (_nameError)
+                  Text('表示名は1～15文字で設定してください',
+                      style: TextStyle(color: Colors.red)),
+                TextFormField(
+                  controller: _userIdController,
+                  decoration: InputDecoration(
+                    labelText: 'ユーザーID',
+                    prefixIcon: _userIdError
+                        ? Icon(Icons.error_outline, color: Colors.red)
+                        : null,
                   ),
-                ],
-              ),
-              SizedBox(height: 20),
-              _buildAvatarIcon(),
-              SizedBox(height: 20),
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(labelText: '名前'),
-              ),
-              TextFormField(
-                controller: _userIdController,
-                decoration: InputDecoration(labelText: 'ユーザーID'),
-              ),
-              TextFormField(
-                controller: _profileController,
-                decoration: InputDecoration(labelText: 'プロフィール'),
-                maxLines: null,
-              ),
-              CheckboxListTile(
-                title: Text('非公開にする'),
-                value: _private,
-                onChanged: (value) {
-                  setState(() {
-                    _private = value!;
-                  });
-                },
-              ),
-            ],
+                  onChanged: (value) {
+                    setState(() {
+                      _userIdError = _userIdController.text.isEmpty ||
+                          _userIdController.text.length <= 5 ||
+                          _userIdController.text.length > 30 ||
+                          !RegExp(r'^[a-zA-Z0-9]+$').hasMatch(value);
+                    });
+                  },
+                ),
+                if (_userIdError)
+                  Text('ユーザーIDは6～30文字の半角英数字で設定してください',
+                      style: TextStyle(color: Colors.red)),
+                TextFormField(
+                  controller: _profileController,
+                  decoration: InputDecoration(
+                    labelText: 'プロフィール',
+                    prefixIcon: _profileError
+                        ? Icon(Icons.error_outline, color: Colors.red)
+                        : null,
+                  ),
+                  maxLines: null,
+                  onChanged: (value) {
+                    setState(() {
+                      _profileError = _profileController.text.length > 1000;
+                    });
+                  },
+                ),
+                if (_profileError)
+                  Text('プロフィールは1000文字以下で設定してください',
+                      style: TextStyle(color: Colors.red)),
+                // 非公開にするチェックボックス...
+                ElevatedButton(
+                  onPressed: _hasError
+                      ? null
+                      : () {
+                          if (_formKey.currentState!.validate()) {
+                            _saveProfileChanges();
+                          }
+                        },
+                  child: const Text('保存'),
+                  style: ButtonStyle(
+                    backgroundColor: _hasError
+                        ? MaterialStateProperty.all(
+                            Colors.grey) // エラーがある場合はグレーアウト
+                        : null, // エラーがない場合はテーマのプライマリカラーを使用
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
