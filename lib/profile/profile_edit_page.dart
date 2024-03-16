@@ -44,8 +44,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     _profileController = TextEditingController(
         text: widget.profileData['login_user_profile']['profile']);
     _private = widget.profileData['login_user']['private'];
-    _imageFile =
-        NetworkImage(widget.profileData['login_user_profile']['iconimage']);
+    _imageFile = NetworkImage(widget.profileData['login_user_profile']
+            ['iconimage'] ??
+        'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png');
     _getLoginUserData();
   }
 
@@ -122,6 +123,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         CircleAvatar(
           backgroundImage: _imageFile,
           radius: 40,
+          backgroundColor: Colors.white,
         ),
         Positioned(
           bottom: 0,
@@ -129,7 +131,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           child: IconButton(
             onPressed: _selectImage,
             icon: Icon(Icons.add_a_photo),
-            color: Colors.white,
+            color: Colors.grey,
           ),
         ),
       ],
@@ -152,6 +154,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                _buildAvatarIcon(),
                 // キャンセルボタンと保存ボタンのロウ...
                 TextFormField(
                   controller: _nameController,

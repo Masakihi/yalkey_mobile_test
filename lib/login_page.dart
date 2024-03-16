@@ -22,10 +22,8 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isObscure = true;
 
-  TextEditingController emailController =
-      TextEditingController();
-  TextEditingController passwordController =
-      TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
   //TextEditingController emailController = TextEditingController();
   //TextEditingController passwordController = TextEditingController();
 
@@ -41,9 +39,11 @@ class _LoginPageState extends State<LoginPage> {
       //print(loginUserDataResponse);
       //print(loginUserDataResponse['login_user_profile']['iconimage']);
       await prefs.setString('login_user_name',
-          loginUserDataResponse['login_user_profile']['name'] as String);
-      await prefs.setString('login_user_iconimage',
-          loginUserDataResponse['login_user_profile']['iconimage'] as String);
+          loginUserDataResponse['login_user_profile']['name'] ?? "");
+      await prefs.setString(
+          'login_user_iconimage',
+          loginUserDataResponse['login_user_profile']['iconimage'] ??
+              'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png');
       await prefs.setString('login_user_id',
           loginUserDataResponse['login_user_profile']['user_id'] as String);
       await prefs.setInt('login_user_number',
@@ -204,7 +204,8 @@ class _LoginPageState extends State<LoginPage> {
                           style: const TextStyle(color: Color(0xFFAE0103)),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              _launchInBrowser("https://yalkey.com/password-reset/");
+                              _launchInBrowser(
+                                  "https://yalkey.com/password-reset/");
                             }),
                     ])),
                   ),

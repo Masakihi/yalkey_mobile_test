@@ -19,12 +19,7 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-  final List<Widget> _screens = [
-    const HomePage(),
-    const NotificationListPage(),
-    const MissionListPage(),
-    const ProfilePage(),
-  ];
+  Widget _notificationListPage = NotificationListPage();
 
   int? _notificationCount;
   Timer? _notificationTimer;
@@ -38,7 +33,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
       if (mounted) {
         // ウィジェットがまだウィジェットツリーに存在する場合にのみsetState()を呼び出す
         setState(() {
+          print(response);
           _notificationCount = response['new_notification_count'];
+          _notificationListPage = NotificationListPage();
         });
       }
     } catch (error) {
@@ -61,7 +58,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
     _notificationTimer?.cancel();
     _notificationTimer = Timer.periodic(Duration(seconds: 60), (timer) {
       try {
-        print('hoge');
         _fetchNotificationData();
       } catch (e) {
         print("エラーが発生しました: $e");
@@ -79,7 +75,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
       context,
       controller:
           PersistentTabController(initialIndex: widget.initialScreenIndex),
-      screens: _screens,
+      screens: [
+        const HomePage(),
+        _notificationListPage,
+        const MissionListPage(),
+        const ProfilePage(),
+      ],
       items: [
         PersistentBottomNavBarItem(
           icon: Icon(Icons.home),
