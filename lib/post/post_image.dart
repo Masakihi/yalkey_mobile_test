@@ -267,22 +267,26 @@ class _ImageDisplayState extends State<ImageDisplay> {
                 Expanded(
                   child: Center(
                     child: Container(
-                      height: 300.0,
-                      width: 300.0,
+                      // height: 400.0,
+                      width: 400.0,
                       child: PageView.builder(
                         itemCount: widget.imageURLs.length,
                         controller: PageController(initialPage: index),
                         itemBuilder: (BuildContext context, int pageIndex) {
                           return Center(
+                              child: Padding(
+                            padding:
+                                const EdgeInsets.all(16.0), // ここに適切なパディングを追加
                             child: InteractiveViewer(
                               minScale: 1,
                               maxScale: 7,
+                              scaleEnabled: true,
                               child: Image.network(
                                 "https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/postimage/${widget.imageURLs[pageIndex]}",
                                 fit: BoxFit.contain,
                               ),
                             ),
-                          );
+                          ));
                         },
                       ),
                     ),
