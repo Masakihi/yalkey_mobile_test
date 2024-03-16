@@ -59,6 +59,55 @@ class _PostPageState extends State<PostPage> {
     _fetchReportList();
   }
 
+  var hoge = {
+    "login_user": {
+      "is_active": true,
+      "date_joined": "2024-03-16T14:09:33.167809+09:00",
+      "user_number": 99,
+      "name": "テストユーザー1",
+      "iconimage": "",
+      "user_id": "hogehoge",
+      "profile": "テストユーザー1",
+      "profile_number": 99,
+      "private": false,
+      "super_hard_worker": false,
+      "hard_worker": false,
+      "regular_customer": false,
+      "super_early_bird": false,
+      "early_bird": false
+    },
+    "post_form": {
+      "text": "テスト",
+      "type": "0",
+      "unit": "",
+      "report_name": "テスト",
+      "hour": "1",
+      "minute": "1",
+      "todo": "false",
+      "custom_data": "0",
+      "custom_float_data": "0.0",
+      "report_date": "2024-03-16"
+    },
+    "progress_form": {
+      "text": "テスト",
+      "type": "0",
+      "unit": "",
+      "report_name": "テスト",
+      "hour": "1",
+      "minute": "1",
+      "todo": "false",
+      "custom_data": "0",
+      "custom_float_data": "0.0",
+      "report_date": "2024-03-16"
+    },
+    "report_types": {"レポートを選択してください": 0},
+    "custom_data_types": {},
+    "post_form_error": {},
+    "progress_form_error": {
+      "unit": ["この項目は空にできません。"]
+    }
+  };
+
   Future<void> _getLoginUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var _loginUserName = prefs.getString('login_user_name');
@@ -81,7 +130,7 @@ class _PostPageState extends State<PostPage> {
     });
     ReportListResponse reportListResponse =
         await ReportListResponse.fetchReportListResponse(_loginUserNumber!);
-    logResponse(reportListResponse.reportList[0].graphType);
+    // logResponse(reportListResponse.reportList[0].graphType);
     if (mounted) {
       setState(() {
         reportListResponse.reportList.forEach((newReport) => {
@@ -114,9 +163,6 @@ class _PostPageState extends State<PostPage> {
       return; // 早期リターン
     }
     setState(() => _posting = true);
-    Navigator.of(context).pop(MaterialPageRoute(
-      builder: (context) => const HomePage(),
-    ));
 
     // 成功メッセージを表示
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
@@ -197,7 +243,10 @@ class _PostPageState extends State<PostPage> {
         ),
       );
     } finally {
-      setState(() => _posting = true);
+      setState(() => _posting = false);
+      Navigator.of(context).pop(MaterialPageRoute(
+        builder: (context) => const HomePage(),
+      ));
     }
   }
 
@@ -313,7 +362,10 @@ class _PostPageState extends State<PostPage> {
                     } else {
                       Report newReport = Report(
                         reportName: name,
-                        reportUnit: _newReportUnitController.text,
+                        reportUnit: _selectedType == ReportType.time
+                            ? '分'
+                            // : '分'
+                            : _newReportUnitController.text,
                         graphType: '棒',
                         userId: loginUserNumber!,
                         reportType: reportType2NameAndId[_selectedType][1],
@@ -324,6 +376,7 @@ class _PostPageState extends State<PostPage> {
                         _isNameEmptyError = false;
                         _isNameDuplicateError = false;
                       });
+                      print(newReport.reportUnit);
                       _rebuildDropdownItems();
                       Navigator.of(context).pop();
                     }

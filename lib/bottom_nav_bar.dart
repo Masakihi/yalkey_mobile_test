@@ -19,30 +19,29 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-  final List<Widget> _screens = [
-    const HomePage(),
-    const NotificationListPage(),
-    const MissionListPage(),
-    const ProfilePage(),
-  ];
+  Widget _notificationListPage = NotificationListPage();
 
   int? _notificationCount;
+  Timer? _notificationTimer;
 
   Future<void> _fetchNotificationData() async {
-    // try {
-    final dynamic response =
-        await httpGet('new-notification-count/', jwt: true);
-    //print("通知の読み込み");
-    //print(response);
-    if (mounted) {
-      // ウィジェットがまだウィジェットツリーに存在する場合にのみsetState()を呼び出す
-      setState(() {
-        _notificationCount = response['new_notification_count'];
-      });
+    try {
+      final dynamic response =
+          await httpGet('new-notification-count/', jwt: true);
+      //print("通知の読み込み");
+      //print(response);
+      if (mounted) {
+        // ウィジェットがまだウィジェットツリーに存在する場合にのみsetState()を呼び出す
+        setState(() {
+          print(response);
+          _notificationCount = response['new_notification_count'];
+          _notificationListPage = NotificationListPage();
+        });
+      }
+    } catch (error) {
+      _notificationTimer?.cancel();
+      print('Error fetching notification data: $error');
     }
-    // } catch (error) {
-    //   print('Error fetching notification data: $error');
-    // }
   }
 
   @override
@@ -51,10 +50,22 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
     // 受け取ったデータを状態を管理する変数に格納
     _fetchNotificationData();
-    //print(_notificationCount);
-    // 60秒ごとにデータを更新するためのTimerをセットアップ
-    Timer.periodic(Duration(seconds: 60), (timer) {
-      _fetchNotificationData();
+    startNotificationTimer();
+  }
+
+  void startNotificationTimer() {
+    // 既存のTimerがあればキャンセルして新しく設定
+    _notificationTimer?.cancel();
+    _notificationTimer = Timer.periodic(Duration(seconds: 60), (timer) {
+      try {
+        _fetchNotificationData();
+      } catch (e) {
+        print("エラーが発生しました: $e");
+        // エラーが発生したらTimerをキャンセル
+        print("キャンセルします");
+        timer.cancel();
+        // 必要に応じてその他のクリーンアップ処理をここに追加
+      }
     });
   }
 
@@ -64,7 +75,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
       context,
       controller:
           PersistentTabController(initialIndex: widget.initialScreenIndex),
-      screens: _screens,
+      screens: [
+        const HomePage(),
+        _notificationListPage,
+        const MissionListPage(),
+        const ProfilePage(),
+      ],
       items: [
         PersistentBottomNavBarItem(
           icon: Icon(Icons.home),
