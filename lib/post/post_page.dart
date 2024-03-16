@@ -41,6 +41,10 @@ class _PostPageState extends State<PostPage> {
   bool _loading = false;
   bool _posting = false;
   List<DropdownMenuItem<Report?>> _dropdownItems = [];
+  String? loginUserName;
+  String? loginUserIconImage;
+  String? loginUserId;
+  int? loginUserNumber;
 
   @override
   void initState() {
@@ -51,15 +55,32 @@ class _PostPageState extends State<PostPage> {
     _integerController = TextEditingController();
     _floatController = TextEditingController();
     _selectedDate = DateTime.now();
+    _getLoginUserData();
     _fetchReportList();
   }
 
+  Future<void> _getLoginUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var _loginUserName = prefs.getString('login_user_name');
+    var _loginUserIconImage = prefs.getString('login_user_iconimage');
+    var _loginUserId = prefs.getString('login_user_id');
+    var _loginUserNumber = prefs.getInt('login_user_number');
+    setState(() => {
+          loginUserName = _loginUserName,
+          loginUserIconImage = _loginUserIconImage,
+          loginUserId = _loginUserId,
+          loginUserNumber = _loginUserNumber,
+        });
+  }
+
   Future<void> _fetchReportList() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? _loginUserNumber = prefs.getInt('login_user_number');
     setState(() {
       _loading = true; // データのロード中フラグをtrueに設定
     });
     ReportListResponse reportListResponse =
-        await ReportListResponse.fetchReportListResponse(59);
+        await ReportListResponse.fetchReportListResponse(_loginUserNumber!);
     logResponse(reportListResponse.reportList[0].graphType);
     if (mounted) {
       setState(() {
@@ -136,8 +157,6 @@ class _PostPageState extends State<PostPage> {
 
         // ToDo達成フラグ
         bool todoCompleted = _todoCompleted;
-
-
 
         // APIに投稿するデータを作成
         var data = {
@@ -296,7 +315,7 @@ class _PostPageState extends State<PostPage> {
                         reportName: name,
                         reportUnit: _newReportUnitController.text,
                         graphType: '棒',
-                        userId: 59,
+                        userId: loginUserNumber!,
                         reportType: reportType2NameAndId[_selectedType][1],
                       );
                       setState(() {

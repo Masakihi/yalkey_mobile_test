@@ -142,7 +142,10 @@ class Post {
         postLiked = true;
         postLikeNumber++;
       } else {
-        throw Exception('Post $postNumber is already liked in backend.');
+        // throw Exception('Post $postNumber is already liked in backend.');
+        postLiked = true;
+        postLikeNumber++;
+        await httpPost('like/$postNumber/', null, jwt: true);
       }
     }
   }
@@ -156,7 +159,10 @@ class Post {
         postLiked = false;
         postLikeNumber--;
       } else {
-        throw Exception('Post $postNumber is already unliked in backend.');
+        // throw Exception('Post $postNumber is already unliked in backend.');
+        postLiked = false;
+        postLikeNumber--;
+        await httpPost('like/$postNumber/', null, jwt: true);
       }
     }
   }
@@ -169,7 +175,9 @@ class Post {
       if (response['bookmarked']) {
         postBookmarked = true;
       } else {
-        throw Exception('Post $postNumber is already bookmarked in backend.');
+        // throw Exception('Post $postNumber is already bookmarked in backend.');
+        postBookmarked = true;
+        await httpPost('bookmark/$postNumber/', null, jwt: true);
       }
     }
   }
@@ -182,7 +190,9 @@ class Post {
       if (!response['bookmarked']) {
         postBookmarked = false;
       } else {
-        throw Exception('Post $postNumber is already unbookmarked in backend.');
+        // throw Exception('Post $postNumber is already unbookmarked in backend.');
+        postBookmarked = false;
+        await httpPost('bookmark/$postNumber/', null, jwt: true);
       }
     }
   }
@@ -195,7 +205,9 @@ class Post {
       if (response['reposted']) {
         postReposted = true;
       } else {
-        throw Exception('Post $postNumber is already reposted in backend.');
+        // throw Exception('Post $postNumber is already reposted in backend.');
+        postReposted = true;
+        await httpPost('repost/$postNumber/', null, jwt: true);
       }
     }
   }
@@ -208,7 +220,9 @@ class Post {
       if (!response['reposted']) {
         postReposted = false;
       } else {
-        throw Exception('Post $postNumber is already unreposted in backend.');
+        // throw Exception('Post $postNumber is already unreposted in backend.');
+        postReposted = false;
+        await httpPost('repost/$postNumber/', null, jwt: true);
       }
     }
   }
@@ -363,7 +377,8 @@ class PostListResponse {
     List<Post> pinnedPostList = [];
     if (json['pinned_repost_list'] != null) {
       var pinnedPostJsonList = json['pinned_repost_list'] as List;
-      pinnedPostList = pinnedPostJsonList.map((post) => Post.fromJson(post)).toList();
+      pinnedPostList =
+          pinnedPostJsonList.map((post) => Post.fromJson(post)).toList();
     }
     if (json['repost_list'] != null) {
       var postJsonList = json['repost_list'] as List;
@@ -402,8 +417,9 @@ class PostListResponse {
       int page, String keyword) async {
     // URLエンコードされたクエリを生成
     String encodedKeyword = Uri.encodeQueryComponent(keyword);
-    dynamic jsonData =
-        await httpGet('search-list/${page}/?keyword=${encodedKeyword}', jwt: true);
+    dynamic jsonData = await httpGet(
+        'search-list/${page}/?keyword=${encodedKeyword}',
+        jwt: true);
     return PostListResponse.fromResponsePostList(jsonData);
   }
 
@@ -413,28 +429,26 @@ class PostListResponse {
         jsonData['user_bookmark_list'][0]);
   }
 
-  static Future<PostListResponse> fetchAllPostResponse(
-      int page) async {
-    dynamic jsonData =
-    await httpGet('latest-post/${page}', jwt: true);
+  static Future<PostListResponse> fetchAllPostResponse(int page) async {
+    dynamic jsonData = await httpGet('latest-post/${page}', jwt: true);
     return PostListResponse.fromResponseUserRepostList(jsonData);
   }
 
   static Future<PostListResponse> fetchYalkerPostResponse(
       int userNumber, int page) async {
-    dynamic jsonData =
-    await httpGet('yalker-detail-repost-list/${userNumber}/${page}', jwt: true);
+    dynamic jsonData = await httpGet(
+        'yalker-detail-repost-list/${userNumber}/${page}',
+        jwt: true);
     return PostListResponse.fromResponseYalkerRepostList(jsonData);
   }
 
   static Future<PostListResponse> fetchYalkerPinnedPostResponse(
       int userNumber, int page) async {
-    dynamic jsonData =
-    await httpGet('yalker-detail-repost-list/${userNumber}/${page}', jwt: true);
+    dynamic jsonData = await httpGet(
+        'yalker-detail-repost-list/${userNumber}/${page}',
+        jwt: true);
     return PostListResponse.fromResponseYalkerPinnedRepostList(jsonData);
   }
-
-
 }
 
 // PostDetailPage用レスポンスモデル
