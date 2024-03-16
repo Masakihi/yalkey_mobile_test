@@ -494,7 +494,7 @@ class _MissionListPageState extends State<MissionListPage> {
                                   if (checkboxTomorrow[
                                           missionTomorrow.missionNumber] ==
                                       true) {
-                                    _showAlertDialog(context);
+                                    _showSnackbar(context);
                                   }
                                 },
                               ),
@@ -593,7 +593,7 @@ class _MissionListPageState extends State<MissionListPage> {
                                   if (checkboxToday[
                                           missionToday.missionNumber] ==
                                       true) {
-                                    _showAlertDialog(context);
+                                    _showSnackbar(context);
                                   }
                                 },
                               ),
@@ -693,7 +693,7 @@ class _MissionListPageState extends State<MissionListPage> {
                                   if (checkboxYesterday[
                                           missionYesterday.missionNumber] ==
                                       true) {
-                                    _showAlertDialog(context);
+                                    _showSnackbar(context);
                                   }
                                 },
                               ),
@@ -842,4 +842,40 @@ void _showAlertDialog(BuildContext context) async {
       },
     );
   }
+}
+
+void _showSnackbar(BuildContext context) {
+  ScaffoldMessenger.of(context).removeCurrentSnackBar();
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween, // 内容物をスペースイーブンリーに配置
+      children: <Widget>[
+        Expanded(
+          // TextをExpandedで囲むことで、TextButtonが押し出されないようにする
+          child: Text(
+            'ミッション完了しました！',
+          ),
+        ),
+        TextButton(
+          onPressed: () {
+            ScaffoldMessenger.of(context).removeCurrentSnackBar();
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PostPage(),
+              ),
+            );
+          },
+          child: Text(
+            'レポート投稿',
+            style: TextStyle(
+              color: const Color(0xFFAE0103), // 赤色
+              decoration: TextDecoration.underline, // 下線を引く
+            ),
+          ),
+        ),
+      ],
+    ),
+    behavior: SnackBarBehavior.floating, // Optional: SnackBarを浮かせるスタイルにする
+  ));
 }

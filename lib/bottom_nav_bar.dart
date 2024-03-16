@@ -34,9 +34,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
         await httpGet('new-notification-count/', jwt: true);
     //print("通知の読み込み");
     //print(response);
-    setState(() {
-      _notificationCount = response['new_notification_count'];
-    });
+    if (mounted) {
+      // ウィジェットがまだウィジェットツリーに存在する場合にのみsetState()を呼び出す
+      setState(() {
+        _notificationCount = response['new_notification_count'];
+      });
+    }
     // } catch (error) {
     //   print('Error fetching notification data: $error');
     // }
