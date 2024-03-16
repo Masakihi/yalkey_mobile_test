@@ -80,12 +80,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
                             onPressed: () async {
                               await _postDetailResponse!.post.delete();
                               setState(() => {});
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => HomePage(),
-                                ),
-                              );
+                              Navigator.of(context).pop();
+
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text('投稿を削除しました')),
                               );

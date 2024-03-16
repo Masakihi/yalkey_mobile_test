@@ -75,10 +75,12 @@ class _RegisterPageState extends State<RegisterPage> {
       //print(image.path);
       final response = await httpPost('user-create/', data);
       logResponse(response);
-      if (response['profile_form_error']["user_id"].length > 0) {
-        response['profile_form_error']["user_id"].forEach(
-            (errorText) => {setState(() => userIdError += '$errorText\n')});
-        return;
+      if(response.containsKey('profile_form_error')){
+        if (response['profile_form_error']["user_id"].length > 0) {
+          response['profile_form_error']["user_id"].forEach(
+                  (errorText) => {setState(() => userIdError += '$errorText\n')});
+          return;
+        }
       }
       Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (context) => const RegisterNextPage(),
@@ -271,12 +273,12 @@ class _RegisterPageState extends State<RegisterPage> {
                           bool userIdValid =
                               RegExp(r"^[a-zA-Z0-9_]").hasMatch(value);
                           if (!userIdValid) {
-                            return 'パスワードは8文字以上の半角英数字で設定してください';
+                            return 'ユーザーIDは8文字以上の半角英数字またはアンダーバーで設定してください';
                           }
                           return null;
                         },
                         decoration: InputDecoration(
-                          labelText: "ユーザーID（必須）",
+                          labelText: "ユーザーID（必須、後から変更不可）",
                           hintText: "半角英数字8文字以上。アンダーバー(_)も可",
                           /*
                               border: OutlineInputBorder(

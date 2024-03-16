@@ -420,7 +420,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                       userNumber:
                                           _profileData!['login_user_profile']
                                               ['user_number']),
-                                ));
+                                )
+                            );
                           },
                           child: Text('投稿一覧'),
                         ),

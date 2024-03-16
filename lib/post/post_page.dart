@@ -218,6 +218,8 @@ class _PostPageState extends State<PostPage> {
           'report_date': DateFormat('yyyy-MM-dd').format(_selectedDate),
         };
 
+
+        print("data");
         print(data);
         logResponse(data);
 
