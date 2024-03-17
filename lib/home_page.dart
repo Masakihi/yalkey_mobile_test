@@ -271,6 +271,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ]),
           floatingActionButton: FloatingActionButton.extended(
+            heroTag: "postButton",
             onPressed: () {
               Navigator.push(
                 context,
