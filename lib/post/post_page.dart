@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../profile/report_model.dart';
@@ -13,10 +14,10 @@ import 'image_cropper.dart';
 enum ReportType { time, custom_int, custom_double, bool }
 
 Map<ReportType, dynamic> reportType2NameAndId = {
-  ReportType.time: ['時間型', 0],
-  ReportType.custom_int: ['整数型', 2],
-  ReportType.custom_double: ['小数型', 3],
-  ReportType.bool: ['達成型', 4],
+  ReportType.time: ['時間型（単位：時間＆分）', 0],
+  ReportType.custom_int: ['整数型（単位：自由に設定可）', 2],
+  ReportType.custom_double: ['小数型（単位：自由に設定可）', 3],
+  ReportType.bool: ['達成型（達成/未達成）', 4],
 };
 
 class PostPage extends StatefulWidget {
@@ -33,7 +34,7 @@ class _PostPageState extends State<PostPage> {
   late TextEditingController _minutesController;
   late TextEditingController _integerController;
   late TextEditingController _floatController;
-  bool _todoCompleted = false;
+  bool _todoCompleted = true;
   late DateTime _selectedDate;
   late List<Report> _reportList = [];
   Report? _selectedReport = null;
@@ -218,6 +219,8 @@ class _PostPageState extends State<PostPage> {
           'report_date': DateFormat('yyyy-MM-dd').format(_selectedDate),
         };
 
+
+        print("data");
         print(data);
         logResponse(data);
 
@@ -290,7 +293,7 @@ class _PostPageState extends State<PostPage> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text('新規レポート'),
+              title: Text('新規レポート追加'),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
@@ -306,6 +309,7 @@ class _PostPageState extends State<PostPage> {
                         '同じ名前のレポートが既に存在します',
                         style: TextStyle(color: Colors.red),
                       ),
+                    SizedBox(height: 10),
                     DropdownButton<ReportType>(
                       value: _selectedType,
                       onChanged: (ReportType? newValue) {
@@ -322,6 +326,7 @@ class _PostPageState extends State<PostPage> {
                         );
                       }).toList(),
                     ),
+                    SizedBox(height: 10),
                     if (_selectedType == ReportType.custom_double ||
                         _selectedType == ReportType.custom_int)
                       TextField(
@@ -539,6 +544,7 @@ class _PostPageState extends State<PostPage> {
                           controller: _hoursController,
                           decoration: const InputDecoration(labelText: '時間'),
                           keyboardType: TextInputType.number,
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly]
                         ),
                       ),
                       const SizedBox(width: 16.0),
@@ -547,6 +553,7 @@ class _PostPageState extends State<PostPage> {
                           controller: _minutesController,
                           decoration: const InputDecoration(labelText: '分'),
                           keyboardType: TextInputType.number,
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly]
                         ),
                       ),
                     ])
@@ -558,6 +565,9 @@ class _PostPageState extends State<PostPage> {
                           controller: _integerController,
                           decoration: const InputDecoration(labelText: '整数値'),
                           keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ]
                         ),
                       ),
                       const SizedBox(width: 8.0),
@@ -572,6 +582,9 @@ class _PostPageState extends State<PostPage> {
                           decoration: const InputDecoration(labelText: '小数値'),
                           keyboardType: const TextInputType.numberWithOptions(
                               decimal: true),
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.allow(RegExp(r'^\d+(\.\d*)?')),
+                          ],
                         ),
                       ),
                       const SizedBox(width: 8.0),

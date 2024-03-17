@@ -65,7 +65,7 @@ class _ProfilePageState extends State<ProfilePage> {
           await httpGet('login-user-profile/', jwt: true);
       setState(() {
         _profileData = response;
-        print(_profileData);
+        //print(_profileData);
       });
 
       // データをキャッシュ
@@ -420,7 +420,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                       userNumber:
                                           _profileData!['login_user_profile']
                                               ['user_number']),
-                                ));
+                                )
+                            );
                           },
                           child: Text('投稿一覧'),
                         ),

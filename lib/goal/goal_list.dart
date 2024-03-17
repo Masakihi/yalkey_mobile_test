@@ -162,6 +162,7 @@ class _GoalListPageState extends State<GoalListPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: "goalButton",
         onPressed: ()  {
           Navigator.push(
               context,

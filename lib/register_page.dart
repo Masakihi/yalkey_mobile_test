@@ -290,12 +290,12 @@ class _RegisterPageState extends State<RegisterPage> {
                           bool userIdValid =
                               RegExp(r"^[a-zA-Z0-9_]").hasMatch(value);
                           if (!userIdValid) {
-                            return 'パスワードは8文字以上の半角英数字で設定してください';
+                            return 'ユーザーIDは8文字以上の半角英数字またはアンダーバーで設定してください';
                           }
                           return null;
                         },
                         decoration: InputDecoration(
-                          labelText: "ユーザーID（必須）",
+                          labelText: "ユーザーID（必須、後から変更不可）",
                           hintText: "半角英数字8文字以上。アンダーバー(_)も可",
                           /*
                               border: OutlineInputBorder(

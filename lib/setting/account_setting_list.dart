@@ -83,6 +83,7 @@ class _AccountSettingListPageState extends State<AccountSettingListPage> {
                 _editProfile();
               },
             ),
+            /*
             ListTile(
               //leading: Icon(Icons.photo_album),
               title: const Text('メールアドレスの変更'),
@@ -107,6 +108,7 @@ class _AccountSettingListPageState extends State<AccountSettingListPage> {
                 );
               },
             ),
+             */
             ListTile(
               //leading: Icon(Icons.photo_album),
               title: const Text('ログアウト'),

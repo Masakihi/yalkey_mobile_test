@@ -85,7 +85,10 @@ Future httpDelete(String path, {bool jwt = false}) async {
 
 // Post（画像投稿可能）
 Future<dynamic> httpPost(String path, Map<String, dynamic>? body,
-    {bool jwt = false, List<String> images = const []}) async {
+    {bool jwt = false,
+      List<String> images = const [],
+    String imageFieldName = 'postimage'
+    }) async {
   if (jwt) {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('access_token');
@@ -101,7 +104,7 @@ Future<dynamic> httpPost(String path, Map<String, dynamic>? body,
       // 画像をリクエストに追加
       for (var imagePath in images) {
         request.files
-            .add(await http.MultipartFile.fromPath('postimage', imagePath));
+            .add(await http.MultipartFile.fromPath(imageFieldName, imagePath));
       }
       // ボディを追加
       if (body != null) {
@@ -124,7 +127,7 @@ Future<dynamic> httpPost(String path, Map<String, dynamic>? body,
     // 画像をリクエストに追加
     for (var imagePath in images) {
       request.files
-          .add(await http.MultipartFile.fromPath('postimage', imagePath));
+          .add(await http.MultipartFile.fromPath(imageFieldName, imagePath));
     }
 
     // ボディを追加
@@ -148,11 +151,9 @@ Future<dynamic> httpPut(String path, Map<String, dynamic>? body,
   if (jwt) {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('access_token');
-    print("putput");
     if (token == null) {
       throw Exception('Token does not exist');
     } else {
-      print("putputputput");
       var request = http.MultipartRequest(
         'PUT',
         Uri.parse('https://yalkey.com/api/v1/$path'),
@@ -248,6 +249,79 @@ Future<dynamic> httpPostWithIcon(
   } else {
     var request = http.MultipartRequest(
       'POST',
+      Uri.parse('https://yalkey.com/api/v1/$path'),
+    );
+
+    // 画像をリクエストに追加
+    if (image != null)
+      request.files.add(await http.MultipartFile.fromPath('iconimage', image));
+    /*
+      for (var imagePath in images) {
+        request.files
+            .add(await http.MultipartFile.fromPath('iconimage', imagePath));
+      }
+       */
+
+    // ボディを追加
+    if (body != null) {
+      body.forEach((key, value) {
+        request.fields[key] = value.toString();
+      });
+    }
+
+    var response = await request.send();
+    var responseBody = await response.stream.bytesToString();
+
+    //print(responseBody);
+
+    return json.decode(responseBody);
+  }
+}
+
+
+// Post（プロフィール画像追加可能）
+Future<dynamic> httpPutWithIcon(
+    String path, Map<String, dynamic>? body, String? image,
+    {bool jwt = false}) async {
+  if (jwt) {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString('access_token');
+    if (token == null) {
+      throw Exception('Token does not exist');
+    } else {
+      var request = http.MultipartRequest(
+        'PUT',
+        Uri.parse('https://yalkey.com/api/v1/$path'),
+      );
+      // ヘッダーにトークンを追加
+      request.headers['Authorization'] = 'JWT $token';
+
+      // 画像をリクエストに追加
+      if (image != null)
+        request.files
+            .add(await http.MultipartFile.fromPath('iconimage', image));
+      /*
+      for (var imagePath in images) {
+        request.files
+            .add(await http.MultipartFile.fromPath('iconimage', imagePath));
+      }
+       */
+
+      // ボディを追加
+      if (body != null) {
+        body.forEach((key, value) {
+          request.fields[key] = value.toString();
+        });
+      }
+
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
+      logResponse(responseBody);
+      return json.decode(responseBody);
+    }
+  } else {
+    var request = http.MultipartRequest(
+      'PUT',
       Uri.parse('https://yalkey.com/api/v1/$path'),
     );
 
