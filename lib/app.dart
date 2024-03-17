@@ -112,7 +112,19 @@ class _AppPageState extends State<AppPage> {
             //     onPressed: () => _scaffoldKey.currentState!.openDrawer(),
             //     icon: const Icon(Icons.person)),
             GestureDetector(
-          onTap: () => _scaffoldKey.currentState!.openDrawer(),
+          onTap: () async {
+            // SharedPreferencesからデータを取得
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            var _loginUserIconImage = prefs.getString('login_user_iconimage');
+
+            // setStateを呼び出してログインユーザーのアイコン画像を更新
+            setState(() {
+              loginUserIconImage = _loginUserIconImage;
+            });
+
+            // drawerを開く
+            _scaffoldKey.currentState!.openDrawer();
+          },
           child: Padding(
             padding: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
             child: ClipOval(
@@ -172,7 +184,8 @@ class _AppPageState extends State<AppPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => YalkerProfilePage(userNumber: loginUserNumber!),
+                              builder: (context) => YalkerProfilePage(
+                                  userNumber: loginUserNumber!),
                             ),
                           );
                         },
@@ -193,7 +206,7 @@ class _AppPageState extends State<AppPage> {
                       ),
                       SizedBox(height: 5),
                       Text(
-                          '@${loginUserId ?? ''}',
+                        '@${loginUserId ?? ''}',
                         style: const TextStyle(color: Colors.grey),
                       ),
                     ],
