@@ -83,7 +83,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     final data = {
       "name": _nameController.text,
       // "user_id": _userIdController.text,
-      "user_id": "hogehogee",
+      "user_id": "hogehoge",
       "profile": _profileController.text,
       "private": _private
     };
