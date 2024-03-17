@@ -500,7 +500,7 @@ class _PostPageState extends State<PostPage> {
                   return null;
                 },
                 decoration: const InputDecoration(
-                  labelText: '本文（必須、5000文字まで）',
+                  labelText: '本文（5000文字まで）',
                 ),
                 maxLines: null,
               ),
