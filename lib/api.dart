@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer';
@@ -7,6 +8,7 @@ import 'dart:developer';
 void logResponse(dynamic response) {
   log(response.toString(), name: 'Response');
 }
+
 
 Future<void> checkInternetConnection() async {
   try {
@@ -21,8 +23,11 @@ Future<void> checkInternetConnection() async {
   }
 }
 
+
 Future httpGet(String path, {bool jwt = false}) async {
-  await checkInternetConnection(); // インターネット接続を確認
+  if (!kIsWeb) {
+    await checkInternetConnection(); // インターネット接続を確認
+  }
 
   if (jwt) {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -51,7 +56,9 @@ Future httpGet(String path, {bool jwt = false}) async {
 }
 
 Future httpDelete(String path, {bool jwt = false}) async {
-  await checkInternetConnection(); // インターネット接続を確認
+  if (!kIsWeb) {
+    await checkInternetConnection(); // インターネット接続を確認
+  }
 
   if (jwt) {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -146,7 +153,9 @@ Future<dynamic> httpPut(String path, Map<String, dynamic>? body,
     {bool jwt = false,
     List<String> images = const [],
     String imageFieldName = 'postimage'}) async {
-  await checkInternetConnection(); // インターネット接続を確認
+  if (!kIsWeb) {
+    await checkInternetConnection(); // インターネット接続を確認
+  }
 
   if (jwt) {
     SharedPreferences prefs = await SharedPreferences.getInstance();

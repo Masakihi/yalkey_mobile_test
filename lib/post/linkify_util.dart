@@ -69,7 +69,7 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
           _spansEclipsed.add(
             TextSpan(
               text: text.substring(currentIndex, widget.maxWords),
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(color: Colors.white, fontSize: 16),
             ),
           );
           _spansEclipsed.add(
@@ -88,7 +88,7 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
         spans.add(
           TextSpan(
             text: text.substring(currentIndex, match.start),
-            style: TextStyle(fontSize: 16),
+            style: TextStyle(color: Colors.white, fontSize: 16),
           ),
         );
       }
@@ -132,7 +132,7 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
           _spansEclipsed.add(
             TextSpan(
               text: text.substring(currentIndex, widget.maxWords),
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(color: Colors.white, fontSize: 16),
             ),
           );
         }
@@ -157,7 +157,7 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
       spans.add(
         TextSpan(
           text: remainingText,
-          style: TextStyle(fontSize: 16),
+          style: TextStyle(color: Colors.white, fontSize: 16),
         ),
       );
     } else {
