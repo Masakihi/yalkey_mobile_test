@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../profile/report_model.dart';
@@ -255,14 +256,59 @@ class _PostPageState extends State<PostPage> {
 
   Future<void> _getImages() async {
     final imagePicker = ImagePicker();
-    final pickedFiles = await imagePicker.pickMultiImage();
+    final pickedFiles = await imagePicker.pickMultiImage(imageQuality: 50);
 
     if (pickedFiles != null) {
       // 新たに選択された画像と既存の画像を合わせたリストを作成
+      /*
       List<String> newImagePaths =
           pickedFiles.map((file) => file.path).toList();
       List<String> combinedImagePaths = List.from(_selectedImagePaths)
         ..addAll(newImagePaths);
+       */
+
+
+      Future<CroppedFile?> _cropImage(String imagePath) async {
+        CroppedFile? croppedFile = await ImageCropper().cropImage(
+          sourcePath: imagePath,
+          aspectRatioPresets: [
+            CropAspectRatioPreset.square,
+            CropAspectRatioPreset.ratio3x2,
+            CropAspectRatioPreset.original,
+            CropAspectRatioPreset.ratio4x3,
+            CropAspectRatioPreset.ratio16x9
+          ],
+          compressQuality: 50,
+          maxWidth: 4086,
+          maxHeight: 4086,
+          uiSettings: [
+            AndroidUiSettings(
+                toolbarTitle: '画像の編集',
+                toolbarColor: Colors.deepOrange,
+                toolbarWidgetColor: Colors.white,
+                initAspectRatio: CropAspectRatioPreset.original,
+                lockAspectRatio: false),
+            IOSUiSettings(
+              title: '画像の編集',
+            ),
+            WebUiSettings(
+              context: context,
+            ),
+          ],
+        );
+        return croppedFile;
+      }
+
+      List<String> combinedImagePaths = [];
+      for (XFile image in pickedFiles) {
+        CroppedFile? croppedImage = await _cropImage(image.path);
+        if (croppedImage != null) {
+          setState(() {
+            combinedImagePaths.add(croppedImage.path);
+          });
+        }
+      }
+
 
       if (combinedImagePaths.length <= 10) {
         // 合計が10件以下の場合は、新たに選択された画像を追加

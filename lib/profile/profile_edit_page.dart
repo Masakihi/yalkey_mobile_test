@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import '../api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
@@ -110,9 +111,36 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
+      Future<CroppedFile?> _cropImage(String imagePath) async {
+        CroppedFile? croppedFile = await ImageCropper().cropImage(
+          sourcePath: imagePath,
+          aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
+          compressQuality: 50,
+          maxWidth: 4096,
+          maxHeight: 4096,
+          uiSettings: [
+            AndroidUiSettings(
+                toolbarTitle: '画像の切り抜き',
+                toolbarColor: Colors.deepOrange,
+                toolbarWidgetColor: Colors.white,
+                initAspectRatio: CropAspectRatioPreset.original,
+                lockAspectRatio: false),
+            IOSUiSettings(
+              title: '画像の切り抜き',
+            ),
+            WebUiSettings(
+              context: context,
+            ),
+          ],
+        );
+        return croppedFile;
+      }
+
+      CroppedFile? croppedImage = await _cropImage(pickedFile.path);
+
       setState(() {
-        _imageFile = FileImage(File(pickedFile.path));
-        _editImagePath = pickedFile.path;
+        if(croppedImage!=null) _imageFile = FileImage(File(croppedImage.path));
+        if(croppedImage!=null) _editImagePath = croppedImage.path;
       });
     }
   }
