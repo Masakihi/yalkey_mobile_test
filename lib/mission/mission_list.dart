@@ -734,6 +734,7 @@ class _MissionListPageState extends State<MissionListPage> {
           ],
         ),
         floatingActionButton: FloatingActionButton.extended(
+          heroTag: "missionButton",
           onPressed: () {
             Navigator.push(
                 context,
