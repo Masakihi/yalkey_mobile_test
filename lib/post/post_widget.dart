@@ -28,6 +28,7 @@ class _PostWidgetState extends State<PostWidget> {
   bool _liking = false;
   bool _bookmarking = false;
   bool _reposting = false;
+  bool _deleted = false;
 
   @override
   void initState() {
@@ -127,18 +128,19 @@ class _PostWidgetState extends State<PostWidget> {
   }
 
   void _navigateToPostDetailPage() async {
-    final updatedPost = await Navigator.push(
+    await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) =>
               PostDetailPage(postNumber: widget.post.postNumber),
-        ));
-
-    if (updatedPost != null) {
-      setState(() {
-        _post = updatedPost;
-      });
-    }
+        )).then((result) {
+      if (result != null && result['delete'] == true) {
+        print(result);
+        setState(() {
+          _deleted = true;
+        });
+      }
+    });
   }
 
   void _navigateToYalkerDetailPage() {
@@ -172,350 +174,370 @@ class _PostWidgetState extends State<PostWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-        onTap: () {
-          _navigateToPostDetailPage();
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              if (widget.post.isRepost == 1)
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.refresh,
-                      color: Colors.grey,
-                      size: 12.0,
-                    ),
-                    Text(
-                      '${widget.post.repostUserName}さんがリポスト',
-                      style: const TextStyle(
-                          fontSize: 12.0,
-                          color: Colors.grey,
-                          fontStyle: FontStyle.italic),
-                    ),
-                  ],
-                ),
-              if (widget.post.isRepost == 1) const SizedBox(height: 8.0),
-              if (widget.post.postPinned == true)
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.push_pin,
-                      color: Colors.grey,
-                      size: 12.0,
-                    ),
-                    Text(
-                      'ピン留めされた投稿',
-                      style: const TextStyle(
-                          fontSize: 12.0,
-                          color: Colors.grey,
-                          fontStyle: FontStyle.italic),
-                    ),
-                  ],
-                ),
-              if (widget.post.postPinned == true) const SizedBox(height: 8.0),
-              if (widget.post.toPostUserName != null)
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.reply,
-                      color: Colors.grey,
-                      size: 12.0,
-                    ),
-                    Text(
-                      '${widget.post.toPostUserName}さんに対する返信',
-                      style: const TextStyle(
-                          fontSize: 12.0,
-                          color: Colors.grey,
-                          fontStyle: FontStyle.italic),
-                    ),
-                  ],
-                ),
-              if (widget.post.toPostUserName != null)
-                const SizedBox(height: 8.0),
-              Row(
+    return _deleted
+        ? SizedBox.shrink()
+        : InkWell(
+            onTap: () {
+              _navigateToPostDetailPage();
+            },
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  GestureDetector(
-                    onTap: () {
-                      _navigateToYalkerDetailPage();
-                    },
-                    child: widget.post.postUser.postUserIcon == ""
-                        ? const CircleAvatar(
-                            backgroundColor: Colors.white,
-                            backgroundImage: NetworkImage(
-                              'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
-                            ),
-                          )
-                        : CircleAvatar(
-                            backgroundImage: NetworkImage(
-                              'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${widget.post.postUser.postUserIcon}',
-                            ),
-                          ),
-                  ),
-                  const SizedBox(width: 16.0),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
+                  if (widget.post.isRepost == 1)
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.refresh,
+                          color: Colors.grey,
+                          size: 12.0,
+                        ),
                         Text(
-                          widget.post.postUser.postUserName,
-                          style: const TextStyle(fontSize: 18.0),
+                          '${widget.post.repostUserName}さんがリポスト',
+                          style: const TextStyle(
+                              fontSize: 12.0,
+                              color: Colors.grey,
+                              fontStyle: FontStyle.italic),
                         ),
-                        const SizedBox(height: 4.0),
-                        Row(
-                          children: [
-                            if (widget.post.postUser.postUserPrivate ?? false)
-                              const Icon(
-                                Icons.lock,
-                                color: Colors.grey,
-                                size: 12.0,
-                              ),
-                            Text(
-                              '@${widget.post.postUser.postUserId} / ${widget.post.postCreatedAt.toString().substring(0, 10)} ${widget.post.postCreatedAt.toString().substring(11, 16)}',
-                              style: const TextStyle(
-                                  fontSize: 12.0, color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8.0),
-                        Row(
-                          children: [
-                            if (widget.post.postUser.postUserSuperEarlyBird ??
-                                false)
-                              GestureDetector(
-                                behavior: HitTestBehavior.translucent,
-                                onTap: () {
-                                  _showExplanation(
-                                      context, badge2Explanation['超早起き']!);
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 3, vertical: 1),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFAE0103),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: const Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 3, vertical: 1),
-                                      child: Text(
-                                        "超早起き",
-                                        style: TextStyle(
-                                            fontSize: 10.0,
-                                            color: Colors.white),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            if (widget.post.postUser.postUserEarlyBird ??
-                                false)
-                              GestureDetector(
-                                behavior: HitTestBehavior.translucent,
-                                onTap: () {
-                                  _showExplanation(
-                                      context, badge2Explanation['早起き']!);
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 3, vertical: 1),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFAE0103),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: const Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 3, vertical: 1),
-                                      child: Text(
-                                        "早起き",
-                                        style: TextStyle(
-                                            fontSize: 10.0,
-                                            color: Colors.white),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            if (widget.post.postUser.postUserSuperHardWorker ??
-                                false)
-                              GestureDetector(
-                                behavior: HitTestBehavior.translucent,
-                                onTap: () {
-                                  _showExplanation(
-                                      context, badge2Explanation['超努力家']!);
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 3, vertical: 1),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFAE0103),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: const Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 3, vertical: 1),
-                                      child: Text(
-                                        "超努力家",
-                                        style: TextStyle(
-                                            fontSize: 10.0,
-                                            color: Colors.white),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            if (widget.post.postUser.postUserHardWorker ??
-                                false)
-                              GestureDetector(
-                                behavior: HitTestBehavior.translucent,
-                                onTap: () {
-                                  _showExplanation(
-                                      context, badge2Explanation['努力家']!);
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 3, vertical: 1),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFAE0103),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: const Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 3, vertical: 1),
-                                      child: Text(
-                                        "努力家",
-                                        style: TextStyle(
-                                            fontSize: 10.0,
-                                            color: Colors.white),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            if (widget.post.postUser.postUserRegularCustomer ??
-                                false)
-                              GestureDetector(
-                                behavior: HitTestBehavior.translucent,
-                                onTap: () {
-                                  _showExplanation(
-                                      context, badge2Explanation['常連']!);
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 3, vertical: 1),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFAE0103),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: const Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 3, vertical: 1),
-                                      child: Text(
-                                        "常連",
-                                        style: TextStyle(
-                                            fontSize: 10.0,
-                                            color: Colors.white),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )
-                          ],
-                        ),
-                        const SizedBox(height: 8.0),
-                        widget.post.postText != ''
-                            ? LinkifyUtil(text: widget.post.postText)
-                            : const SizedBox.shrink(),
-                        const SizedBox(height: 8.0),
-                        ...widget.post.progressTextList
-                            .map((progressText) => Text("$progressText",
-                                style: const TextStyle(
-                                  fontSize: 16.0,
-                                  //fontWeight: FontWeight.bold,
-                                  fontStyle: FontStyle.italic,
-                                  //decoration: TextDecoration.underline,
-                                )))
-                            .toList(),
-                        ImageDisplay(
-                          imageURLs: widget.post.postImageList,
-                        )
                       ],
                     ),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      _showReplyForm();
-                    },
-                    icon: const Icon(
-                      Icons.reply,
-                      color: Color(0xFF929292),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          like();
-                        },
-                        icon: Icon(
-                          widget.post.postLiked
-                              ? Icons.favorite
-                              : Icons.favorite_border,
-                          color: widget.post.postLiked
-                              ? const Color(0xFFF75D5D)
-                              : const Color(0xFF929292), // 赤色にするかどうか
+                  if (widget.post.isRepost == 1) const SizedBox(height: 8.0),
+                  if (widget.post.postPinned == true)
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.push_pin,
+                          color: Colors.grey,
+                          size: 12.0,
                         ),
-                      ),
-                      Text(
-                        '${widget.post.postLikeNumber}', // いいね数を表示
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: widget.post.postLiked
-                              ? const Color(0xFFF75D5D)
-                              : const Color(0xFF929292),
+                        Text(
+                          'ピン留めされた投稿',
+                          style: const TextStyle(
+                              fontSize: 12.0,
+                              color: Colors.grey,
+                              fontStyle: FontStyle.italic),
+                        ),
+                      ],
+                    ),
+                  if (widget.post.postPinned == true)
+                    const SizedBox(height: 8.0),
+                  if (widget.post.toPostUserName != null)
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.reply,
+                          color: Colors.grey,
+                          size: 12.0,
+                        ),
+                        Text(
+                          '${widget.post.toPostUserName}さんに対する返信',
+                          style: const TextStyle(
+                              fontSize: 12.0,
+                              color: Colors.grey,
+                              fontStyle: FontStyle.italic),
+                        ),
+                      ],
+                    ),
+                  if (widget.post.toPostUserName != null)
+                    const SizedBox(height: 8.0),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      GestureDetector(
+                          onTap: () {
+                            _navigateToYalkerDetailPage();
+                          },
+                          child: widget.post.postUser.postUserIcon == ""
+                              ? CircleAvatar(
+                                  backgroundColor: Colors.white,
+                                  backgroundImage: Image.network(
+                                    'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png',
+                                    errorBuilder: (c, o, s) {
+                                      return Image.asset(
+                                          'assets/images/yalkey_icon.jpg');
+                                    },
+                                  ).image,
+                                )
+                              : CircleAvatar(
+                                  backgroundImage: Image.network(
+                                    'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/media/iconimage/${widget.post.postUser.postUserIcon}',
+                                    errorBuilder: (c, o, s) {
+                                      return Image.asset(
+                                          'assets/images/yalkey_icon.jpg');
+                                    },
+                                  ).image,
+                                )),
+                      const SizedBox(width: 16.0),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              widget.post.postUser.postUserName,
+                              style: const TextStyle(fontSize: 18.0),
+                            ),
+                            const SizedBox(height: 4.0),
+                            Row(
+                              children: [
+                                if (widget.post.postUser.postUserPrivate ??
+                                    false)
+                                  const Icon(
+                                    Icons.lock,
+                                    color: Colors.grey,
+                                    size: 12.0,
+                                  ),
+                                Text(
+                                  '@${widget.post.postUser.postUserId} / ${widget.post.postCreatedAt.toString().substring(0, 10)} ${widget.post.postCreatedAt.toString().substring(11, 16)}',
+                                  style: const TextStyle(
+                                      fontSize: 12.0, color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8.0),
+                            Row(
+                              children: [
+                                if (widget
+                                        .post.postUser.postUserSuperEarlyBird ??
+                                    false)
+                                  GestureDetector(
+                                    behavior: HitTestBehavior.translucent,
+                                    onTap: () {
+                                      _showExplanation(
+                                          context, badge2Explanation['超早起き']!);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 3, vertical: 1),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFAE0103),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: const Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 3, vertical: 1),
+                                          child: Text(
+                                            "超早起き",
+                                            style: TextStyle(
+                                                fontSize: 10.0,
+                                                color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                if (widget.post.postUser.postUserEarlyBird ??
+                                    false)
+                                  GestureDetector(
+                                    behavior: HitTestBehavior.translucent,
+                                    onTap: () {
+                                      _showExplanation(
+                                          context, badge2Explanation['早起き']!);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 3, vertical: 1),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFAE0103),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: const Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 3, vertical: 1),
+                                          child: Text(
+                                            "早起き",
+                                            style: TextStyle(
+                                                fontSize: 10.0,
+                                                color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                if (widget.post.postUser
+                                        .postUserSuperHardWorker ??
+                                    false)
+                                  GestureDetector(
+                                    behavior: HitTestBehavior.translucent,
+                                    onTap: () {
+                                      _showExplanation(
+                                          context, badge2Explanation['超努力家']!);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 3, vertical: 1),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFAE0103),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: const Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 3, vertical: 1),
+                                          child: Text(
+                                            "超努力家",
+                                            style: TextStyle(
+                                                fontSize: 10.0,
+                                                color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                if (widget.post.postUser.postUserHardWorker ??
+                                    false)
+                                  GestureDetector(
+                                    behavior: HitTestBehavior.translucent,
+                                    onTap: () {
+                                      _showExplanation(
+                                          context, badge2Explanation['努力家']!);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 3, vertical: 1),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFAE0103),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: const Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 3, vertical: 1),
+                                          child: Text(
+                                            "努力家",
+                                            style: TextStyle(
+                                                fontSize: 10.0,
+                                                color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                if (widget.post.postUser
+                                        .postUserRegularCustomer ??
+                                    false)
+                                  GestureDetector(
+                                    behavior: HitTestBehavior.translucent,
+                                    onTap: () {
+                                      _showExplanation(
+                                          context, badge2Explanation['常連']!);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 3, vertical: 1),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFAE0103),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: const Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 3, vertical: 1),
+                                          child: Text(
+                                            "常連",
+                                            style: TextStyle(
+                                                fontSize: 10.0,
+                                                color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                              ],
+                            ),
+                            const SizedBox(height: 8.0),
+                            widget.post.postText != ''
+                                ? LinkifyUtil(text: widget.post.postText)
+                                : const SizedBox.shrink(),
+                            const SizedBox(height: 8.0),
+                            ...widget.post.progressTextList
+                                .map((progressText) => Text("$progressText",
+                                    style: const TextStyle(
+                                      fontSize: 16.0,
+                                      //fontWeight: FontWeight.bold,
+                                      fontStyle: FontStyle.italic,
+                                      //decoration: TextDecoration.underline,
+                                    )))
+                                .toList(),
+                            ImageDisplay(
+                              imageURLs: widget.post.postImageList,
+                            )
+                          ],
                         ),
                       ),
                     ],
                   ),
-                  IconButton(
-                    onPressed: () {
-                      bookmark();
-                    },
-                    icon: Icon(
-                        widget.post.postBookmarked
-                            ? Icons.bookmark
-                            : Icons.bookmark_border,
-                        color: widget.post.postBookmarked
-                            ? const Color.fromRGBO(255, 196, 67, 1)
-                            : const Color(0xFF929292)),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      _repost();
-                    },
-                    icon: Icon(Icons.refresh,
-                        color: widget.post.postReposted
-                            ? const Color.fromRGBO(102, 205, 170, 1)
-                            : const Color(0xFF929292)),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          _showReplyForm();
+                        },
+                        icon: const Icon(
+                          Icons.reply,
+                          color: Color(0xFF929292),
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              like();
+                            },
+                            icon: Icon(
+                              widget.post.postLiked
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: widget.post.postLiked
+                                  ? const Color(0xFFF75D5D)
+                                  : const Color(0xFF929292), // 赤色にするかどうか
+                            ),
+                          ),
+                          Text(
+                            '${widget.post.postLikeNumber}', // いいね数を表示
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: widget.post.postLiked
+                                  ? const Color(0xFFF75D5D)
+                                  : const Color(0xFF929292),
+                            ),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          bookmark();
+                        },
+                        icon: Icon(
+                            widget.post.postBookmarked
+                                ? Icons.bookmark
+                                : Icons.bookmark_border,
+                            color: widget.post.postBookmarked
+                                ? const Color.fromRGBO(255, 196, 67, 1)
+                                : const Color(0xFF929292)),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          _repost();
+                        },
+                        icon: Icon(Icons.refresh,
+                            color: widget.post.postReposted
+                                ? const Color.fromRGBO(102, 205, 170, 1)
+                                : const Color(0xFF929292)),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
-        ));
+            ));
   }
 }

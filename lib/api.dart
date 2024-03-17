@@ -101,20 +101,18 @@ Future<dynamic> httpPost(String path, Map<String, dynamic>? body,
       );
       // ヘッダーにトークンを追加
       request.headers['Authorization'] = 'JWT $token';
-
       // 画像をリクエストに追加
       for (var imagePath in images) {
         request.files
             .add(await http.MultipartFile.fromPath(imageFieldName, imagePath));
       }
-
       // ボディを追加
       if (body != null) {
         body.forEach((key, value) {
           request.fields[key] = value.toString();
         });
       }
-
+      // logResponse(request.fields);
       var response = await request.send();
       var responseBody = await response.stream.bytesToString();
       logResponse(responseBody);
@@ -138,14 +136,11 @@ Future<dynamic> httpPost(String path, Map<String, dynamic>? body,
         request.fields[key] = value.toString();
       });
     }
-
     var response = await request.send();
     var responseBody = await response.stream.bytesToString();
-
     return json.decode(responseBody);
   }
 }
-
 
 Future<dynamic> httpPut(String path, Map<String, dynamic>? body,
     {bool jwt = false,

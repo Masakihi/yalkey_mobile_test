@@ -57,14 +57,20 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _fetchProfileData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    // キャッシュからデータを取得
-    String? cachedProfileData = prefs.getString('profileData');
-
     try {
       final Map<String, dynamic> response =
           await httpGet('login-user-profile/', jwt: true);
+      await prefs.setString(
+          'login_user_name', response['login_user_profile']['name'] ?? "");
+      await prefs.setString(
+          'login_user_iconimage',
+          response['login_user_profile']['iconimage'] ??
+              'https://yalkey-s3.s3.ap-southeast-2.amazonaws.com/static/img/user.png');
+      await prefs.setString(
+          'login_user_id', response['login_user_profile']['user_id'] as String);
       setState(() {
         _profileData = response;
+
         //print(_profileData);
       });
 
@@ -420,8 +426,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       userNumber:
                                           _profileData!['login_user_profile']
                                               ['user_number']),
-                                )
-                            );
+                                ));
                           },
                           child: Text('投稿一覧'),
                         ),

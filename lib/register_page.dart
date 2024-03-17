@@ -36,6 +36,8 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController userIDController = TextEditingController();
   TextEditingController userProfileController = TextEditingController();
   String userIdError = '';
+  String emailError = '';
+  bool hasError = false;
 
   Future<void> _getImages() async {
     final imagePicker = ImagePicker();
@@ -69,22 +71,34 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future<void> register(BuildContext context, data) async {
     try {
-      setState(() => userIdError = '');
+      setState(() => {userIdError = '', emailError = '', hasError = true});
       //final response = await httpPost('token/', {'email': 'molcar@yalkey.com', 'password': 'hogehoge'});
 
       //print(image.path);
       final response = await httpPost('user-create/', data);
       logResponse(response);
-      if(response.containsKey('profile_form_error')){
-        if (response['profile_form_error']["user_id"].length > 0) {
-          response['profile_form_error']["user_id"].forEach(
-                  (errorText) => {setState(() => userIdError += '$errorText\n')});
-          return;
-        }
+      if (response == 201) {
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const RegisterNextPage()));
+        return;
       }
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => const RegisterNextPage(),
-      ));
+      if (response['profile_form_error']["user_id"]?.length > 0) {
+        response['profile_form_error']["user_id"]?.forEach(
+            (errorText) => {setState(() => userIdError += '$errorText\n')});
+        setState(() => hasError = true);
+      }
+      if (response['user_form_error']["email"]?.length > 0) {
+        response['user_form_error']["email"]?.forEach(
+            (errorText) => {setState(() => emailError += '$errorText\n')});
+        setState(() => hasError = true);
+      }
+      if (!hasError) {
+      } else {
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('登録エラー：フォームを確認してください')),
+        );
+      }
     } catch (error) {
       print('Error logging in: $error');
     }
@@ -148,6 +162,11 @@ class _RegisterPageState extends State<RegisterPage> {
                                */
                         ),
                       )),
+                  if (emailError != '')
+                    Text(
+                      emailError,
+                      style: TextStyle(color: Colors.red),
+                    ),
                   Padding(
                       padding: const EdgeInsets.all(5.0), //マージン
                       child: TextFormField(
