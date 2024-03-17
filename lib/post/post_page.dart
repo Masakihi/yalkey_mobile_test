@@ -177,7 +177,7 @@ class _PostPageState extends State<PostPage> {
       if (!_hasData) {
         String text = _textEditingController.text;
         var data = {
-          'text': text,
+          'text': text == "" ? "本文無し" : text,
         };
         logResponse(data);
         final response = await httpPost('post-form/', data,
@@ -208,7 +208,7 @@ class _PostPageState extends State<PostPage> {
 
         // APIに投稿するデータを作成
         var data = {
-          'text': text,
+          'text': text == "" ? "　" : text,
           'type': _selectedReport?.reportType,
           'unit': _selectedReport?.reportUnit,
           'report_name': _selectedReport?.reportName,
@@ -219,7 +219,6 @@ class _PostPageState extends State<PostPage> {
           'custom_float_data': floatForm,
           'report_date': DateFormat('yyyy-MM-dd').format(_selectedDate),
         };
-
 
         print("data");
         print(data);
@@ -267,7 +266,6 @@ class _PostPageState extends State<PostPage> {
         ..addAll(newImagePaths);
        */
 
-
       Future<CroppedFile?> _cropImage(String imagePath) async {
         CroppedFile? croppedFile = await ImageCropper().cropImage(
           sourcePath: imagePath,
@@ -284,7 +282,7 @@ class _PostPageState extends State<PostPage> {
           uiSettings: [
             AndroidUiSettings(
                 toolbarTitle: '画像の編集',
-                toolbarColor: Colors.deepOrange,
+                toolbarColor: Color(0xFFAE0103),
                 toolbarWidgetColor: Colors.white,
                 initAspectRatio: CropAspectRatioPreset.original,
                 lockAspectRatio: false),
@@ -308,7 +306,6 @@ class _PostPageState extends State<PostPage> {
           });
         }
       }
-
 
       if (combinedImagePaths.length <= 10) {
         // 合計が10件以下の場合は、新たに選択された画像を追加
@@ -532,7 +529,13 @@ class _PostPageState extends State<PostPage> {
                           Positioned(
                             right: 0,
                             child: IconButton(
-                              icon: Icon(Icons.close, color: Colors.red),
+                              icon: Ink(
+                                  decoration: ShapeDecoration(
+                                    color: Color.fromARGB(150, 0, 0, 0), // 背景色
+                                    shape: CircleBorder(), // 丸い形
+                                  ),
+                                  child:
+                                      Icon(Icons.close, color: Colors.white)),
                               onPressed: () {
                                 // この画像をリストから削除する
                                 setState(() {
@@ -587,20 +590,22 @@ class _PostPageState extends State<PostPage> {
                     Row(children: [
                       Expanded(
                         child: TextFormField(
-                          controller: _hoursController,
-                          decoration: const InputDecoration(labelText: '時間'),
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [FilteringTextInputFormatter.digitsOnly]
-                        ),
+                            controller: _hoursController,
+                            decoration: const InputDecoration(labelText: '時間'),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ]),
                       ),
                       const SizedBox(width: 16.0),
                       Expanded(
                         child: TextFormField(
-                          controller: _minutesController,
-                          decoration: const InputDecoration(labelText: '分'),
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [FilteringTextInputFormatter.digitsOnly]
-                        ),
+                            controller: _minutesController,
+                            decoration: const InputDecoration(labelText: '分'),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ]),
                       ),
                     ])
                   ],
@@ -608,13 +613,12 @@ class _PostPageState extends State<PostPage> {
                     Row(children: [
                       Expanded(
                         child: TextFormField(
-                          controller: _integerController,
-                          decoration: const InputDecoration(labelText: '整数値'),
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly
-                          ]
-                        ),
+                            controller: _integerController,
+                            decoration: const InputDecoration(labelText: '整数値'),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ]),
                       ),
                       const SizedBox(width: 8.0),
                       Text(_selectedReport!.reportUnit), // 単位
@@ -629,7 +633,8 @@ class _PostPageState extends State<PostPage> {
                           keyboardType: const TextInputType.numberWithOptions(
                               decimal: true),
                           inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.allow(RegExp(r'^\d+(\.\d*)?')),
+                            FilteringTextInputFormatter.allow(
+                                RegExp(r'^\d+(\.\d*)?')),
                           ],
                         ),
                       ),
