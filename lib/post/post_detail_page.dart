@@ -21,6 +21,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
   String? loginUserIconImage;
   String? loginUserId;
   int? loginUserNumber;
+  bool deleted = false;
 
   @override
   void initState() {
@@ -30,12 +31,17 @@ class _PostDetailPageState extends State<PostDetailPage> {
   }
 
   Future<void> _fetchPostDetail() async {
-    var postDetailResponse =
-        await PostDetailResponse.fetchPostDetailResponse(widget.postNumber);
-    setState(() {
-      _postDetailResponse = postDetailResponse;
-      _isLoading = false;
-    });
+    try {
+      var postDetailResponse =
+          await PostDetailResponse.fetchPostDetailResponse(widget.postNumber);
+      setState(() {
+        _postDetailResponse = postDetailResponse;
+        _isLoading = false;
+      });
+    } catch (error) {
+      print(error);
+      setState(() => deleted = true);
+    }
   }
 
   Future<void> _getLoginUserData() async {
@@ -54,117 +60,142 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('投稿詳細'),
-        actions: [
-          if (loginUserNumber ==
-              _postDetailResponse?.post.postUser.postUserNumber)
-            IconButton(
-              onPressed: () {
-                if (_postDetailResponse != null) {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('削除の確認'),
-                        content: const Text('本当に削除してもよろしいですか？'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text('キャンセル'),
-                          ),
-                          TextButton(
-                            onPressed: () async {
-                              await _postDetailResponse!.post.delete();
-                              setState(() => {});
-                              Navigator.of(context).pop();
+    return WillPopScope(
+        onWillPop: () async {
+          final result = {'delete': deleted};
+          Navigator.pop(context, result);
+          return false;
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('投稿詳細'),
+            actions: [
+              if (loginUserNumber ==
+                      _postDetailResponse?.post.postUser.postUserNumber &&
+                  !deleted)
+                IconButton(
+                  onPressed: () {
+                    if (_postDetailResponse != null) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('削除の確認'),
+                            content: const Text('本当に削除してもよろしいですか？'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('キャンセル'),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  await _postDetailResponse!.post.delete();
+                                  setState(() => {});
+                                  // Navigator.pushAndRemoveUntil(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //       builder: (context) => HomePage()),
+                                  //   (Route<dynamic> route) => false,
+                                  // );
+                                  Navigator.of(context).pop();
+                                  print("contextです");
+                                  print(context);
+                                  setState(() => deleted = true);
+                                  // Navigator.pop(context);
 
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('投稿を削除しました')),
-                              );
-                            },
-                            child: Text('削除'),
-                          ),
-                        ],
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('投稿を削除しました')),
+                                  );
+                                },
+                                child: Text('削除'),
+                              ),
+                            ],
+                          );
+                        },
                       );
-                    },
-                  );
-                }
-              },
-              icon: const Icon(Icons.delete),
-            ),
-          if (loginUserNumber ==
-              _postDetailResponse?.post.postUser.postUserNumber)
-            IconButton(
-              onPressed: () async {
-                if (_postDetailResponse != null) {
-                  await _postDetailResponse!.post.pin();
-                  setState(() => {});
-                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text(_postDetailResponse!.post.postPinned!
-                            ? '投稿をピン止めしました'
-                            : 'ピン止めを解除しました')),
-                  );
-                }
-              },
-              icon: Icon(
-                _postDetailResponse != null
-                    ? _postDetailResponse!.post.postPinned!
-                        ? Icons.push_pin
-                        : Icons.push_pin_outlined
-                    : Icons.push_pin_outlined,
-                color: _postDetailResponse != null
-                    ? _postDetailResponse!.post.postPinned!
-                        ? Colors.red
-                        : Colors.grey
-                    : Colors.grey,
-              ),
-            ),
-        ],
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _postDetailResponse != null
-              ? SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      PostWidget(post: _postDetailResponse!.post),
-                      if (_postDetailResponse!.toPost != null)
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12.0),
-                              border: Border.all(color: Colors.grey),
-                            ),
-                            padding: const EdgeInsets.all(12.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  '返信先の投稿',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(height: 8.0), // 適宜間隔を設ける
-                                PostWidget(post: _postDetailResponse!.toPost!),
-                              ],
-                            ),
-                          ),
-                        ),
-                      const Divider(
-                          height: 32.0, thickness: 1.0, color: Colors.grey),
-                      _buildReplyList(_postDetailResponse!.replyList),
-                    ],
+                    }
+                  },
+                  icon: const Icon(Icons.delete),
+                ),
+              if (loginUserNumber ==
+                      _postDetailResponse?.post.postUser.postUserNumber &&
+                  !deleted)
+                IconButton(
+                  onPressed: () async {
+                    if (_postDetailResponse != null) {
+                      await _postDetailResponse!.post.pin();
+                      setState(() => {});
+                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text(_postDetailResponse!.post.postPinned!
+                                ? '投稿をピン止めしました'
+                                : 'ピン止めを解除しました')),
+                      );
+                    }
+                  },
+                  icon: Icon(
+                    _postDetailResponse != null
+                        ? _postDetailResponse!.post.postPinned!
+                            ? Icons.push_pin
+                            : Icons.push_pin_outlined
+                        : Icons.push_pin_outlined,
+                    color: _postDetailResponse != null
+                        ? _postDetailResponse!.post.postPinned!
+                            ? Colors.red
+                            : Colors.grey
+                        : Colors.grey,
                   ),
-                )
-              : const Center(child: Text('投稿の読み込みに失敗しました。')),
-    );
+                ),
+            ],
+          ),
+          body: deleted
+              ? Text('この投稿は削除されました')
+              : _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _postDetailResponse != null
+                      ? SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              PostWidget(post: _postDetailResponse!.post),
+                              if (_postDetailResponse!.toPost != null)
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12.0),
+                                      border: Border.all(color: Colors.grey),
+                                    ),
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          '返信先の投稿',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        const SizedBox(height: 8.0), // 適宜間隔を設ける
+                                        PostWidget(
+                                            post: _postDetailResponse!.toPost!),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              const Divider(
+                                  height: 32.0,
+                                  thickness: 1.0,
+                                  color: Colors.grey),
+                              _buildReplyList(_postDetailResponse!.replyList),
+                            ],
+                          ),
+                        )
+                      : const Center(child: Text('投稿の読み込みに失敗しました。')),
+        ));
   }
 
   Widget _buildReplyList(List<Post> replyList) {

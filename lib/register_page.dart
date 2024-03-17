@@ -77,20 +77,22 @@ class _RegisterPageState extends State<RegisterPage> {
       //print(image.path);
       final response = await httpPost('user-create/', data);
       logResponse(response);
-      if (response['profile_form_error']["user_id"].length > 0) {
-        response['profile_form_error']["user_id"].forEach(
+      if (response == 201) {
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const RegisterNextPage()));
+        return;
+      }
+      if (response['profile_form_error']["user_id"]?.length > 0) {
+        response['profile_form_error']["user_id"]?.forEach(
             (errorText) => {setState(() => userIdError += '$errorText\n')});
         setState(() => hasError = true);
       }
-      if (response['user_form_error']["email"].length > 0) {
-        response['user_form_error']["email"].forEach(
+      if (response['user_form_error']["email"]?.length > 0) {
+        response['user_form_error']["email"]?.forEach(
             (errorText) => {setState(() => emailError += '$errorText\n')});
         setState(() => hasError = true);
       }
       if (!hasError) {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => const RegisterNextPage(),
-        ));
       } else {
         ScaffoldMessenger.of(context).removeCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
