@@ -467,7 +467,7 @@ class PostDetailResponse {
     Post? toPost = json['to_post_detail'] != null
         ? Post.fromJson(json['to_post_detail'])
         : null;
-    if (json['reply_list'].isNotEmpty) {
+    if (json['reply_list']?.isNotEmpty) {
       print(json['reply_list']
           .map((json) => {Post.fromJson(json) as Post})
           .toList());
@@ -492,6 +492,7 @@ class PostDetailResponse {
   static Future<PostDetailResponse> fetchPostDetailResponse(
       int postNumber) async {
     dynamic jsonData = await httpGet('detail/$postNumber', jwt: true);
+    logResponse(jsonData);
     return PostDetailResponse.fromJson(jsonData);
   }
 }

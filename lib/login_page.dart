@@ -27,10 +27,21 @@ class _LoginPageState extends State<LoginPage> {
   //TextEditingController emailController = TextEditingController();
   //TextEditingController passwordController = TextEditingController();
 
+  String errorText = '';
+
   Future<void> login(BuildContext context, email, password) async {
     try {
       final response =
           await httpPost('token/', {'email': email, 'password': password});
+      logResponse(response);
+      if (response['detail'] ==
+          "No active account found with the given credentials") {
+        setState(() => errorText = 'メールアドレスかパスワードが異なります');
+        return;
+      } else if (response['detail'] != null) {
+        setState(() => errorText = response['detail']);
+        return;
+      }
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('access_token', response['access'] as String);
       await prefs.setString('refresh_token', response['refresh'] as String);
@@ -136,6 +147,11 @@ class _LoginPageState extends State<LoginPage> {
                               */
                         ),
                       )),
+                  if (errorText != '')
+                    Text(
+                      errorText,
+                      style: TextStyle(color: Colors.red),
+                    ),
                   Padding(
                       padding: const EdgeInsets.all(10.0), //マージン
                       child: ElevatedButton(

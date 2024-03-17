@@ -81,17 +81,17 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     );
     final data = {
       "name": _nameController.text,
-      "user_id": _userIdController.text,
+      // "user_id": _userIdController.text,
+      "user_id": "hogehogee",
       "profile": _profileController.text,
       "private": _private
     };
-    logResponse(data);
-    final response = httpPut(
-        'profile/update/',
-        data,
+    // logResponse(data);
+    final response = await httpPut('profile/update/', data,
         jwt: true,
         images: _editImagePath != null ? [_editImagePath!] : [],
         imageFieldName: 'iconimage');
+    print("responseです");
     logResponse(response);
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
