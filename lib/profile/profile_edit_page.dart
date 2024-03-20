@@ -121,15 +121,20 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           uiSettings: [
             AndroidUiSettings(
                 toolbarTitle: '画像の切り抜き',
-                toolbarColor: Colors.deepOrange,
+                toolbarColor: const Color(0xFFAE0103),
                 toolbarWidgetColor: Colors.white,
                 initAspectRatio: CropAspectRatioPreset.original,
-                lockAspectRatio: false),
+                lockAspectRatio: true),
             IOSUiSettings(
               title: '画像の切り抜き',
             ),
             WebUiSettings(
+              enableZoom: true,
+              enableResize: true,
+              mouseWheelZoom: true,
+              showZoomer: true,
               context: context,
+              presentStyle: CropperPresentStyle.page,
             ),
           ],
         );

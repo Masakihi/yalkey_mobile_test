@@ -120,7 +120,16 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
       MaterialPageRoute(
         builder: (context) => ProfileEditPage(profileData: _loginUserProfileData!),
       ),
-    );
+    ).then((value){
+      setState(() {
+        _reportListMap = {
+          'num_report_list': [],
+          'bool_report_list': []
+        };
+        _fetchProfileData();
+        _fetchReportList();
+      });
+    });
   }
 
   void _showExplanation(BuildContext context, String explanation) {

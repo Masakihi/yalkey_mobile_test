@@ -399,7 +399,7 @@ class PostListResponse {
   }
 
   static Future<PostListResponse> fetchPostListResponse(int page) async {
-    dynamic jsonData = await httpGet('home/$page', jwt: true);
+    dynamic jsonData = await httpGet('home/$page/', jwt: true);
     // print(jsonData);
     return PostListResponse.fromResponseUserRepostList(jsonData);
   }
@@ -424,20 +424,20 @@ class PostListResponse {
   }
 
   static Future<PostListResponse> fetchBookmarkPostResponse(int page) async {
-    dynamic jsonData = await httpGet('user-bookmark/$page', jwt: true);
+    dynamic jsonData = await httpGet('user-bookmark/$page/', jwt: true);
     return PostListResponse.fromResponsePostList(
         jsonData['user_bookmark_list'][0]);
   }
 
   static Future<PostListResponse> fetchAllPostResponse(int page) async {
-    dynamic jsonData = await httpGet('latest-post/${page}', jwt: true);
+    dynamic jsonData = await httpGet('latest-post/${page}/', jwt: true);
     return PostListResponse.fromResponseUserRepostList(jsonData);
   }
 
   static Future<PostListResponse> fetchYalkerPostResponse(
       int userNumber, int page) async {
     dynamic jsonData = await httpGet(
-        'yalker-detail-repost-list/${userNumber}/${page}',
+        'yalker-detail-repost-list/${userNumber}/${page}/',
         jwt: true);
     return PostListResponse.fromResponseYalkerRepostList(jsonData);
   }
@@ -445,7 +445,7 @@ class PostListResponse {
   static Future<PostListResponse> fetchYalkerPinnedPostResponse(
       int userNumber, int page) async {
     dynamic jsonData = await httpGet(
-        'yalker-detail-repost-list/${userNumber}/${page}',
+        'yalker-detail-repost-list/${userNumber}/${page}/',
         jwt: true);
     return PostListResponse.fromResponseYalkerPinnedRepostList(jsonData);
   }
@@ -491,7 +491,7 @@ class PostDetailResponse {
 
   static Future<PostDetailResponse> fetchPostDetailResponse(
       int postNumber) async {
-    dynamic jsonData = await httpGet('detail/$postNumber', jwt: true);
+    dynamic jsonData = await httpGet('detail/$postNumber/', jwt: true);
     logResponse(jsonData);
     return PostDetailResponse.fromJson(jsonData);
   }
