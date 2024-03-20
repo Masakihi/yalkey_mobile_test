@@ -114,7 +114,7 @@ class YalkerProgressListResponse {
   static Future<YalkerProgressListResponse> fetchYalkerProgressListResponse(
       int userId, DateTime startDate, DateTime endDate) async {
     dynamic jsonData = await httpGet(
-        'yalker-progress-list/$userId/${startDate.year}/${startDate.month}/${startDate.day}/${endDate.year}/${endDate.month}/${endDate.day}/1',
+        'yalker-progress-list/$userId/${startDate.year}/${startDate.month}/${startDate.day}/${endDate.year}/${endDate.month}/${endDate.day}/1/',
         jwt: true);
     // print(jsonData);
     return YalkerProgressListResponse.fromJson(jsonData);
@@ -126,7 +126,7 @@ class YalkerProgressListResponse {
       DateTime endDate,
       String reportTitle) async {
     dynamic jsonData = await httpGet(
-        'yalker-progress-list/$userId/${startDate.year}/${startDate.month}/${startDate.day}/${endDate.year}/${endDate.month}/${endDate.day}/1',
+        'yalker-progress-list/$userId/${startDate.year}/${startDate.month}/${startDate.day}/${endDate.year}/${endDate.month}/${endDate.day}/1/',
         jwt: true);
     final progressList =
         YalkerProgressListResponse.fromJson(jsonData).progressList;

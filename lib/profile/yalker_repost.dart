@@ -124,7 +124,7 @@ class _YalkerRepostPageState extends State<YalkerRepostPage> {
   Future<void> _fetchProfileData() async {
     try {
       final Map<String, dynamic> response =
-      await httpGet('yalker-profile/${widget.userNumber}', jwt: true);
+      await httpGet('yalker-profile/${widget.userNumber}/', jwt: true);
       setState(() {
         print(response);
         _profileData = response;

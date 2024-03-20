@@ -547,7 +547,6 @@ class _PostPageState extends State<PostPage> {
                               fit: BoxFit.cover,
                             ),
                           ),
-
                           if (kIsWeb) Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Image.asset(
@@ -556,7 +555,6 @@ class _PostPageState extends State<PostPage> {
                               fit: BoxFit.cover,
                             ),
                           ),
-
                           Positioned(
                             right: 0,
                             child: IconButton(
