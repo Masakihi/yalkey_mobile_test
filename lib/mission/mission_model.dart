@@ -161,7 +161,7 @@ class MissionResponse {
 
   static Future<MissionResponse> fetchMissionResponse(int missionNumber) async {
     dynamic jsonData =
-        await httpGet('mission/detail/${missionNumber}', jwt: true);
+        await httpGet('mission/detail/${missionNumber}/', jwt: true);
     return MissionResponse.fromJson(jsonData);
   }
 }

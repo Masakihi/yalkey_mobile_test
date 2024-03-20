@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -11,6 +12,21 @@ import '../app.dart';
 import '../home_page.dart';
 import 'package:intl/intl.dart';
 import 'image_cropper.dart';
+import 'dart:html' as html;
+import 'dart:typed_data';
+import 'dart:async';
+
+
+extension FileModifier on html.File {
+  Future<Uint8List> asBytes() async {
+    final bytesFile = Completer<List<int>>();
+    final reader = html.FileReader();
+    reader.onLoad.listen(
+            (event) => bytesFile.complete(reader.result as FutureOr<List<int>>?));
+    reader.readAsArrayBuffer(this);
+    return Uint8List.fromList(await bytesFile.future);
+  }
+}
 
 enum ReportType { time, custom_int, custom_double, bool }
 
@@ -290,7 +306,12 @@ class _PostPageState extends State<PostPage> {
               title: '画像の編集',
             ),
             WebUiSettings(
+              enableZoom: true,
+              enableResize: true,
+              mouseWheelZoom: true,
+              showZoomer: true,
               context: context,
+              presentStyle: CropperPresentStyle.page,
             ),
           ],
         );
@@ -518,7 +539,7 @@ class _PostPageState extends State<PostPage> {
                     itemBuilder: (context, index) {
                       return Stack(
                         children: [
-                          Padding(
+                          if (!kIsWeb) Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Image.file(
                               File(_selectedImagePaths[index]),
@@ -526,6 +547,16 @@ class _PostPageState extends State<PostPage> {
                               fit: BoxFit.cover,
                             ),
                           ),
+
+                          if (kIsWeb) Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Image.asset(
+                              _selectedImagePaths[index],
+                              height: 200,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+
                           Positioned(
                             right: 0,
                             child: IconButton(

@@ -129,7 +129,12 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               title: '画像の切り抜き',
             ),
             WebUiSettings(
+              enableZoom: true,
+              enableResize: true,
+              mouseWheelZoom: true,
+              showZoomer: true,
               context: context,
+              presentStyle: CropperPresentStyle.page,
             ),
           ],
         );
