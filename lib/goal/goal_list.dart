@@ -39,7 +39,7 @@ class _GoalListPageState extends State<GoalListPage> {
     });
 
     GoalListResponse goalListResponse =
-        await GoalListResponse.fetchGoalListResponse(_page);
+    await GoalListResponse.fetchGoalListResponse(_page);
     if (mounted) {
       setState(() {
         _goalList.addAll(goalListResponse.goalList); // 新しいデータをリストに追加
@@ -88,77 +88,68 @@ class _GoalListPageState extends State<GoalListPage> {
         onRefresh: () async {
           _clearCache();
         },
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: ListView.builder(
-                controller: _scrollController, // スクロールコントローラーを設定
-                itemCount: _goalList.length + 1, // リストアイテム数 + ローディングインジケーター
-                itemBuilder: (context, index) {
-                  if (index == _goalList.length) {
-                    return _loading
-                        ? Container(
-                            alignment: Alignment.center,
-                            padding: EdgeInsets.all(16.0),
-                            child: CircularProgressIndicator(
-                              strokeWidth: 3.0,
+        child: ListView.builder(
+          controller: _scrollController, // スクロールコントローラーを設定
+          itemCount: _goalList.length + 1, // リストアイテム数 + ローディングインジケーター
+          itemBuilder: (context, index) {
+            if (index == _goalList.length) {
+              return _loading
+                  ? Container(
+                alignment: Alignment.center,
+                padding: EdgeInsets.all(16.0),
+                child: CircularProgressIndicator(
+                  strokeWidth: 3.0,
+                ),
+              )
+                  : SizedBox.shrink(); // ローディングインジケーターを表示
+            }
+            final goal = _goalList[index];
+            return Padding(
+              padding: const EdgeInsets.symmetric(
+                  vertical: 8.0, horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      GestureDetector(
+                        //InkWellでも同じ
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => GoalDetailPage(
+                                  value: int.parse('${goal.goalNumber}')),
+                              //builder: (context) => TaskDetailPage(value: int.parse('352')),
                             ),
-                          )
-                        : SizedBox.shrink(); // ローディングインジケーターを表示
-                  }
-                  final goal = _goalList[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 8.0, horizontal: 16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
+                          ).then((value) {
+                            // 再描画
+                            _clearCache();
+                          });
+                        },
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            GestureDetector(
-                              //InkWellでも同じ
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => GoalDetailPage(
-                                        value: int.parse('${goal.goalNumber}')),
-                                    //builder: (context) => TaskDetailPage(value: int.parse('352')),
-                                  ),
-                                ).then((value) {
-                                  // 再描画
-                                  _clearCache();
-                                });
-                              },
-
-                              child: Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      goal.goalText,
-                                      style: const TextStyle(fontSize: 18.0),
-                                    ),
-                                    SizedBox(height: 4.0),
-                                    Text(
-                                      '期限：${goal.deadline.toString().substring(0, 10)} ${goal.deadline.toString().substring(11, 16)}',
-                                      style: TextStyle(
-                                          fontSize: 12.0, color: Colors.grey),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            Text(
+                              goal.goalText,
+                              style: const TextStyle(fontSize: 18.0),
+                            ),
+                            SizedBox(height: 4.0),
+                            Text(
+                              '期限：${goal.deadline.toString().substring(0, 10)} ${goal.deadline.toString().substring(11, 16)}',
+                              style: TextStyle(
+                                  fontSize: 12.0, color: Colors.grey),
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                  );
-                },
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ),
-          ],
+            );
+          },
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
