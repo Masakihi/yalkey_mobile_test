@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -43,7 +44,7 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
           ),
         ),
         const SizedBox(height: 5),
-        if (widget.withPreview) PreviewsWidget(urls: _extractUrls(widget.text)),
+        if (widget.withPreview && !kIsWeb) PreviewsWidget(urls: _extractUrls(widget.text)),
       ],
     );
   }
