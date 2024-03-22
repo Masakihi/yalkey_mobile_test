@@ -9,11 +9,14 @@ import 'dart:io';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/foundation.dart';
 
 // [StatefulWidget]を使う場合
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await FlutterDownloader.initialize();
+  if (!kIsWeb) {
+    await FlutterDownloader.initialize();
+  }
   initializeDateFormatting('jp');
   WidgetsFlutterBinding.ensureInitialized();
   // accessTokenを取得する
@@ -23,7 +26,8 @@ void main() async {
   var loginUserIconImage = prefs.getString('login_user_iconimage');
 
   // // ネットワーク接続状態を取得
-  var connectivityResult = await Connectivity().checkConnectivity();
+  //var connectivityResult = await Connectivity().checkConnectivity();
+
 
   // // オフラインの場合はアプリを終了
   // if (connectivityResult == ConnectivityResult.none) {

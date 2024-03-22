@@ -110,7 +110,16 @@ class _ProfilePageState extends State<ProfilePage> {
       MaterialPageRoute(
         builder: (context) => ProfileEditPage(profileData: _profileData!),
       ),
-    );
+    ).then((value){
+      setState(() {
+        _reportListMap = {
+          'num_report_list': [],
+          'bool_report_list': []
+        };
+        _fetchProfileData();
+        _fetchReportList();
+      });
+    });
   }
 
   void _showExplanation(BuildContext context, String explanation) {

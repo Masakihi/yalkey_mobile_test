@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -43,7 +44,7 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
           ),
         ),
         const SizedBox(height: 5),
-        if (widget.withPreview) PreviewsWidget(urls: _extractUrls(widget.text)),
+        if (widget.withPreview && !kIsWeb) PreviewsWidget(urls: _extractUrls(widget.text)),
       ],
     );
   }
@@ -69,7 +70,7 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
           _spansEclipsed.add(
             TextSpan(
               text: text.substring(currentIndex, widget.maxWords),
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(color: Colors.white, fontSize: 16),
             ),
           );
           _spansEclipsed.add(
@@ -88,7 +89,7 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
         spans.add(
           TextSpan(
             text: text.substring(currentIndex, match.start),
-            style: TextStyle(fontSize: 16),
+            style: TextStyle(color: Colors.white, fontSize: 16),
           ),
         );
       }
@@ -132,7 +133,7 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
           _spansEclipsed.add(
             TextSpan(
               text: text.substring(currentIndex, widget.maxWords),
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(color: Colors.white, fontSize: 16),
             ),
           );
         }
@@ -157,7 +158,7 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
       spans.add(
         TextSpan(
           text: remainingText,
-          style: TextStyle(fontSize: 16),
+          style: TextStyle(color: Colors.white, fontSize: 16),
         ),
       );
     } else {

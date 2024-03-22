@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'api.dart';
 import 'notification/notification_list.dart';
 import 'home_page.dart';
-import 'notification/notification.dart';
 import 'post/post_page.dart';
 import 'profile/profile_page.dart';
 import 'mission/mission_list.dart';
@@ -23,6 +22,26 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   int? _notificationCount;
   Timer? _notificationTimer;
+
+  int _selectedIndex = 0;
+  final List<Widget> _screens = [
+    const HomePage(),
+    NotificationListPage(),
+    //const PostPage(),
+    //const TaskPage(),
+    const MissionListPage(),
+    ProfilePage(),
+    // 他の画面をここに追加してください
+  ];
+
+  final PageController _pageController = PageController();
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      _pageController.jumpToPage(index);
+    });
+  }
 
   Future<void> _fetchNotificationData() async {
     try {
@@ -69,6 +88,80 @@ class _BottomNavBarState extends State<BottomNavBar> {
     });
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: PageView(
+        controller: _pageController,
+        children: _screens,
+        onPageChanged: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.groups),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Icon(Icons.notifications),
+                      // 通知バッジを表示する
+                      if (_notificationCount != null && _notificationCount != 0)
+                        Positioned(
+                          top: -10,
+                          right: -10,
+                          child: badges.Badge(
+                            badgeContent: Text('${_notificationCount!}',
+                                style: TextStyle(fontSize: 10)),
+                            badgeAnimation: const badges.BadgeAnimation.rotation(
+                              animationDuration: Duration(seconds: 1),
+                              colorChangeAnimationDuration: Duration(seconds: 1),
+                              loopAnimation: false,
+                              curve: Curves.fastOutSlowIn,
+                              colorChangeAnimationCurve: Curves.easeInCubic,
+                            ),
+                            badgeStyle: const badges.BadgeStyle(
+                                badgeColor: Color(0xFFAE0103),
+                                padding: EdgeInsets.all(7)),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+              label: 'Notification',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.task),
+              label: 'Task',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+            // 他のボタンも同様に追加してください
+          ],
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          selectedItemColor: const Color(0xFFAE0103),
+          backgroundColor: const Color(0xFF1A1A1A),
+          unselectedItemColor: Colors.white,
+          type: BottomNavigationBarType.fixed),
+    );
+  }
+
+  /*
   @override
   Widget build(BuildContext context) {
     return PersistentTabView(
@@ -155,4 +248,5 @@ class _BottomNavBarState extends State<BottomNavBar> {
       navBarStyle: NavBarStyle.style6,
     );
   }
+   */
 }

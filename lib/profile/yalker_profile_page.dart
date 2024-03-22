@@ -51,7 +51,7 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
   Future<void> _fetchProfileData() async {
     try {
       final Map<String, dynamic> response =
-          await httpGet('yalker-profile/${widget.userNumber}', jwt: true);
+          await httpGet('yalker-profile/${widget.userNumber}/', jwt: true);
       setState(() {
         //print(response);
         _profileData = response;
@@ -120,7 +120,16 @@ class _YalkerProfilePageState extends State<YalkerProfilePage> {
       MaterialPageRoute(
         builder: (context) => ProfileEditPage(profileData: _loginUserProfileData!),
       ),
-    );
+    ).then((value){
+      setState(() {
+        _reportListMap = {
+          'num_report_list': [],
+          'bool_report_list': []
+        };
+        _fetchProfileData();
+        _fetchReportList();
+      });
+    });
   }
 
   void _showExplanation(BuildContext context, String explanation) {

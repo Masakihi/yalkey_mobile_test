@@ -91,7 +91,7 @@ class GoalResponse {
   }
 
   static Future<GoalResponse> fetchGoalResponse(int goalNumber) async {
-    dynamic jsonData = await httpGet('goal/detail/${goalNumber}', jwt: true);
+    dynamic jsonData = await httpGet('goal/detail/${goalNumber}/', jwt: true);
     return GoalResponse.fromJson(jsonData);
   }
 }
