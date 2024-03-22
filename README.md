@@ -18,3 +18,8 @@ samples, guidance on mobile development, and a full API reference.
 ## ver1.1
 
 プルリクエスト48
+
+
+## Web版コマンド
+
+`flutter run -d chrome --web-browser-flag "--disable-web-security"`

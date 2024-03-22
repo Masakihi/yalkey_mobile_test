@@ -52,7 +52,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
       if (mounted) {
         // ウィジェットがまだウィジェットツリーに存在する場合にのみsetState()を呼び出す
         setState(() {
-          print(response);
+          // print(response);
           _notificationCount = response['new_notification_count'];
           _notificationListPage = NotificationListPage();
         });
@@ -122,9 +122,11 @@ class _BottomNavBarState extends State<BottomNavBar> {
                           child: badges.Badge(
                             badgeContent: Text('${_notificationCount!}',
                                 style: TextStyle(fontSize: 10)),
-                            badgeAnimation: const badges.BadgeAnimation.rotation(
+                            badgeAnimation:
+                                const badges.BadgeAnimation.rotation(
                               animationDuration: Duration(seconds: 1),
-                              colorChangeAnimationDuration: Duration(seconds: 1),
+                              colorChangeAnimationDuration:
+                                  Duration(seconds: 1),
                               loopAnimation: false,
                               curve: Curves.fastOutSlowIn,
                               colorChangeAnimationCurve: Curves.easeInCubic,

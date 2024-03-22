@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'dart:html' as html;
 import '../profile/report_model.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,18 +16,19 @@ import 'image_cropper.dart';
 import 'dart:html' as html;
 import 'dart:typed_data';
 import 'dart:async';
+import 'dart:developer';
+import 'package:image_picker_web/image_picker_web.dart';
 
-
-extension FileModifier on html.File {
-  Future<Uint8List> asBytes() async {
-    final bytesFile = Completer<List<int>>();
-    final reader = html.FileReader();
-    reader.onLoad.listen(
-            (event) => bytesFile.complete(reader.result as FutureOr<List<int>>?));
-    reader.readAsArrayBuffer(this);
-    return Uint8List.fromList(await bytesFile.future);
-  }
-}
+// extension FileModifier on html.File {
+//   Future<Uint8List> asBytes() async {
+//     final bytesFile = Completer<List<int>>();
+//     final reader = html.FileReader();
+//     reader.onLoad.listen(
+//             (event) => bytesFile.complete(reader.result as FutureOr<List<int>>?));
+//     reader.readAsArrayBuffer(this);
+//     return Uint8List.fromList(await bytesFile.future);
+//   }
+// }
 
 enum ReportType { time, custom_int, custom_double, bool }
 
@@ -196,8 +198,13 @@ class _PostPageState extends State<PostPage> {
           'text': text == "" ? "本文無し" : text,
         };
         logResponse(data);
-        final response = await httpPost('post-form/', data,
-            jwt: true, images: _selectedImagePaths);
+        if (kIsWeb) {
+          final response = await httpPostInWeb('post-form/', data,
+              jwt: true, imagePaths: _selectedImagePaths);
+        } else {
+          final response = await httpPost('post-form/', data,
+              jwt: true, images: _selectedImagePaths);
+        }
       } else {
         // データをAPIに投稿する処理をここに記述
         // テキストデータ
@@ -239,10 +246,15 @@ class _PostPageState extends State<PostPage> {
         print("data");
         print(data);
         logResponse(data);
-
-        final response = await httpPost('progress-form/', data,
-            jwt: true, images: _selectedImagePaths);
-        logResponse(response);
+        if (kIsWeb) {
+          final response = await httpPostInWeb('progress-form/', data,
+              jwt: true, imagePaths: _selectedImagePaths);
+          logResponse(response);
+        } else {
+          final response = await httpPost('progress-form/', data,
+              jwt: true, images: _selectedImagePaths);
+          logResponse(response);
+        }
       }
 
       // 成功メッセージを表示
@@ -269,78 +281,67 @@ class _PostPageState extends State<PostPage> {
     }
   }
 
+  Future<CroppedFile?> _cropImage(String imagePath) async {
+    CroppedFile? croppedFile = await ImageCropper().cropImage(
+      sourcePath: imagePath,
+      aspectRatioPresets: [
+        CropAspectRatioPreset.square,
+        CropAspectRatioPreset.ratio3x2,
+        CropAspectRatioPreset.original,
+        CropAspectRatioPreset.ratio4x3,
+        CropAspectRatioPreset.ratio16x9
+      ],
+      compressQuality: 50,
+      maxWidth: 4086,
+      maxHeight: 4086,
+      uiSettings: [
+        AndroidUiSettings(
+            toolbarTitle: '画像の編集',
+            toolbarColor: Color(0xFFAE0103),
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        IOSUiSettings(
+          title: '画像の編集',
+        ),
+        WebUiSettings(
+          enableZoom: true,
+          enableResize: true,
+          mouseWheelZoom: true,
+          showZoomer: true,
+          context: context,
+          presentStyle: CropperPresentStyle.page,
+        ),
+      ],
+    );
+    return croppedFile;
+  }
+
   Future<void> _getImages() async {
     final imagePicker = ImagePicker();
     final pickedFiles = await imagePicker.pickMultiImage(imageQuality: 50);
-
-    if (pickedFiles != null) {
-      // 新たに選択された画像と既存の画像を合わせたリストを作成
-      /*
-      List<String> newImagePaths =
-          pickedFiles.map((file) => file.path).toList();
-      List<String> combinedImagePaths = List.from(_selectedImagePaths)
-        ..addAll(newImagePaths);
-       */
-
-      Future<CroppedFile?> _cropImage(String imagePath) async {
-        CroppedFile? croppedFile = await ImageCropper().cropImage(
-          sourcePath: imagePath,
-          aspectRatioPresets: [
-            CropAspectRatioPreset.square,
-            CropAspectRatioPreset.ratio3x2,
-            CropAspectRatioPreset.original,
-            CropAspectRatioPreset.ratio4x3,
-            CropAspectRatioPreset.ratio16x9
-          ],
-          compressQuality: 50,
-          maxWidth: 4086,
-          maxHeight: 4086,
-          uiSettings: [
-            AndroidUiSettings(
-                toolbarTitle: '画像の編集',
-                toolbarColor: Color(0xFFAE0103),
-                toolbarWidgetColor: Colors.white,
-                initAspectRatio: CropAspectRatioPreset.original,
-                lockAspectRatio: false),
-            IOSUiSettings(
-              title: '画像の編集',
-            ),
-            WebUiSettings(
-              enableZoom: true,
-              enableResize: true,
-              mouseWheelZoom: true,
-              showZoomer: true,
-              context: context,
-              presentStyle: CropperPresentStyle.page,
-            ),
-          ],
-        );
-        return croppedFile;
-      }
-
-      List<String> combinedImagePaths = [];
-      for (XFile image in pickedFiles) {
-        CroppedFile? croppedImage = await _cropImage(image.path);
-        if (croppedImage != null) {
-          setState(() {
-            combinedImagePaths.add(croppedImage.path);
-          });
-        }
-      }
-
-      if (combinedImagePaths.length <= 10) {
-        // 合計が10件以下の場合は、新たに選択された画像を追加
+    List<String> combinedImagePaths = [];
+    for (XFile image in pickedFiles) {
+      // combinedImagePaths.add(image.path);
+      CroppedFile? croppedImage = await _cropImage(image.path);
+      if (croppedImage != null) {
         setState(() {
-          _selectedImagePaths = combinedImagePaths;
+          combinedImagePaths.add(croppedImage.path);
         });
-      } else {
-        // 合計が10件を超える場合はエラーメッセージを表示
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('画像は最大10件までです。'),
-          ),
-        );
       }
+    }
+    if (combinedImagePaths.length <= 10) {
+      // 合計が10件以下の場合は、新たに選択された画像を追加
+      setState(() {
+        _selectedImagePaths = combinedImagePaths;
+      });
+    } else {
+      // 合計が10件を超える場合はエラーメッセージを表示
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('画像は最大10件までです。'),
+        ),
+      );
     }
   }
 
@@ -497,6 +498,27 @@ class _PostPageState extends State<PostPage> {
     }
   }
 
+  Widget _buildImageWidget(int index) {
+    print("buildします");
+    if (html.window != null) {
+      // Web プラットフォームの場合
+      print(kIsWeb);
+      return Image.network(
+        _selectedImagePaths[index],
+        height: 200,
+        fit: BoxFit.cover,
+      );
+    } else {
+      // Android や iOS などその他のプラットフォームの場合
+      print(kIsWeb);
+      return Image.file(
+        File(_selectedImagePaths[index]),
+        height: 200,
+        fit: BoxFit.cover,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -539,21 +561,26 @@ class _PostPageState extends State<PostPage> {
                     itemBuilder: (context, index) {
                       return Stack(
                         children: [
-                          if (!kIsWeb) Padding(
+                          // if (!kIsWeb) Padding(
+                          //   padding: const EdgeInsets.all(8.0),
+                          //   child: Image.file(
+                          //     File(_selectedImagePaths[index]),
+                          //     height: 200,
+                          //     fit: BoxFit.cover,
+                          //   ),
+                          // ),
+                          // if (kIsWeb) Padding(
+                          //   padding: const EdgeInsets.all(8.0),
+                          //   child: Image.asset(
+                          //     _selectedImagePaths[index],
+                          //     height: 200,
+                          //     fit: BoxFit.cover,
+                          //   ),
+                          // ),
+                          Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Image.file(
-                              File(_selectedImagePaths[index]),
-                              height: 200,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          if (kIsWeb) Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Image.asset(
-                              _selectedImagePaths[index],
-                              height: 200,
-                              fit: BoxFit.cover,
-                            ),
+                            child: _buildImageWidget(
+                                index), // プラットフォームに応じたウィジェットを構築する
                           ),
                           Positioned(
                             right: 0,
