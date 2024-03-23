@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
 
 void logResponse(dynamic response) {
   log(response.toString(), name: 'Response');
@@ -376,6 +377,7 @@ Future<dynamic> httpPostInWeb(String path, Map<String, dynamic>? body,
           forFormDataMap[key] = value.toString();
         });
       }
+      /*
       List<Uint8List> imageBytesList = [];
       for (var imagePath in imagePaths) {
         XFile image = XFile(imagePath);
@@ -385,13 +387,71 @@ Future<dynamic> httpPostInWeb(String path, Map<String, dynamic>? body,
       print("点A");
       forFormDataMap[imageFieldName] = imageBytesList;
       print("点B");
+       */
+      print("点AA");
+      // FormData formData = FormData.fromMap(forFormDataMap);
+
+      List<MultipartFile> imageMultipartFileList = [];
+      for (var imagePath in imagePaths) {
+
+        print("imagePath");
+        print(imagePath);
+        XFile image = XFile(imagePath);
+        Uint8List imageBytes = await image.readAsBytes();
+        print(image);  // Instance of 'XFile'
+        // print(imageBytes); // [137, 80, 78, 71, 13, 10, 26
+
+        // https://github.com/cfug/dio/issues/1067
+        final MultipartFile imageFile = MultipartFile.fromBytes(
+          imageBytes,
+          filename: "${imagePath.toString().split(".").last.split("/").last}", // imageFieldName,
+          contentType: MediaType("image","png") // MediaType("image","${imagePath.toString().split(".").last}"),
+        );
+        print(imageFile); // Instance of 'MultipartFile'
+
+        // https://github.com/hardik584/Flutter-lunchbox/blob/master/Multipart%20with%20dio.dart
+        /*
+        formData.files.add(
+          MapEntry(
+            imageFieldName,
+            imageFile
+          ),
+        );
+         */
+
+        imageMultipartFileList.add(imageFile);
+
+        //print(formData.files); // [MapEntry(postimage: Instance of 'MultipartFile')]
+        // [MapEntry(postimage: Instance of 'MultipartFile'), MapEntry(postimage: Instance of 'MultipartFile')]
+      }
+
+      forFormDataMap["postimage"] = imageMultipartFileList;
+
       FormData formData = FormData.fromMap(forFormDataMap);
+
+
+
+      print("点BB");
+      print(formData); // Instance of 'FormData'
       Response response = await dio.post('https://yalkey.com/api/v1/$path',
           data: formData,
           options: Options(headers: {
-            "Content-Type": "multipart/form-data",
-            "Authorization": "JWT $jwt"
+            Headers.contentTypeHeader: "multipart/form-data",
+            "Authorization": "JWT $token"
           }));
+
+      print("点CC");
+
+      // 画像をリクエストに追加
+      /*
+      for (var imagePath in images) {
+        request.files
+            .add(await http.MultipartFile.fromPath(imageFieldName, imagePath));
+      }
+       */
+
+
+
       var responseBody = await response.toString();
       logResponse(responseBody);
       return json.decode(responseBody);
