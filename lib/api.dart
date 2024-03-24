@@ -433,6 +433,8 @@ Future<dynamic> httpPostInWeb(String path, Map<String, dynamic>? body,
 
       print("点BB");
       print(formData); // Instance of 'FormData'
+      print(formData.files);
+      print(formData.fields);
       Response response = await dio.post('https://yalkey.com/api/v1/$path',
           data: formData,
           options: Options(headers: {
@@ -453,7 +455,10 @@ Future<dynamic> httpPostInWeb(String path, Map<String, dynamic>? body,
 
 
       var responseBody = await response.toString();
+      print("response");
       logResponse(responseBody);
+      print(responseBody);
+      print("response_2");
       return json.decode(responseBody);
     }
   } else {

@@ -291,7 +291,8 @@ class _PostPageState extends State<PostPage> {
         CropAspectRatioPreset.ratio4x3,
         CropAspectRatioPreset.ratio16x9
       ],
-      compressQuality: 50,
+      compressQuality: 30,
+      compressFormat: ImageCompressFormat.png,
       maxWidth: 4086,
       maxHeight: 4086,
       uiSettings: [
