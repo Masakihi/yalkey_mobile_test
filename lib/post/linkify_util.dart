@@ -44,14 +44,15 @@ class _LinkifyUtilState extends State<LinkifyUtil> {
           ),
         ),
         const SizedBox(height: 5),
-        if (widget.withPreview && !kIsWeb) PreviewsWidget(urls: _extractUrls(widget.text)),
+        if (widget.withPreview && !kIsWeb)
+          PreviewsWidget(urls: _extractUrls(widget.text)),
       ],
     );
   }
 
   void _buildTextSpans(String text) {
     final RegExp regex = RegExp(
-        r'((?:https?|ftp):\/\/[\w/\-?=%.]+\.[\w/\-&?=%.]+)|((?<=\s|^)#[\w\一-\龥ぁ-んァ-ンー]+(?=\s|$))',
+        r'((?:https?|ftp):\/\/[\w/\-?=%.]+\.[\w/\-&?=%.]+)|((?<=^|[^#\s])#[\w\一-\龥ぁ-んァ-ンー]+(?=\s|$))',
         multiLine: true);
     final RegExp regexHash = RegExp(r'^#');
 

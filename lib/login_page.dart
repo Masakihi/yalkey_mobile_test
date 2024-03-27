@@ -45,6 +45,7 @@ class _LoginPageState extends State<LoginPage> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('access_token', response['access'] as String);
       await prefs.setString('refresh_token', response['refresh'] as String);
+      print(response['access']);
       final loginUserDataResponse =
           await httpGet('login-user-profile/', jwt: true);
       //print(loginUserDataResponse);

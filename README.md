@@ -22,4 +22,6 @@ samples, guidance on mobile development, and a full API reference.
 
 ## Web版コマンド
 
+fvm入れている場合は最初にfvm flutter ...とつける
+
 `flutter run -d chrome --web-browser-flag "--disable-web-security"`

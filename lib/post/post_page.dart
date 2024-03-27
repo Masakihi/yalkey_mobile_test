@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'dart:html' as html;
+// import 'dart:html' as html;
 import '../profile/report_model.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,11 +13,9 @@ import '../app.dart';
 import '../home_page.dart';
 import 'package:intl/intl.dart';
 import 'image_cropper.dart';
-import 'dart:html' as html;
 import 'dart:typed_data';
 import 'dart:async';
 import 'dart:developer';
-import 'package:image_picker_web/image_picker_web.dart';
 
 // extension FileModifier on html.File {
 //   Future<Uint8List> asBytes() async {
@@ -500,7 +498,7 @@ class _PostPageState extends State<PostPage> {
 
   Widget _buildImageWidget(int index) {
     print("buildします");
-    if (html.window != null) {
+    if (kIsWeb) {
       // Web プラットフォームの場合
       print(kIsWeb);
       return Image.network(

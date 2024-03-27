@@ -18,16 +18,15 @@ void main() async {
     await FlutterDownloader.initialize();
   }
   initializeDateFormatting('jp');
-  WidgetsFlutterBinding.ensureInitialized();
   // accessTokenを取得する
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var accessToken = prefs.getString('access_token');
   var refreshToken = prefs.getString('refresh_token');
   var loginUserIconImage = prefs.getString('login_user_iconimage');
+  // print(accessToken);
 
   // // ネットワーク接続状態を取得
   //var connectivityResult = await Connectivity().checkConnectivity();
-
 
   // // オフラインの場合はアプリを終了
   // if (connectivityResult == ConnectivityResult.none) {
