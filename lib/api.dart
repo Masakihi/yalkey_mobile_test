@@ -366,62 +366,47 @@ Future<dynamic> httpPostInWeb(String path, Map<String, dynamic>? body,
     {bool jwt = false,
     List<String> imagePaths = const [],
     String imageFieldName = 'postimage'}) async {
-  // print("jwt$jwt");
+  final dio = Dio();
+  // JWTトークンを取得する
+  String? token;
   if (jwt) {
-    // print(jwt);
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('access_token');
+    token = prefs.getString('access_token');
     if (token == null) {
       throw Exception('Token does not exist');
-    } else {
-      // print(token);
-      final dio = Dio();
-      Map<String, dynamic> forFormDataMap = {};
-      if (body != null) {
-        body.forEach((key, value) {
-          forFormDataMap[key] = value.toString();
-        });
-      }
-      List<Uint8List> imageBytesList = [];
-      for (var imagePath in imagePaths) {
-        XFile image = XFile(imagePath);
-        Uint8List imageBytes = await image.readAsBytes();
-        imageBytesList.add(imageBytes);
-      }
-      print("点A");
-      forFormDataMap[imageFieldName] = imageBytesList;
-      print("点B");
-      FormData formData = FormData.fromMap(forFormDataMap);
-      Response response = await dio.post('${constant.getUrl()}api/v1/$path',
-          data: formData,
-          options: Options(headers: {
-            "Content-Type": "multipart/form-data",
-            "Authorization": "JWT $token"
-          }));
-      var responseBody = await response.toString();
-      logResponse(responseBody);
-      return json.decode(responseBody);
     }
-  } else {
-    final dio = Dio();
-    Map<String, dynamic> forFormDataMap = {};
-    if (body != null) {
-      forFormDataMap = body;
-    }
-    forFormDataMap[imageFieldName] = [];
-    for (var imagePath in imagePaths) {
-      XFile image = XFile(imagePath);
-      Uint8List imageBytes = await image.readAsBytes();
-      forFormDataMap[imageFieldName].add(MultipartFile.fromBytes(imageBytes));
-    }
-    FormData formData = FormData.fromMap(forFormDataMap);
-    Response response = await dio.post('${constant.getUrl()}api/v1/$path',
-        data: formData,
-        options: Options(headers: {
-          "Content-Type": "multipart/form-data",
-        }));
-    var responseBody = await response.toString();
-    logResponse(responseBody);
-    return json.decode(responseBody);
   }
+  // リクエストボディを構築する
+  FormData formData = FormData();
+  // その他のパラメータがあれば追加する
+  if (body != null) {
+    formData = FormData.fromMap(
+        body.map((key, value) => MapEntry(key, value.toString())));
+  }
+// 画像を追加する
+  Map<String, MultipartFile> imageFilesMap = {};
+  for (var imagePath in imagePaths) {
+    XFile image = XFile(imagePath);
+    Uint8List imageBytes = await image.readAsBytes();
+    MultipartFile imageFile = MultipartFile.fromBytes(imageBytes,
+        filename: imagePath.split('/').last);
+    imageFilesMap[imageFieldName] = imageFile;
+  }
+// 画像が存在する場合、リクエストボディに追加する
+  if (imageFilesMap.isNotEmpty) {
+    formData.files.addAll(imageFilesMap.entries);
+  }
+  // リクエストヘッダーを設定する
+  Options options = Options(headers: {"Content-Type": "multipart/form-data"});
+  if (jwt && token != null) {
+    options.headers!["Authorization"] = "JWT $token";
+  }
+  // APIにリクエストを送信する
+  Response response = await dio.post(
+    '${constant.getUrl()}api/v1/$path',
+    data: formData,
+    options: options,
+  );
+  // レスポンスをログに出力する
+  print(response.data);
 }

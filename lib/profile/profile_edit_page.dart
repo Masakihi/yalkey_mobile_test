@@ -100,10 +100,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         content: Text('修正が完了しました'),
       ),
     );
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ProfilePage()),
-    );
+    Navigator.of(context).pop();
   }
 
   Future<void> _selectImage() async {
@@ -144,8 +141,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       CroppedFile? croppedImage = await _cropImage(pickedFile.path);
 
       setState(() {
-        if(croppedImage!=null) _imageFile = FileImage(File(croppedImage.path));
-        if(croppedImage!=null) _editImagePath = croppedImage.path;
+        if (croppedImage != null)
+          _imageFile = FileImage(File(croppedImage.path));
+        if (croppedImage != null) _editImagePath = croppedImage.path;
       });
     }
   }

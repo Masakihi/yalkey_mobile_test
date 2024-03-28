@@ -115,11 +115,16 @@ class _AppPageState extends State<AppPage> {
           onTap: () async {
             // SharedPreferencesからデータを取得
             SharedPreferences prefs = await SharedPreferences.getInstance();
+            var _loginUserName = prefs.getString('login_user_name');
             var _loginUserIconImage = prefs.getString('login_user_iconimage');
+            var _loginUserId = prefs.getString('login_user_id');
+            var _loginUserNumber = prefs.getInt('login_user_number');
 
             // setStateを呼び出してログインユーザーのアイコン画像を更新
             setState(() {
+              loginUserName = _loginUserName;
               loginUserIconImage = _loginUserIconImage;
+              loginUserId = _loginUserId;
             });
 
             // drawerを開く
