@@ -65,62 +65,54 @@ class _PostPageState extends State<PostPage> {
   String? loginUserId;
   int? loginUserNumber;
 
-  Future<void> sendImagesToLocalApi(Map<String, dynamic>? body,
-      {bool jwt = false,
-      List<String> imagePaths = const [],
-      String imageFieldName = 'postimage'}) async {
-    final dio = Dio();
-
-    // JWTトークンを取得する
-    String? token;
-    if (jwt) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      token = prefs.getString('access_token');
-      if (token == null) {
-        throw Exception('Token does not exist');
-      }
-    }
-
-    // リクエストボディを構築する
-    FormData formData = FormData();
-
-    // その他のパラメータがあれば追加する
-    if (body != null) {
-      formData = FormData.fromMap(
-          body.map((key, value) => MapEntry(key, value.toString())));
-    }
-
-// 画像を追加する
-    Map<String, MultipartFile> imageFilesMap = {};
-    for (var imagePath in imagePaths) {
-      XFile image = XFile(imagePath);
-      Uint8List imageBytes = await image.readAsBytes();
-      MultipartFile imageFile = MultipartFile.fromBytes(imageBytes,
-          filename: imagePath.split('/').last);
-      imageFilesMap[imageFieldName] = imageFile;
-    }
-
-// 画像が存在する場合、リクエストボディに追加する
-    if (imageFilesMap.isNotEmpty) {
-      formData.files.addAll(imageFilesMap.entries);
-    }
-
-    // リクエストヘッダーを設定する
-    Options options = Options(headers: {"Content-Type": "multipart/form-data"});
-    if (jwt && token != null) {
-      options.headers!["Authorization"] = "JWT $token";
-    }
-
-    // APIにリクエストを送信する
-    Response response = await dio.post(
-      'http://127.0.0.1:8000/api/v1/post-form/',
-      data: formData,
-      options: options,
-    );
-
-    // レスポンスをログに出力する
-    print(response.data);
-  }
+//   Future<void> sendImagesToLocalApi(Map<String, dynamic>? body,
+//       {bool jwt = false,
+//       List<String> imagePaths = const [],
+//       String imageFieldName = 'postimage'}) async {
+//     final dio = Dio();
+//     // JWTトークンを取得する
+//     String? token;
+//     if (jwt) {
+//       SharedPreferences prefs = await SharedPreferences.getInstance();
+//       token = prefs.getString('access_token');
+//       if (token == null) {
+//         throw Exception('Token does not exist');
+//       }
+//     }
+//     // リクエストボディを構築する
+//     FormData formData = FormData();
+//     // その他のパラメータがあれば追加する
+//     if (body != null) {
+//       formData = FormData.fromMap(
+//           body.map((key, value) => MapEntry(key, value.toString())));
+//     }
+// // 画像を追加する
+//     Map<String, MultipartFile> imageFilesMap = {};
+//     for (var imagePath in imagePaths) {
+//       XFile image = XFile(imagePath);
+//       Uint8List imageBytes = await image.readAsBytes();
+//       MultipartFile imageFile = MultipartFile.fromBytes(imageBytes,
+//           filename: imagePath.split('/').last);
+//       imageFilesMap[imageFieldName] = imageFile;
+//     }
+// // 画像が存在する場合、リクエストボディに追加する
+//     if (imageFilesMap.isNotEmpty) {
+//       formData.files.addAll(imageFilesMap.entries);
+//     }
+//     // リクエストヘッダーを設定する
+//     Options options = Options(headers: {"Content-Type": "multipart/form-data"});
+//     if (jwt && token != null) {
+//       options.headers!["Authorization"] = "JWT $token";
+//     }
+//     // APIにリクエストを送信する
+//     Response response = await dio.post(
+//       'http://127.0.0.1:8000/api/v1/post-form/',
+//       data: formData,
+//       options: options,
+//     );
+//     // レスポンスをログに出力する
+//     print(response.data);
+//   }
 
   @override
   void initState() {
@@ -255,9 +247,8 @@ class _PostPageState extends State<PostPage> {
         };
         logResponse(data);
         if (kIsWeb) {
-          // final response = await httpPostInWeb('post-form/', data,
-          //     jwt: true, imagePaths: _selectedImagePaths);
-          await sendImagesToLocalApi(data,
+          print("hogehoge");
+          final response = await httpPostInWeb('post-form/', data,
               jwt: true, imagePaths: _selectedImagePaths);
         } else {
           final response = await httpPost('post-form/', data,

@@ -6,6 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
+import 'const.dart';
+
+final constant = Const(debugAPI: true);
 
 void logResponse(dynamic response) {
   log(response.toString(), name: 'Response');
@@ -36,7 +39,7 @@ Future httpGet(String path, {bool jwt = false}) async {
       throw Exception('Token does not exist');
     } else {
       final response = await http.get(
-        Uri.parse('https://yalkey.com/api/v1/$path'),
+        Uri.parse('${constant.getUrl()}api/v1/$path'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'JWT $token'
@@ -49,7 +52,7 @@ Future httpGet(String path, {bool jwt = false}) async {
     }
   }
   final response = await http.get(
-    Uri.parse('https://yalkey.com/api/v1/$path'),
+    Uri.parse('${constant.getUrl()}api/v1/$path'),
     headers: {'Content-Type': 'application/json'},
   );
   return json.decode(utf8.decode(response.bodyBytes));
@@ -67,7 +70,7 @@ Future httpDelete(String path, {bool jwt = false}) async {
       throw Exception('Token does not exist');
     } else {
       final response = await http.delete(
-        Uri.parse('https://yalkey.com/api/v1/$path'),
+        Uri.parse('${constant.getUrl()}api/v1/$path'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'JWT $token'
@@ -84,7 +87,7 @@ Future httpDelete(String path, {bool jwt = false}) async {
     }
   }
   final response = await http.get(
-    Uri.parse('https://yalkey.com/api/v1/$path'),
+    Uri.parse('${constant.getUrl()}api/v1/$path'),
     headers: {'Content-Type': 'application/json'},
   );
   return json.decode(utf8.decode(response.bodyBytes));
@@ -103,7 +106,7 @@ Future<dynamic> httpPost(String path, Map<String, dynamic>? body,
     } else {
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('https://yalkey.com/api/v1/$path'),
+        Uri.parse('${constant.getUrl()}api/v1/$path'),
       );
       // ヘッダーにトークンを追加
       request.headers['Authorization'] = 'JWT $token';
@@ -127,7 +130,7 @@ Future<dynamic> httpPost(String path, Map<String, dynamic>? body,
   } else {
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse('https://yalkey.com/api/v1/$path'),
+      Uri.parse('${constant.getUrl()}api/v1/$path'),
     );
 
     // 画像をリクエストに追加
@@ -164,7 +167,7 @@ Future<dynamic> httpPut(String path, Map<String, dynamic>? body,
     } else {
       var request = http.MultipartRequest(
         'PUT',
-        Uri.parse('https://yalkey.com/api/v1/$path'),
+        Uri.parse('${constant.getUrl()}api/v1/$path'),
       );
       // ヘッダーにトークンを追加
       request.headers['Authorization'] = 'JWT $token';
@@ -191,7 +194,7 @@ Future<dynamic> httpPut(String path, Map<String, dynamic>? body,
   } else {
     var request = http.MultipartRequest(
       'PUT',
-      Uri.parse('https://yalkey.com/api/v1/$path'),
+      Uri.parse('${constant.getUrl()}api/v1/$path'),
     );
 
     // 画像をリクエストに追加
@@ -226,7 +229,7 @@ Future<dynamic> httpPostWithIcon(
     } else {
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('https://yalkey.com/api/v1/$path'),
+        Uri.parse('${constant.getUrl()}api/v1/$path'),
       );
       // ヘッダーにトークンを追加
       request.headers['Authorization'] = 'JWT $token';
@@ -257,7 +260,7 @@ Future<dynamic> httpPostWithIcon(
   } else {
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse('https://yalkey.com/api/v1/$path'),
+      Uri.parse('${constant.getUrl()}api/v1/$path'),
     );
 
     // 画像をリクエストに追加
@@ -298,7 +301,7 @@ Future<dynamic> httpPutWithIcon(
     } else {
       var request = http.MultipartRequest(
         'PUT',
-        Uri.parse('https://yalkey.com/api/v1/$path'),
+        Uri.parse('${constant.getUrl()}api/v1/$path'),
       );
       // ヘッダーにトークンを追加
       request.headers['Authorization'] = 'JWT $token';
@@ -329,7 +332,7 @@ Future<dynamic> httpPutWithIcon(
   } else {
     var request = http.MultipartRequest(
       'PUT',
-      Uri.parse('https://yalkey.com/api/v1/$path'),
+      Uri.parse('${constant.getUrl()}api/v1/$path'),
     );
 
     // 画像をリクエストに追加
@@ -363,12 +366,15 @@ Future<dynamic> httpPostInWeb(String path, Map<String, dynamic>? body,
     {bool jwt = false,
     List<String> imagePaths = const [],
     String imageFieldName = 'postimage'}) async {
+  // print("jwt$jwt");
   if (jwt) {
+    // print(jwt);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('access_token');
     if (token == null) {
       throw Exception('Token does not exist');
     } else {
+      // print(token);
       final dio = Dio();
       Map<String, dynamic> forFormDataMap = {};
       if (body != null) {
@@ -386,11 +392,11 @@ Future<dynamic> httpPostInWeb(String path, Map<String, dynamic>? body,
       forFormDataMap[imageFieldName] = imageBytesList;
       print("点B");
       FormData formData = FormData.fromMap(forFormDataMap);
-      Response response = await dio.post('https://yalkey.com/api/v1/$path',
+      Response response = await dio.post('${constant.getUrl()}api/v1/$path',
           data: formData,
           options: Options(headers: {
             "Content-Type": "multipart/form-data",
-            "Authorization": "JWT $jwt"
+            "Authorization": "JWT $token"
           }));
       var responseBody = await response.toString();
       logResponse(responseBody);
@@ -409,7 +415,7 @@ Future<dynamic> httpPostInWeb(String path, Map<String, dynamic>? body,
       forFormDataMap[imageFieldName].add(MultipartFile.fromBytes(imageBytes));
     }
     FormData formData = FormData.fromMap(forFormDataMap);
-    Response response = await dio.post('https://yalkey.com/api/v1/$path',
+    Response response = await dio.post('${constant.getUrl()}api/v1/$path',
         data: formData,
         options: Options(headers: {
           "Content-Type": "multipart/form-data",
